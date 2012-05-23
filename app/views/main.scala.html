@@ -1,0 +1,67 @@
+@(title: Html, nav: String = "")(content: Html)(implicit request: RequestHeader)
+
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <title>TaxiMob</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+    </head>
+    <body>
+
+        <div class="topbar">
+            <div class="fill">
+                <div class="container">
+                    <a class="brand logo" href="@routes.Application.index()">TaxiMob</a>
+                    <ul class="secondary-nav">
+                       @request.session.get("username").map{ login =>
+                       <li>
+                           <a href="/account">Hello @login</a>
+                       </li>
+                       <li>
+                           <a href="/logout">Log out</a>
+                       </li>
+                       }.getOrElse {
+                        <li class="@("active".when(nav == "signup"))">
+                            <a href="@routes.Auth.register">Register</a>
+                        </li>
+                        <li class="@("active".when(nav == "login"))">
+                            <a href="@routes.Auth.login">Login</a>
+                        </li>
+                        }
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="content">
+                
+                <div class="page-header">
+                    <h1>@title</h1>
+                </div>
+
+                <div class="row">
+                    <div class="span14">
+                        @content
+                    </div>
+                </div>
+                
+            </div>
+
+            <footer>
+                <p>
+                    <a href="http://www.playframework.org">www.playframework.org</a>
+                </p>
+            </footer>
+
+        </div>
+        
+    </body>
+</html>

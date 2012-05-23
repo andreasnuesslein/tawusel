@@ -1,0 +1,86 @@
+@(signupForm: Form[User])(implicit request: RequestHeader)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@title = {
+    Sign Up
+}
+
+@main(title, nav = "signup") {
+
+<script type="text/javascript">
+  tr = {"ä":"ae", "ü":"ue", "ö":"oe", "ß":"ss" }
+  $(document).ready(function(){
+    //$("#username").attr("disabled", "disabled");
+    $("#first_name,#last_name").keyup(function() {
+      $("#username").val(
+        $("#first_name").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
+        + "."
+        + $("#last_name").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
+      );
+    });
+  });
+</script>
+
+@helper.form(action = routes.Auth.submit) {
+
+<fieldset>
+  <legend>Account information</legend>
+
+  @inputText(
+  signupForm("first_name"),
+  '_label -> "First name",
+  '_error -> signupForm.error("first_name")
+  )
+
+  @inputText(
+  signupForm("last_name"),
+  '_label -> "Last name",
+  '_error -> signupForm.error("last_name")
+  )
+
+  @inputText(
+  signupForm("username"),
+  '_label -> "Username",
+  '_error -> signupForm.globalError
+  )
+
+  @inputText(
+  signupForm("email"), '_label -> "Email",
+  '_help -> "Enter a valid email address."
+  )
+
+  @inputPassword(
+  signupForm("password.main"),
+  '_label -> "Password",
+  '_help -> "A password must be at least 6 characters. "
+  )
+
+  @inputPassword(
+  signupForm("password.confirm"), 
+  '_label -> "Repeat password",
+  '_help -> "Please repeat your password again.",
+  '_error -> signupForm.error("password")
+  )
+
+</fieldset>
+
+<fieldset>
+
+  <legend>Contact information</legend>
+
+</fieldset>
+
+<fieldset>
+
+</fieldset>
+
+<div class="actions">
+  <input type="submit" class="btn primary" value="Sign Up">
+  <a href="@routes.Application.index" class="btn">Cancel</a>
+</div>
+
+}
+
+}

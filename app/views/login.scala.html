@@ -1,0 +1,41 @@
+@(myform: Form[(String,String)])(implicit request: RequestHeader)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@title = {
+  Login
+}
+
+@main(title, nav = "login") {
+
+  @helper.form(routes.Auth.authenticate) {
+
+
+  <div class="alerts">
+  @myform.globalError.map { error =>
+  <div class="alert-message error">
+    <a class="close" href="#">x</a>
+    <p>@error.message</p>
+  </div>
+</div>
+  }
+
+  @inputText(
+  myform("username"),
+  '_label -> "Username"
+  )
+  @inputPassword(
+  myform("password"),
+  '_label -> "Password"
+  )
+
+  <div class="actions">
+   <input type="submit" class="btn primary" value="Sign Up">
+   <a href="@routes.Application.index" class="btn">Cancel</a>
+  </div>
+
+
+  }
+
+  }
