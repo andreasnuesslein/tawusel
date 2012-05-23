@@ -5,18 +5,15 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
+import play.api._
+import play.api.mvc._
+
 case class User(
-  username: String,
-  first_name: String,
-  last_name: String,
   email: String,
-  password: String,
-  cellphone: Option[String],
-  homephone: Option[String],
-  street: Option[String],
-  zip: Option[String],
-  city: Option[String],
-  notes: Option[String]
+  forename: String,
+  lastname: String,
+  cellphone: Long,
+  password: String
   )
 
 object User {
@@ -27,18 +24,12 @@ object User {
    * Parse a User from a ResultSet
    */
   val simple = {
-    get[String]("user.username") ~
-    get[String]("user.first_name") ~
-    get[String]("user.last_name") ~
     get[String]("user.email") ~
-    get[String]("user.password") ~
-    get[Option[String]]("user.cellphone") ~
-    get[Option[String]]("user.homephone") ~
-    get[Option[String]]("user.street") ~
-    get[Option[String]]("user.zip") ~
-    get[Option[String]]("user.city") ~
-    get[Option[String]]("user.notes") map {
-      case u~fn~ln~e~p~c~h~s~z~ci~no => User(u, fn, ln, e, p, c, h, s, z, ci, no)
+    get[String]("user.forename") ~
+    get[String]("user.lastname") ~
+    get[Long]("user.cellphone") ~
+    get[String]("user.password") map {
+      case e~fn~ln~c~p => User(e, fn, ln, c, p)
     }
   }
   
@@ -47,10 +38,10 @@ object User {
   /**
    * Retrieve a User from email.
    */
-  def findByUsername(username: String): Option[User] = {
+  def findByEmail(email: String): Option[User] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from user where username = {username}").on(
-        'username -> username
+      SQL("select * from user where email = {email}").on(
+        'email -> email
       ).as(User.simple.singleOpt)
     }
   }
@@ -67,15 +58,15 @@ object User {
   /**
    * Authenticate a User.
    */
-  def authenticate(username: String, password: String): Option[User] = {
+  def authenticate(email: String, password: String): Option[User] = {
     DB.withConnection { implicit connection =>
       SQL(
         """
          select * from user where
-         username = {username} and password = SHA1({password})
+         email = {email} and password = SHA1({password})
         """
       ).on(
-        'username -> username,
+        'email -> email,
         'password -> password
       ).as(User.simple.singleOpt)
     }
@@ -85,31 +76,28 @@ object User {
    * Create a User.
    */
   def create(user: User): User = {
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-          INSERT INTO user(username,first_name,last_name,email,password,
-            cellphone,homephone,street,zip,city,notes) VALUES (
-            {u},{fn},{ln},{e},SHA1({p}),{cp},{hp},{s},{z},{c},{n}
-          )
-        """
-      ).on(
-        'u -> user.username,
-        'fn -> user.first_name,
-        'ln -> user.last_name,
-        'e -> user.email,
-        'p -> user.password,
-        'cp -> user.cellphone,
-        'hp -> user.homephone,
-        's -> user.street,
-        'z -> user.zip,
-        'c -> user.city,
-        'n -> user.notes
-      ).executeUpdate()
-
-      user
-
-    }
+//    try {
+	    DB.withConnection { implicit connection =>
+	      SQL(
+	        """
+	          INSERT 
+	          INTO user (email, forename, lastname, cellphone, password) 
+	          VALUES ({e},{fn},{ln},{c},SHA1({p}))
+	        """
+	      ).on(
+	        'e -> user.email,
+	        'fn -> user.forename,
+	        'ln -> user.lastname,
+	        'c -> user.cellphone,
+	        'p -> user.password
+	      ).executeUpdate()
+	
+	      user
+	
+	    }
+//    } catch {
+//   		case e => Ok(html.signup.form(regForm))
+//    }
   }
   
 }

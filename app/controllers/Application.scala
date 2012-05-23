@@ -11,8 +11,8 @@ object Application extends Controller with Secured {
     Ok(views.html.index())
   }
 
-  def secure = IsAuthenticated { username => implicit request =>
-    val user = User.findByUsername(username).get
+  def secure = IsAuthenticated { email => implicit request =>
+    val user = User.findByEmail(email).get
     Ok(views.html.signup.summary(user))
   }
 

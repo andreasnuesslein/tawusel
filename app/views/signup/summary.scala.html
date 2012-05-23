@@ -4,10 +4,10 @@
     
     <h2>Your account:</h2>
     
-    <h6>Username</h6>
+    <h6>Name</h6>
     
     <p>
-        @user.username
+        @user.forename @user.lastname
     </p>
     
     <h6>Email</h6>
@@ -22,12 +22,10 @@
         @user.password
     </p>
     
-    <h2>Additional information:</h2>
-    
-    <h6>Address</h6>
+    <h6>Cellphone</h6>
     
     <p>
-        @user.street.getOrElse { <em>Not specified</em> } 
+        @user.cellphone
     </p>
     
     

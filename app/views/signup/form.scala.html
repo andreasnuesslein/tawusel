@@ -29,26 +29,29 @@
   <legend>Account information</legend>
 
   @inputText(
-  signupForm("first_name"),
-  '_label -> "First name",
-  '_error -> signupForm.error("first_name")
+  signupForm("forename"),
+  '_label -> "Forename",
+  '_error -> signupForm.error("forename")
   )
 
   @inputText(
-  signupForm("last_name"),
-  '_label -> "Last name",
-  '_error -> signupForm.error("last_name")
+  signupForm("lastname"),
+  '_label -> "Lastname",
+  '_error -> signupForm.error("lastname")
   )
 
   @inputText(
-  signupForm("username"),
-  '_label -> "Username",
-  '_error -> signupForm.globalError
+  signupForm("email"), 
+  '_label -> "Email",
+  '_help -> "Enter a valid email address.",	
+  '_error -> signupForm.error("email")
   )
 
   @inputText(
-  signupForm("email"), '_label -> "Email",
-  '_help -> "Enter a valid email address."
+  signupForm("cellphone"), 
+  '_label -> "Cellphone",
+  '_help -> "Enter a valid german cellphone number.",	
+  '_error -> signupForm.error("cellphone")
   )
 
   @inputPassword(
