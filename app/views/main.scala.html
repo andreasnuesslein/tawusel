@@ -48,7 +48,16 @@
                 </div>
 
                 <div class="row">
-                    <div class="span14">
+                  <div class="span14">
+                    <div class="alerts">
+                      @for((class,message)<- request.flash.data) {
+                        <div class="alert-message @class">
+                            <a class="close" href="#">x</a>
+                          <p>@message</p>
+                        </div>
+                        }
+                      </div>
+
                         @content
                     </div>
                 </div>
