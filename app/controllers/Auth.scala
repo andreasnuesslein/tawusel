@@ -75,8 +75,11 @@ object Auth extends Controller with Secured {
     )
   }
 
-  def account = TODO
-  
+  def account = IsAuthenticated { email => implicit request =>
+    val user = User.findByEmail(email).get
+    Ok(views.html.signup.summary(user))
+  }
+
   def submit = Action { implicit request =>
    regForm.bindFromRequest.fold(
      formWithErrors => {
@@ -92,19 +95,16 @@ object Auth extends Controller with Secured {
 }
 
 trait Secured {
-  private def email(request: RequestHeader) = request.session.get("email")
+  private def username(request: RequestHeader) = request.session.get("email")
   private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Auth.login)
-  def IsAuthenticated(f: => String => Request[AnyContent] => Result) = Security.Authenticated(email, onUnauthorized) { user =>
-    Action(request => f(user)(request))
+
+  def IsAuthenticated(f: => String => Request[AnyContent] => Result) =
+    Security.Authenticated(username, onUnauthorized) { user => Action(request => f(user)(request))
   }
 
-  /*def IsMemberOf(project: Long)(f: => String => Request[AnyContent] => Result) = IsAuthenticated { user => request =>
-    if(Project.isMember(project, user)) {
-      f(user)(request)
-    } else {
-      Results.Forbidden
-    }
-  }*/
+  def IsAuthenticated(f: => String => Request[AnyContent] => Result, g: => Result) =
+    Security.Authenticated(username, RequestHeader => g) { user => Action(request => f(user)(request))
+  }
 
 }
 
