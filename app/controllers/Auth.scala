@@ -1,30 +1,31 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
-import play.api.data._
+import models._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
-
-import models._
+import play.api.data._
+import play.api.mvc._
+import play.api._
 import views._
 
 
 object Auth extends Controller with Secured {
+  
   val loginForm = Form(
     tuple(
-      "email" -> text,
+      "email" -> email,
       "password" -> text
     ) verifying ("Invalid email or password", result => result match {
       case (email, password) => User.authenticate(email, password).isDefined
       })
   )
+  
   val regForm: Form[User] = Form(
     mapping(
-      "email" -> text(minLength = 4),
+      "email" -> email,
       "forename" -> text,
       "lastname" -> text,
-      "cellphone" -> of[Long],
+      "cellphone" -> text,
       "password" -> tuple(
             "main" -> text(minLength = 6),
             "confirm" -> text
@@ -41,7 +42,7 @@ object Auth extends Controller with Secured {
       user => Some(user.email, user.forename, user.lastname, user.cellphone, (user.password, ""))
     }.verifying(
       "This email is not available",
-      user => !Seq("admin", "guest").contains(user.email)
+      user => User.findByEmail(user.email).isEmpty
       )
   )
 
@@ -54,7 +55,11 @@ object Auth extends Controller with Secured {
   }
 
   def register = Action { implicit request =>
-    Ok(html.signup.form(regForm))
+    try {
+    	Ok(html.signup.form(regForm))
+    } catch {
+   		case e => Ok(html.signup.form(regForm))
+    }
   }
 
   def authenticate = Action { implicit request =>
@@ -71,6 +76,7 @@ object Auth extends Controller with Secured {
   }
 
   def account = TODO
+  
   def submit = Action { implicit request =>
    regForm.bindFromRequest.fold(
      formWithErrors => {
@@ -83,8 +89,6 @@ object Auth extends Controller with Secured {
     }
    )
   }
-
-
 }
 
 trait Secured {

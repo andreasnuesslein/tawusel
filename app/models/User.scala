@@ -4,15 +4,15 @@ import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
-
 import play.api._
 import play.api.mvc._
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException
 
 case class User(
   email: String,
   forename: String,
   lastname: String,
-  cellphone: Long,
+  cellphone: String,
   password: String
   )
 
@@ -27,7 +27,7 @@ object User {
     get[String]("user.email") ~
     get[String]("user.forename") ~
     get[String]("user.lastname") ~
-    get[Long]("user.cellphone") ~
+    get[String]("user.cellphone") ~
     get[String]("user.password") map {
       case e~fn~ln~c~p => User(e, fn, ln, c, p)
     }
@@ -75,29 +75,24 @@ object User {
   /**
    * Create a User.
    */
+  @throws(classOf[MySQLIntegrityConstraintViolationException])
   def create(user: User): User = {
-//    try {
-	    DB.withConnection { implicit connection =>
-	      SQL(
-	        """
-	          INSERT 
-	          INTO user (email, forename, lastname, cellphone, password) 
-	          VALUES ({e},{fn},{ln},{c},SHA1({p}))
-	        """
-	      ).on(
-	        'e -> user.email,
-	        'fn -> user.forename,
-	        'ln -> user.lastname,
-	        'c -> user.cellphone,
+	  DB.withConnection { implicit connection =>
+	  SQL("""
+		INSERT 
+	    INTO user (email, forename, lastname, cellphone, password) 
+	    VALUES ({e},{fn},{ln},{c},SHA1({p}))
+	    """).on(
+	    'e -> user.email,
+	    'fn -> user.forename,
+	    'ln -> user.lastname,
+	    'c -> user.cellphone,
 	        'p -> user.password
 	      ).executeUpdate()
-	
-	      user
-	
-	    }
-//    } catch {
-//   		case e => Ok(html.signup.form(regForm))
-//    }
+		}
+	  
+	  	user
+    
   }
   
 }
