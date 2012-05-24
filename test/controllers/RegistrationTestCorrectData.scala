@@ -17,7 +17,7 @@ class RegistrationTestCorrectData extends Specification{
         browser.pageSource must contain("Account information")
         
         //try to register with correct entries
-        browser.$("#forename_field").text("Max")
+        browser.$("#firstname_field").text("Max")
         browser.$("#lastname_field").text("Mustermann")
         browser.$("#email_field").text("max.mustermann@carmeq.com")
         browser.$("#cellphone_field").text("0132123456")
@@ -33,7 +33,7 @@ class RegistrationTestCorrectData extends Specification{
    
         //try to register with the same email adress
 //        browser.goTo("http://localhost:9000/register")
-//        browser.$("#forename_field").text("Max")
+//        browser.$("#firstname_field").text("Max")
 //        browser.$("#lastname_field").text("Mustermann")
 //        browser.$("#email_field").text("max.mustermann@carmeq.com")
 //        browser.$("#cellphone_field").text("0132123456")

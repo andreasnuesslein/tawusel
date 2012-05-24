@@ -13,9 +13,9 @@
   tr = {"ä":"ae", "ü":"ue", "ö":"oe", "ß":"ss" }
   $(document).ready(function(){
     //$("#username").attr("disabled", "disabled");
-    $("#forename,#lastname").keyup(function() {
+    $("#firstname,#lastname").keyup(function() {
       $("#email").val(
-        $("#forename").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
+        $("#firstname").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
         + "."
         + $("#lastname").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
         + "@@carmeq.com"
@@ -30,9 +30,9 @@
   <legend>Account information</legend>
 
   @inputText(
-  signupForm("forename"),
-  '_label -> "Forename",
-  '_error -> signupForm.error("forename")
+  signupForm("firstname"),
+  '_label -> "Firstname",
+  '_error -> signupForm.error("firstname")
   )
 
   @inputText(

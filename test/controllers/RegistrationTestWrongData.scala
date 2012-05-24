@@ -16,8 +16,8 @@ class RegistrationTestWrongData extends Specification{
         browser.pageSource must contain("Sign Up")
         browser.pageSource must contain("Account information")
         
-        //try to register without a forename - shouldn't work
-        browser.$("#forename_field").text("")
+        //try to register without a firstname - shouldn't work
+        browser.$("#firstname_field").text("")
         browser.$("#lastname_field").text("Mustermann")
         browser.$("#email_field").text("max.mustermann@carmeq.com")
         browser.$("#cellphone_field").text("0132123456")
@@ -28,7 +28,7 @@ class RegistrationTestWrongData extends Specification{
         browser.pageSource must contain("Valid email required")
         
         //try to register without a lastname -shouln't work
-        browser.$("#forename_field").text("Max")
+        browser.$("#firstname_field").text("Max")
         browser.$("#lastname_field").text("")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 2")
@@ -51,7 +51,7 @@ class RegistrationTestWrongData extends Specification{
 //        browser.pageSource must contain("Choose a valid cellphone number")
         
         //        browser.goTo("http://localhost:9000/register")
-//        browser.$("#forename_field").text("Max")
+//        browser.$("#firstname_field").text("Max")
 //        browser.$("#lastname_field").text("Mustermann")
 //        browser.$("#email_field").text("max.mustermann@carmeq.com")
 //        browser.$("#cellphone_field").text("aaaaaaaaaa")

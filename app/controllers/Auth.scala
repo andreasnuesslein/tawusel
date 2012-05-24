@@ -41,7 +41,7 @@ object Auth extends Controller with Secured {
   val registrationForm: Form[User] = Form(
     mapping(
       "email" -> email.verifying("This email adress is already in use", User.findByEmail(_).isEmpty),
-      "forename" -> text(minLength = 2, maxLength = 45),
+      "firstname" -> text(minLength = 2, maxLength = 45),
       "lastname" -> text(minLength = 2, maxLength = 45),
       "cellphone" -> text(minLength = 10).verifying("Choose a valid cellphone number", _.matches(cellphonePattern)),
       "password" -> tuple(
@@ -51,11 +51,11 @@ object Auth extends Controller with Secured {
         // Add an additional constraint: both passwords must match
         "Passwords don't match", passwords => passwords._1 == passwords._2
       )
-    ) { (email, forename, lastname, cellphone, passwords)
-      => User(email, forename, lastname, cellphone, passwords._1)
+    ) { (email, firstname, lastname, cellphone, passwords)
+      => User(email, firstname, lastname, cellphone, passwords._1)
     }
     {
-      user => Some(user.email, user.forename, user.lastname, user.cellphone, (user.password, ""))
+      user => Some(user.email, user.firstname, user.lastname, user.cellphone, (user.password, ""))
     }
   )
 
@@ -81,7 +81,7 @@ object Auth extends Controller with Secured {
       formWithErrors => BadRequest(html.login(formWithErrors)),
       email => {
         var user = User.findByEmail(email._1).get
-        Redirect(routes.Application.index).withSession("email" -> user.email, "forename" -> user.forename)
+        Redirect(routes.Application.index).withSession("email" -> user.email, "firstname" -> user.firstname)
     }
     )
   }
@@ -100,7 +100,7 @@ object Auth extends Controller with Secured {
      },
      user => {
       User.create(user)
-      Redirect(routes.Application.index).withSession("email" -> user.email,"forename" -> user.forename)
+      Redirect(routes.Application.index).withSession("email" -> user.email,"firstname" -> user.firstname)
     }
    )
   }
