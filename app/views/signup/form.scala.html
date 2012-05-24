@@ -13,11 +13,12 @@
   tr = {"ä":"ae", "ü":"ue", "ö":"oe", "ß":"ss" }
   $(document).ready(function(){
     //$("#username").attr("disabled", "disabled");
-    $("#first_name,#last_name").keyup(function() {
-      $("#username").val(
-        $("#first_name").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
+    $("#forename,#lastname").keyup(function() {
+      $("#email").val(
+        $("#forename").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
         + "."
-        + $("#last_name").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
+        + $("#lastname").val().toLowerCase().replace(/[äöüß]/g, function($0) { return tr[$0] })
+        + "@@carmeq.com"
       );
     });
   });
