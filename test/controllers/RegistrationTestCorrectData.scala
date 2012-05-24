@@ -15,7 +15,7 @@ class RegistrationTestCorrectData extends Specification{
         
         browser.pageSource must contain("Sign Up")
         browser.pageSource must contain("Account information")
-        
+
         //try to register with correct entries
         browser.$("#firstname").text("Max")
         browser.$("#lastname").text("Mustermann")
@@ -23,6 +23,7 @@ class RegistrationTestCorrectData extends Specification{
         browser.$("#cellphone").text("01321234561")
         browser.$("#password_main").text("tester")
         browser.$("#password_confirm").text("tester")
+
         browser.$("#registerbutton").click()
         browser.$("dl.error").size must equalTo(0)
         browser.pageSource must not contain("Login")
@@ -41,6 +42,7 @@ class RegistrationTestCorrectData extends Specification{
         browser.$("#password_confirm").text("tester")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("This email adress is already in use")
+
         
       	}
       }

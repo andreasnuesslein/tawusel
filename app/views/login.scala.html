@@ -8,6 +8,16 @@
 }
 
 @main(title, nav = "login") {
+  <script>
+    $(document).ready(function(){
+      $("form").submit(function() {
+        $email = $("#email").val();
+        if($email.search("@@") == -1){
+          $("#email").val($email+"@@carmeq.com");
+        }
+      });
+    });
+  </script>
 
   @helper.form(routes.Auth.authenticate) {
 

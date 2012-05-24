@@ -30,9 +30,9 @@ object Auth extends Controller with Secured {
       }
     )
   )
-  
+
   val cellphonePattern = "((^\\(\\+?\\d+[\\s]*\\d*\\)|^\\(\\d+\\)|^\\+?\\d+|^\\d+)+([\\-\\/\\s])*(\\d)+)"
-  
+
   /**
    * Definition of the registration formular as a variable including the verifying for
    * some simple cases like email and cellphone and the mapping to an user object of the
@@ -41,7 +41,7 @@ object Auth extends Controller with Secured {
   val registrationForm: Form[User] = Form(
     mapping(
       "email" -> email.verifying("This email adress is already in use", User.findByEmail(_).isEmpty),
-      "forename" -> text(minLength = 2, maxLength = 45),
+      "firstname" -> text(minLength = 2, maxLength = 45),
       "lastname" -> text(minLength = 2, maxLength = 45),
       "cellphone" -> text(minLength = 10).verifying("Choose a valid cellphone number", _.matches(cellphonePattern)),
       "password" -> tuple(
@@ -49,13 +49,13 @@ object Auth extends Controller with Secured {
             "confirm" -> text
       ).verifying(
         // Add an additional constraint: both passwords must match
-    	"Passwords don't match", passwords => passwords._1 == passwords._2
-      )  
-    ) { (email, forename, lastname, cellphone, passwords) 
-    	=> User(email, forename, lastname, cellphone, passwords._1)
+        "Passwords don't match", passwords => passwords._1 == passwords._2
+      )
+    ) { (email, firstname, lastname, cellphone, passwords)
+      => User(email, firstname, lastname, cellphone, passwords._1)
     }
     {
-      user => Some(user.email, user.forename, user.lastname, user.cellphone, (user.password, ""))
+      user => Some(user.email, user.firstname, user.lastname, user.cellphone, (user.password, ""))
     }
   )
 
@@ -67,9 +67,23 @@ object Auth extends Controller with Secured {
   def login = Action { implicit request =>
       session.get("email") match {
         case Some(_) => Redirect(routes.Application.index).flashing(
-          "success" -> "You're already logged in" )
+          "info" -> "You're already logged in." )
         case None => Ok(html.login(loginForm))
       }
+  }
+  /**
+   * Implementation of the authenticate method (action) which shows
+   * the login formular with errors if they exists and redirects the
+   * user to the index.html otherwise.
+   */
+  def authenticate = Action { implicit request =>
+    loginForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.login(formWithErrors)),
+      email => {
+        var user = User.findByEmail(email._1).get
+        Redirect(routes.Application.index).withSession("email" -> user.email, "firstname" -> user.firstname)
+    }
+    )
   }
 
   /**
@@ -77,20 +91,20 @@ object Auth extends Controller with Secured {
    * contains just a redirect to the signup.html.
    */
   def register = Action { implicit request =>
-  	Ok(html.signup.form(registrationForm))
+    Ok(html.signup.form(registrationForm))
+  }
+  def submit = Action { implicit request =>
+   registrationForm.bindFromRequest.fold(
+     formWithErrors => {
+       BadRequest(html.signup.form(formWithErrors))
+     },
+     user => {
+      User.create(user)
+      Redirect(routes.Application.index).withSession("email" -> user.email,"firstname" -> user.firstname)
+    }
+   )
   }
 
-  /**
-   * Implementation of the authenticate method (action) which shows 
-   * the login formular with errors if they exists and redirects the
-   * user to the index.html otherwise.
-   */
-  def authenticate = Action { implicit request =>
-    loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.login(formWithErrors)),
-      user => Redirect(routes.Application.index).withSession("email" -> user._1)
-    )
-  }
 
   /**
    * Implementation of the logout method (action).
@@ -106,18 +120,6 @@ object Auth extends Controller with Secured {
     Ok(views.html.signup.summary(user))
   }
 
-  def submit = Action { implicit request =>
-   registrationForm.bindFromRequest.fold(
-     formWithErrors => {
-       println(formWithErrors)
-       BadRequest(html.signup.form(formWithErrors))
-     },
-     user => {
-      User.create(user)
-      Redirect(routes.Application.index).withSession("email" -> user.email)
-    }
-   )
-  }
 }
 
 trait Secured {

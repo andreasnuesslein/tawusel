@@ -3,7 +3,7 @@
 CREATE  TABLE IF NOT EXISTS `user` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `email` VARCHAR(45) NOT NULL ,
-  `forename` VARCHAR(45) NOT NULL ,
+  `firstname` VARCHAR(45) NOT NULL ,
   `lastname` VARCHAR(45) NOT NULL ,
   `cellphone` VARCHAR(20) NOT NULL ,
   `password` VARCHAR(45) NOT NULL ,
@@ -101,7 +101,7 @@ ENGINE = InnoDB;
 -- Data for table `user`
 -- -----------------------------------------------------
  START TRANSACTION;
- INSERT INTO `user` (`id`, `email`, `forename`, `lastname`, `cellphone`, `password`) VALUES (1, 'test.test@carmeq.com', 'test', 'test', '0177123456', '7c4a8d09ca3762af61e59520943dc26494f8941b');
+ INSERT INTO `user` (`id`, `email`, `firstname`, `lastname`, `cellphone`, `password`) VALUES (1, 'test.test@carmeq.com', 'test', 'test', '0177123456', '7c4a8d09ca3762af61e59520943dc26494f8941b');
 
  COMMIT;
 

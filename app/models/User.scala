@@ -9,7 +9,7 @@ import play.api.mvc._
 
 case class User(
   email: String,
-  forename: String,
+  firstname: String,
   lastname: String,
   cellphone: String,
   password: String
@@ -24,7 +24,7 @@ object User {
    */
   val simple = {
     get[String]("user.email") ~
-    get[String]("user.forename") ~
+    get[String]("user.firstname") ~
     get[String]("user.lastname") ~
     get[String]("user.cellphone") ~
     get[String]("user.password") map {
@@ -78,11 +78,11 @@ object User {
 	  DB.withConnection { implicit connection =>
 	  SQL("""
 		INSERT 
-	    INTO user (email, forename, lastname, cellphone, password) 
+	    INTO user (email, firstname, lastname, cellphone, password) 
 	    VALUES ({e},{fn},{ln},{c},SHA1({p}))
 	    """).on(
 	    'e -> user.email,
-	    'fn -> user.forename,
+	    'fn -> user.firstname,
 	    'ln -> user.lastname,
 	    'c -> user.cellphone,
 	        'p -> user.password

@@ -15,6 +15,7 @@ class RegistrationTestWrongData extends Specification{
         
         browser.pageSource must contain("Sign Up")
         browser.pageSource must contain("Account information")
+
         
         //try to register without a firstname - shouldn't work
         browser.$("#firstname").text("")
@@ -23,12 +24,15 @@ class RegistrationTestWrongData extends Specification{
         browser.$("#cellphone").text("0132123456")
         browser.$("#password_main").text("tester")
         browser.$("#password_confirm").text("tester")
+
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 2")
         
+
         //try to register without a lastname -shouln't work
         browser.$("#firstname").text("Max")
         browser.$("#lastname").text("")
+
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 2")
         
