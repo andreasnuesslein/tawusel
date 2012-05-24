@@ -75,7 +75,6 @@ object User {
   /**
    * Create a User.
    */
-  @throws(classOf[MySQLIntegrityConstraintViolationException])
   def create(user: User): User = {
 	  DB.withConnection { implicit connection =>
 	  SQL("""
