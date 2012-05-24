@@ -16,8 +16,8 @@ class RegistrationTestWrongData extends Specification{
         browser.pageSource must contain("Sign Up")
         browser.pageSource must contain("Account information")
         
-        //try to register without a forename - shouldn't work
-        browser.$("#forename").text("")
+        //try to register without a firstname - shouldn't work
+        browser.$("#firstname").text("")
         browser.$("#lastname").text("Mustermann")
         browser.$("#email").text("max.mustermann@carmeq.com")
         browser.$("#cellphone").text("0132123456")
@@ -27,7 +27,7 @@ class RegistrationTestWrongData extends Specification{
         browser.pageSource must contain("Minimum length is 2")
         
         //try to register without a lastname -shouln't work
-        browser.$("#forename").text("Max")
+        browser.$("#firstname").text("Max")
         browser.$("#lastname").text("")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 2")
@@ -50,7 +50,7 @@ class RegistrationTestWrongData extends Specification{
         browser.pageSource must contain("Choose a valid cellphone number")
         
         //        browser.goTo("http://localhost:9000/register")
-        browser.$("#forename").text("Max")
+        browser.$("#firstname").text("Max")
         browser.$("#lastname").text("Mustermann")
         browser.$("#email").text("max.mustermann@carmeq.com")
         browser.$("#cellphone").text("aaaaaaaaaa")
@@ -58,7 +58,7 @@ class RegistrationTestWrongData extends Specification{
         browser.$("#password_confirm").text("tester")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Choose a valid cellphone number")
-       
+
         //try to register without password - shouldn't work
         browser.$("#cellphone").text("0132123456")
         browser.$("#password_main").text("")

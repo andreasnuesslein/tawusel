@@ -17,7 +17,7 @@ class RegistrationTestCorrectData extends Specification{
         browser.pageSource must contain("Account information")
         
         //try to register with correct entries
-        browser.$("#forename").text("Max")
+        browser.$("#firstname").text("Max")
         browser.$("#lastname").text("Mustermann")
         browser.$("#email").text("max.mustermann@carmeq.com")
         browser.$("#cellphone").text("01321234561")
@@ -28,12 +28,12 @@ class RegistrationTestCorrectData extends Specification{
         browser.pageSource must not contain("Login")
         browser.pageSource must not contain("Register")
         browser.pageSource must contain("Index")
-        browser.pageSource must contain("Hello max.mustermann@carmeq.com")
+        browser.pageSource must contain("Hello Max")
         browser.pageSource must contain("Log out")
    
         //try to register with the same email adress
         browser.goTo("http://localhost:9000/register")
-        browser.$("#forename").text("Max")
+        browser.$("#firstname").text("Max")
         browser.$("#lastname").text("Mustermann")
         browser.$("#email").text("max.mustermann@carmeq.com")
         browser.$("#cellphone").text("0132123456")

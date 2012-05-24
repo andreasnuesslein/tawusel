@@ -23,7 +23,7 @@ class LoginTestCorrectData extends Specification{
         browser.$("dl.error").size must equalTo(0)
         browser.pageSource must not contain("Login")
         browser.pageSource must not contain("Register")
-        browser.pageSource must contain("Hello test.test@carmeq.com")
+        browser.pageSource must contain("Hello test")
         browser.pageSource must contain("Log out")
       }
     }
