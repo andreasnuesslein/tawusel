@@ -1,10 +1,5 @@
 # --- !Ups
 
--- -----------------------------------------------------
--- Table `user`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `user` ;
-
 CREATE  TABLE IF NOT EXISTS `user` (
   `user_id` INT NOT NULL AUTO_INCREMENT ,
   `email` VARCHAR(45) NOT NULL ,
@@ -16,24 +11,12 @@ CREATE  TABLE IF NOT EXISTS `user` (
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) )
 ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table `town`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `town` ;
-
 CREATE  TABLE IF NOT EXISTS `town` (
   `town_id` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(45) NOT NULL ,
   PRIMARY KEY (`town_id`) ,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) )
 ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `location`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `location` ;
 
 CREATE  TABLE IF NOT EXISTS `location` (
   `location_id` INT NOT NULL AUTO_INCREMENT ,
@@ -50,24 +33,12 @@ CREATE  TABLE IF NOT EXISTS `location` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table `tour_state`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `tour_state` ;
-
 CREATE  TABLE IF NOT EXISTS `tour_state` (
   `state_id` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(20) NULL ,
   `description` MEDIUMTEXT NULL ,
   PRIMARY KEY (`state_id`) )
 ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `tour`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `tour` ;
 
 CREATE  TABLE IF NOT EXISTS `tour` (
   `tour_id` INT NOT NULL AUTO_INCREMENT ,
@@ -107,12 +78,6 @@ CREATE  TABLE IF NOT EXISTS `tour` (
     ON DELETE SET NULL
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `user_has_tour`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `user_has_tour` ;
 
 CREATE  TABLE IF NOT EXISTS `user_has_tour` (
   `user_id` INT NOT NULL ,
@@ -170,4 +135,9 @@ COMMIT;
 
 # --- !Downs
 
-DROP TABLE user;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS `town` ;
+DROP TABLE IF EXISTS `location` ;
+DROP TABLE IF EXISTS `tour_state` ;
+DROP TABLE IF EXISTS `tour` ;
+DROP TABLE IF EXISTS `user_has_tour` ;
