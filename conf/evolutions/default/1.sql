@@ -10,7 +10,7 @@ CREATE  TABLE IF NOT EXISTS `user` (
   `email` VARCHAR(45) NOT NULL ,
   `forename` VARCHAR(45) NOT NULL ,
   `lastname` VARCHAR(45) NOT NULL ,
-  `cellphone` BIGINT NOT NULL ,
+  `cellphone` VARCHAR(20) NOT NULL ,
   `password` VARCHAR(45) NOT NULL ,
   PRIMARY KEY (`user_id`) ,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) )
