@@ -41,9 +41,9 @@ object Auth extends Controller with Secured {
   val registrationForm: Form[User] = Form(
     mapping(
       "email" -> email.verifying("This email adress is already in use", User.findByEmail(_).isEmpty),
-      "forename" -> text,
-      "lastname" -> text,
-      "cellphone" -> text(minLength = 10).verifying("Choose a vaild cellphone number", _.matches(cellphonePattern)),
+      "forename" -> text(minLength = 2, maxLength = 45),
+      "lastname" -> text(minLength = 2, maxLength = 45),
+      "cellphone" -> text(minLength = 10).verifying("Choose a valid cellphone number", _.matches(cellphonePattern)),
       "password" -> tuple(
             "main" -> text(minLength = 6),
             "confirm" -> text

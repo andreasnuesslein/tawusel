@@ -6,7 +6,6 @@ import play.api.db._
 import play.api.Play.current
 import play.api._
 import play.api.mvc._
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException
 
 case class User(
   email: String,
@@ -92,6 +91,21 @@ object User {
 	  
 	  	user
     
+  }
+  
+  /**
+   * Delete a User.
+   */
+  def delete(email : String) {
+     DB.withConnection { implicit connection =>
+        	SQL("""
+        		DELETE 
+        		FROM user 
+        		WHERE email = {e})
+        	""").on(
+	    		'e -> "max.mustermann@carmeq.com"
+        	).executeUpdate()
+        }
   }
   
 }
