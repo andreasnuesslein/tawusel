@@ -18,7 +18,7 @@
                 <div class="container">
                     <a class="brand logo" href="@routes.Application.index()">TaxiMob</a>
                     <ul class="secondary-nav">
-                       @request.session.get("email").map{ login =>
+                       @request.session.get("forename").map{ login =>
                        <li>
                            <a href="/account">Hello @login</a>
                        </li>
