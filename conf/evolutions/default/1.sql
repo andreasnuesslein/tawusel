@@ -128,8 +128,8 @@ INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (12, 3, 'Audi
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (13, 3, 'Audi Forum', 'Ettinger Straße, 85057 Ingolstadt');
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (14, 4, 'Carmeq Stuttgart', 'Königstraße 43b, 70173 Stuttgart');
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (15, 4, 'Porsche Weissach', 'Porschestraße, 71287 Weissach');
-INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (16, 5, 'e4t', 'Novodvorská 994/138, CZ-142 21 Praha 4');
-INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (17, 5, 'Ŝkoda Werk', 'Nušlova 2515/4, CZ-158 00 Praha 13');
+INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (16, 5, 'e4t', 'Novodvorska 994/138, CZ-142 21 Praha 4');
+INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (17, 5, 'Skoda Werk', 'Nuslova 2515/4, CZ-158 00 Praha 13');
 
 COMMIT;
 
