@@ -17,60 +17,59 @@ class RegistrationTestWrongData extends Specification{
         browser.pageSource must contain("Account information")
         
         //try to register without a forename - shouldn't work
-        browser.$("#forename_field").text("")
-        browser.$("#lastname_field").text("Mustermann")
-        browser.$("#email_field").text("max.mustermann@carmeq.com")
-        browser.$("#cellphone_field").text("0132123456")
-        browser.$("#password_main_field").text("tester")
-        browser.$("#password_confirm_field").text("tester")
+        browser.$("#forename").text("")
+        browser.$("#lastname").text("Mustermann")
+        browser.$("#email").text("max.mustermann@carmeq.com")
+        browser.$("#cellphone").text("0132123456")
+        browser.$("#password_main").text("tester")
+        browser.$("#password_confirm").text("tester")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 2")
-        browser.pageSource must contain("Valid email required")
         
         //try to register without a lastname -shouln't work
-        browser.$("#forename_field").text("Max")
-        browser.$("#lastname_field").text("")
+        browser.$("#forename").text("Max")
+        browser.$("#lastname").text("")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 2")
         
         //try to register with wrong email address - shouldn't work
-        browser.$("#lastname_field").text("Mustermann")
-        browser.$("#email_field").text(".mustermann@carmeq.com")
+        browser.$("#lastname").text("Mustermann")
+        browser.$("#email").text(".mustermann@carmeq.com")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Valid email required")
         
         //try to register without cellphone number - shouldn't work
-        browser.$("#email_field").text("max.mustermann@carmeq.com")
-        browser.$("#cellphone_field").text("")
+        browser.$("#email").text("max.mustermann@carmeq.com")
+        browser.$("#cellphone").text("")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 10")
         
         //try to register with wrong cellphone number - shouldn't work
-//        browser.$("#cellphone_field").text("aaaaaaaaaaaa")
-//        browser.$("#registerbutton").click()
-//        browser.pageSource must contain("Choose a valid cellphone number")
+        browser.$("#cellphone").text("aaaaaaaaaaaa")
+        browser.$("#registerbutton").click()
+        browser.pageSource must contain("Choose a valid cellphone number")
         
         //        browser.goTo("http://localhost:9000/register")
-//        browser.$("#forename_field").text("Max")
-//        browser.$("#lastname_field").text("Mustermann")
-//        browser.$("#email_field").text("max.mustermann@carmeq.com")
-//        browser.$("#cellphone_field").text("aaaaaaaaaa")
-//        browser.$("#password_main_field").text("tester")
-//        browser.$("#password_confirm_field").text("tester")
-//        browser.$("#registerbutton").click()
-//        browser.pageSource must contain("Choose a valid cellphone number")
+        browser.$("#forename").text("Max")
+        browser.$("#lastname").text("Mustermann")
+        browser.$("#email").text("max.mustermann@carmeq.com")
+        browser.$("#cellphone").text("aaaaaaaaaa")
+        browser.$("#password_main").text("tester")
+        browser.$("#password_confirm").text("tester")
+        browser.$("#registerbutton").click()
+        browser.pageSource must contain("Choose a valid cellphone number")
        
         //try to register without password - shouldn't work
-        browser.$("#cellphone_field").text("0132123456")
-        browser.$("#password_main_field").text("")
+        browser.$("#cellphone").text("0132123456")
+        browser.$("#password_main").text("")
         browser.$("#registerbutton").click()
         browser.pageSource must contain("Minimum length is 6")
         
          //try to register with wrong comfirm password - shouldn't work
-//        browser.$("#password_main_field").text("tester")
-//        browser.$("#password_confirm_field").text("test")
-//        browser.$("#registerbutton").click()
-//        browser.pageSource must contain("Passwords don't match")
+        browser.$("#password_main").text("tester")
+        browser.$("#password_confirm").text("test")
+        browser.$("#registerbutton").click()
+        browser.pageSource must contain("Passwords don't match")
         
       	}
       }
