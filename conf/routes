@@ -1,6 +1,6 @@
 
 # Home page
-GET		/				controllers.Application.index
+GET		/				controllers.Tours.newTour
 
 GET		/secure			controllers.Application.secure
 
@@ -11,6 +11,8 @@ GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
+GET		/newTour		controllers.Tours.newTour
+GET		/index			controllers.Application.index
 
 
 # Map static resources from the /public folder to the /assets URL path

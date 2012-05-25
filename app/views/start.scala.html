@@ -1,0 +1,15 @@
+@()(implicit request: RequestHeader)
+
+@import helper._
+
+@title = {
+ Eine Neue Tour planen
+ }
+
+@main(title) {
+@request.session.get("firstname").map{ login =>
+        <h2>Hallo @login, </h2>
+        <h5> Wo bist du gerade?</h5>
+        }
+<a href="/secure"> Meine Reisen</a>
+}

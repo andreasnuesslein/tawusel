@@ -8,6 +8,8 @@ import models.User
 
 class RegistrationTestCorrectData extends Specification{
 
+  def after = (User.delete("max.mustermann@carmeq.com"))
+  
  "Application" should {
     "work from within a browser" in {
       running(TestServer(9000), HTMLUNIT) { browser =>
@@ -28,7 +30,7 @@ class RegistrationTestCorrectData extends Specification{
         browser.$("dl.error").size must equalTo(0)
         browser.pageSource must not contain("Login")
         browser.pageSource must not contain("Register")
-        browser.pageSource must contain("Index")
+     //   browser.pageSource must contain("Neue Tour")
         browser.pageSource must contain("Hello Max")
         browser.pageSource must contain("Log out")
    
@@ -48,7 +50,7 @@ class RegistrationTestCorrectData extends Specification{
       }
  	}
  
-    object dbDelete extends After {
-    	def after = (User.delete("max.mustermann@carmeq.com"))
-    }
+ 
+    	
+   
 }

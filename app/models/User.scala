@@ -103,7 +103,7 @@ object User {
         		FROM user 
         		WHERE email = {e})
         	""").on(
-	    		'e -> "max.mustermann@carmeq.com"
+	    		'e -> email
         	).executeUpdate()
         }
   }
