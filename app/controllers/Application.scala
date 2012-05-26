@@ -13,7 +13,7 @@ object Application extends Controller with Secured {
 
   def secure = IsAuthenticated({ email => implicit request =>
     val user = User.findByEmail(email).get
-    Ok(views.html.signup.summary(user))
+    Ok(views.html.auth.summary(user))
   },Redirect(routes.Auth.login).flashing("error" -> "You have to login first."))
 
 

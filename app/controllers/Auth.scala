@@ -68,7 +68,7 @@ object Auth extends Controller with Secured {
       session.get("email") match {
         case Some(_) => Redirect(routes.Application.index).flashing(
           "info" -> "You're already logged in." )
-        case None => Ok(html.login(loginForm))
+        case None => Ok(html.auth.login(loginForm))
       }
   }
   /**
@@ -78,7 +78,7 @@ object Auth extends Controller with Secured {
    */
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.login(formWithErrors)),
+      formWithErrors => BadRequest(html.auth.login(formWithErrors)),
       email => {
         var user = User.findByEmail(email._1).get
         Redirect(routes.Application.index).withSession("email" -> user.email, "firstname" -> user.firstname)
@@ -91,12 +91,12 @@ object Auth extends Controller with Secured {
    * contains just a redirect to the signup.html.
    */
   def register = Action { implicit request =>
-    Ok(html.signup.form(registrationForm))
+    Ok(html.auth.register(registrationForm))
   }
   def submit = Action { implicit request =>
    registrationForm.bindFromRequest.fold(
      formWithErrors => {
-       BadRequest(html.signup.form(formWithErrors))
+       BadRequest(html.auth.register(formWithErrors))
      },
      user => {
       User.create(user)
@@ -117,7 +117,7 @@ object Auth extends Controller with Secured {
 
   def account = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    Ok(views.html.signup.summary(user))
+    Ok(html.auth.summary(user))
   }
 
 }
