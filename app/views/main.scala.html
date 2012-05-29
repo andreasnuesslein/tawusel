@@ -16,7 +16,15 @@
         <div class="topbar">
             <div class="fill">
                 <div class="container">
-                    <a class="brand logo" href="@routes.Application.index()">TaWusel</a>
+                    <a class="brand logo" href="/">TaWusel</a>
+                    <div class="topbar_center">
+                    <ul class="m_margin">
+                    <li>  <a href="/newTour">Neue Tour</a>
+                    </li>
+                     <li>  <a href=/newTour>Meine Towns</a>
+                    </li>
+                    </ul>
+                    </div>                    
                     <ul class="secondary-nav">
                        @request.session.get("firstname").map{ login =>
                        <li>

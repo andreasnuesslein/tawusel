@@ -23,6 +23,8 @@ body {
        -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
             box-shadow: 0 1px 2px rgba(0,0,0,.15);
     min-height: 10px;
+    overflow: auto;
+    
 }
 
 /* Page header tweaks */
@@ -53,6 +55,7 @@ body {
     color: #888;
 }
 
+
 .profile {
     margin-left: 32px;
 }
@@ -76,4 +79,39 @@ body {
 
 .phone_template, .profile_template {
     display: none;
+}
+
+.topbar_center{
+	margin:auto; 
+	width:30%;
+}
+
+.m_margin {
+	margin:0 30px;
+}
+
+.number_container{
+	height:250px;
+	width:20%;
+	font-size: 28pt;
+	margin-top:30px;
+	text-align: center;
+}
+
+.number-container_select{
+	margin-top: 10px;
+	width:20%;
+	font-size: 16pt;
+	border:1px solid black;
+	height: 200px;
+	width: 100%;
+}
+
+.loader_rect{
+	height:5px;
+	border:1px solid black;
+	width:100%;
+	background-color: lightgrey;
+	margin: 7px 0 4px;
+	
 }
