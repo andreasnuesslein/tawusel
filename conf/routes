@@ -4,6 +4,9 @@ GET		/				controllers.Tours.newTour
 
 GET		/secure			controllers.Application.secure
 
+
+GET		/tours			controllers.Tours.tours
+
 # Authentication
 GET		/login			controllers.Auth.login
 POST	/login			controllers.Auth.authenticate

@@ -1,0 +1,47 @@
+@()(implicit request: RequestHeader)
+
+@main(Html("")) {
+
+<script type="text/javascript">
+  $(document).ready(function() {
+          $('#tourlist').dataTable( {
+                    "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+                    } );
+          $.extend( $.fn.dataTableExt.oStdClasses, {
+                "sWrapper": "dataTables_wrapper form-inline"
+                } );
+
+          });
+</script>
+
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="tourlist">
+  <caption>
+  </caption>
+  <thead>
+    <tr>
+      <th>From</th>
+      <th>To</th>
+      <th>Departure time</th>
+      <th>Arrival time</th>
+      <th>Fellows</th>
+      <th>Comment</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="userentry">
+      <td>u.firstname</td>
+      <td>u.lastname</td>
+      <td>u.email</td>
+      <td>u.cellphone</td>
+      <td>u.homephone</td>
+      <td>u.street</td>
+      <td><a href="/edit/u.username"><i class="icon-edit"></i></a> <a href="/delete/u.username"><i class="icon-remove"></i></a></td>
+    </tr>
+
+  </tbody>
+</table>
+<p></p>
+<a class="btn btn-info" href="@routes.Auth.register">Create new tour</a>
+
+}
