@@ -96,7 +96,7 @@ object User {
   /**
    * Delete a User.
    */
-  def delete(email : String) {
+  def delete(email : String) = {
      DB.withConnection { implicit connection =>
         	SQL("""
         		DELETE 
