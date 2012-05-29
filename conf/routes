@@ -5,7 +5,6 @@ GET		/				controllers.Tour.newTour
 GET		/secure			controllers.Application.secure
 
 
-GET		/tours			controllers.Tours.tours
 
 # Authentication
 GET		/login			controllers.Auth.login
