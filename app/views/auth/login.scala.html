@@ -8,45 +8,43 @@
 }
 
 @main(title, nav = "login") {
-  <script>
-    $(document).ready(function(){
-      $("form").submit(function() {
-        $email = $("#email").val();
-        if($email.search("@@") == -1){
-          $("#email").val($email+"@@carmeq.com");
-        }
-      });
+<script>
+  $(document).ready(function(){
+    $("form").submit(function() {
+      $email = $("#email").val();
+      if($email.search("@@") == -1){
+        $("#email").val($email+"@@carmeq.com");
+      }
     });
-  </script>
-  
+  });
+</script>
 
-  @helper.form(routes.Auth.authenticate) {
+@helper.form(routes.Auth.authenticate) {
 
 
-  <div class="alerts">
+<div class="alerts">
   @myform.globalError.map { error =>
   <div class="alert-message error">
     <a class="close" href="#">x</a>
     <p>@error.message</p>
   </div>
-</div>
   }
+</div>
 
-  @inputText(
-  myform("email"),
-  '_label -> "Email"
-  )
-  @inputPassword(
-  myform("password"),
-  '_label -> "Password"
-  )
+@inputText(
+myform("email"),
+'_label -> "Email"
+)
+@inputPassword(
+myform("password"),
+'_label -> "Password"
+)
 
-  <div class="actions">
-   <input type="submit" id="loginbutton" class="btn primary" value="Login">
-   <a href="@routes.Application.index" class="btn">Cancel</a>
-  </div>
+<div class="actions">
+  <input type="submit" id="loginbutton" class="btn primary" value="Login">
+  <a href="@routes.Application.index" class="btn">Cancel</a>
+</div>
 
 }
-  }
+}
 
-  
