@@ -101,7 +101,7 @@ object User {
         	SQL("""
         		DELETE 
         		FROM user 
-        		WHERE email = {e})
+        		WHERE email = {e}
         	""").on(
 	    		'e -> email
         	).executeUpdate()
