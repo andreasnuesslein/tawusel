@@ -14,8 +14,6 @@ case class Town(
 
 object Town {
 
-  // -- Parsers
-
   /**
    * Parse a Town from a ResultSet
    */
@@ -25,8 +23,6 @@ object Town {
       case i ~ n => Town(i,n)
     }
   }
-  
-  // -- Queries
   
   /**
    * Retrieve a Town by id.
@@ -48,7 +44,6 @@ object Town {
     }
   }
   
-   
   /**
    * Create a Town.
    */
@@ -68,9 +63,10 @@ object Town {
   /**
    * Delete a Town.
    */
-  def delete(id : Long) = {
+  def delete(id : Long) : Boolean = {
+    var result: Int = 0
      DB.withConnection { implicit connection =>
-        	SQL("""
+        	result = SQL("""
         		DELETE 
         		FROM town 
         		WHERE id = {i})
@@ -78,6 +74,7 @@ object Town {
 	    		'i -> id
         	).executeUpdate()
         }
+     if(result>0) true else false
   }
   
 }
