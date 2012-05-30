@@ -10,15 +10,19 @@ import scala.util.matching.Regex
 import models._
 import views._
 
-object Tour extends Controller with Secured {
+object Tours extends Controller with Secured {
   
 def newTour = IsAuthenticated({ email => implicit request =>
     val user = User.findByEmail(email).get
-    Ok(views.html.tour.newTour(Town.findAll(), townForm))
+    Ok(views.html.tour.newTour(Town.findAll(), Location.findAll(), townForm))
   }, Redirect(routes.Application.index))
   
     val townForm = Form(
     "name" -> nonEmptyText)
 
+   def myTours = IsAuthenticated({ email => implicit request =>
+    val user = User.findByEmail(email).get
+    Ok(views.html.tour.myTours(Tour.findAll()))
+  }, Redirect(routes.Application.index))
 
 }

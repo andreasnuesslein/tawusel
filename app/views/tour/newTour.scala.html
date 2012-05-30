@@ -1,4 +1,4 @@
-@(towns: List[Town], townForm: Form[String])(implicit request: RequestHeader)
+@(towns: List[Town],locations: List[Location], townForm: Form[String])(implicit request: RequestHeader)
 
 @import helper._
 
@@ -19,6 +19,18 @@
         @towns.map { town =>
             <option>
                 @town.name
+            </option>
+        }
+    </select>
+    </div>
+    <div class="number_container"> 
+       2.
+	<div class="loader_rect" id="rect_1">
+</div>
+  <select  name="dep_town" size="7" class="number-container_select">
+        @locations.map { location =>
+            <option>
+                @location.name
             </option>
         }
     </select>

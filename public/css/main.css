@@ -133,8 +133,9 @@ table.dataTable th:active { outline: none; }
 	height:250px;
 	width:20%;
 	font-size: 28pt;
-	margin-top:30px;
+	margin:30px 20px 0;
 	text-align: center;
+	float:left;
 }
 
 .number-container_select{

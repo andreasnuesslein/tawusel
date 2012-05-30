@@ -1,0 +1,27 @@
+@(tours: List[Tour])(implicit request: RequestHeader) 
+
+@import helper._
+
+@title = { My Tours } 
+@main(title) {
+	@request.session.get("firstname").map{ login =>
+		<h2>Hallo @login,</h2>
+		<h2>here are your tours</h2>
+	}
+	<table>
+	<tr>
+	<td> ID </td>
+	<td> Date</td>
+	<td> Daparture </td>
+	<td> Arrival </td>
+	</tr>
+	@tours.map { tour =>
+		<tr>
+			<td>@tour.id</td>
+			<td>@tour.date</td>
+			<td>@tour.departure</td>
+			<td>@tour.arrival</td>
+		</tr>
+	}
+	</table>
+}

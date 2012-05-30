@@ -81,7 +81,7 @@ object Auth extends Controller with Secured {
       formWithErrors => BadRequest(html.auth.login(formWithErrors)),
       email => {
         var user = User.findByEmail(email._1).get
-        Redirect(routes.Tour.newTour).withSession("email" -> user.email, "firstname" -> user.firstname)
+        Redirect(routes.Tours.newTour).withSession("email" -> user.email, "firstname" -> user.firstname)
     }
     )
   }
