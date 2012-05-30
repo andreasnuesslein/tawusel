@@ -55,7 +55,8 @@ object User {
   }
   
   /**
-   * Retrieve all users.
+   * Retrieve all users. Returns the sequence of 
+   * found users.
    */
   def findAll: Seq[User] = {
     DB.withConnection { implicit connection =>
@@ -64,7 +65,8 @@ object User {
   }
   
   /**
-   * Authenticate a User.
+   * Authenticate a User. Returns the found user which can be
+   * authenticated.
    */
   def authenticate(email: String, password: String): Option[User] = {
     DB.withConnection { implicit connection =>
@@ -80,7 +82,7 @@ object User {
   }
    
   /**
-   * Create a User.
+   * Create a User. Returns the user which was created.
    */
   def create(user: User): User = {
     DB.withConnection { implicit connection =>
@@ -100,11 +102,13 @@ object User {
   }
   
   /**
-   * Delete a User.
+   * Delete a User. Returns the number of rows which could be
+   * deleted.
    */
-  def delete(email : String) = {
+  def delete(email : String): Boolean = {
+    var result: Int = 0
     DB.withConnection { implicit connection =>
-      SQL("""
+       result = SQL("""
         DELETE 
     	FROM user 
     	WHERE email = {e}
@@ -112,6 +116,7 @@ object User {
           'e -> email
       ).executeUpdate()
     }
+    if(result>0) true else false
   }
   
 }
