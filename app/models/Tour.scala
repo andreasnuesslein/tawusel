@@ -9,7 +9,7 @@ import play.api.mvc._
 import java.util.Date
 
 case class Tour(
-  id: Pk[Long],
+  id: Long,
   date: Date,
   departure: Date,
   arrival: Date,
@@ -29,7 +29,7 @@ object Tour {
    * Parse a Tour from a ResultSet
    */
   val simple = {
-    get[Pk[Long]]("id") ~
+    get[Long]("id") ~
       get[Date]("date") ~
       get[Date]("departure") ~
       get[Date]("arrival") ~
@@ -49,10 +49,10 @@ object Tour {
   /**
    * Retrieve a Tour by id.
    */
-  def findById(id: Long): Option[Tour] = {
+  def findById(id: Long): Tour = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour where id = {id}").on(
-        'id -> id).as(Tour.simple.singleOpt)
+        'id -> id).as(Tour.simple *).head
     }
   }
 
@@ -68,8 +68,10 @@ object Tour {
   /**
    * Create a Tour.
    */
-  def create(tour: Tour): Tour = {
-    DB.withConnection { implicit connection =>
+  def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
+      meet: String, auth: String, tour_id: Long, mod: Long): Tour = {
+   var tid :Long =  0
+   DB.withConnection { implicit connection =>
       SQL("""
 		INSERT INTO  `mydb`.`tour` (
     		  `date` ,
@@ -84,18 +86,23 @@ object Tour {
     		  `mod_id`
     		  ) VALUES ( {da} , {dep} , {arr} , {dep_l} , {arr_l} , {c} , {m} , {a} , {t} , {mod})
     		  """).on(
-        'da -> tour.date,
-        'dep -> tour.departure,
-        'arr -> tour.arrival,
-        'dep_l -> tour.dep_location,
-        'arr_l -> tour.arr_location,
-        'c -> tour.comment,
-        'm -> tour.meetingpoint,
-        'a -> tour.authentification,
-        't -> tour.tour_state,
-        'mod -> tour.mod_id
+        'da -> date,
+        'dep -> dep,
+        'arr -> arr,
+        'dep_l -> dep_l,
+        'arr_l -> arr_l,
+        'c -> comment,
+        'm -> meet,
+        'a -> auth,
+        't -> tour_id,
+        'mod -> mod
     		  ).executeUpdate()
-    }
+    		  val t  = SQL("""
+		SELECT last_insert_id() as id;"""
+	          ).apply().head
+	      tid =t[Long]("id")
+		}
+  val tour = new Tour(tid, date, dep, arr, dep_l, arr_l, comment, meet, auth, tour_id,mod)
     tour
   }
 
@@ -107,7 +114,7 @@ object Tour {
       SQL("""
         		DELETE 
         		FROM tour 
-        		WHERE id = {i})
+        		WHERE id = {i}
         	""").on(
         'i -> id).executeUpdate()
     }

@@ -27,11 +27,11 @@ object Town {
   /**
    * Retrieve a Town by id.
    */
-  def findById(id: Long): Option[Town] = {
+  def findById(id: Long): Town = {
     DB.withConnection { implicit connection =>
       SQL("select * from town where id = {id}").on(
         'id -> id
-      ).as(Town.simple.singleOpt)
+      ).as(Town.simple *).head
     }
   }
   
@@ -58,7 +58,7 @@ object Town {
 	    'n -> name
 	      ).executeUpdate();
 	     id = SQL("""
-		"SELECT last_insert_id();"""
+		SELECT last_insert_id();"""
 	          ).executeUpdate()
 		}
     var town = new Town(id,name)
@@ -75,7 +75,7 @@ object Town {
         	result = SQL("""
         		DELETE 
         		FROM town 
-        		WHERE id = {i})
+        		WHERE id = {i}
         	""").on(
 	    		'i -> id
         	).executeUpdate()
