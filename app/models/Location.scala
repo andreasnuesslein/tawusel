@@ -8,7 +8,7 @@ import play.api._
 import play.api.mvc._
 
 case class Location(
-  id: Pk[Long],
+  id: Long,
   town_id : Long,
   name: String,
   address: String
@@ -24,7 +24,7 @@ object Location {
    * Parse a Location from a ResultSet
    */
   val simple = {
-    get[Pk[Long]]("location.id") ~
+    get[Long]("location.id") ~
     get[Long]("location.town_id") ~
     get[String]("location.name") ~
     get[String]("location.address")map{
@@ -37,11 +37,10 @@ object Location {
   /**
    * Retrieve a Location by id.
    */
-  def findById(id: Long): Option[Location] = {
+  def findById(id: Long): Location = {
     DB.withConnection { implicit connection =>
       SQL("select * from location where id = {id}").on(
-        'id -> id
-      ).as(Location.simple.singleOpt)
+        'id -> id).as(Location.simple *).head
     }
   }
   
@@ -58,30 +57,36 @@ object Location {
   /**
    * Create a Location.
    */
-  def create(location: Location):Location = {
+  def create(name: String, town_id: Long, address : String):Location = {
+     var id :Long = 0
 	  DB.withConnection { implicit connection =>
 	  SQL("""
 		INSERT 
 	    INTO location (town_id,name,address) 
 	    VALUES ({t},{n},{a})
 	    """).on(
-	    'n -> location.name,
-	    't -> location.town_id,
-	    'a -> location.address
+	    'n -> name,
+	    't -> town_id,
+	    'a -> address
 	      ).executeUpdate()
+	      val l  = SQL("""
+		SELECT last_insert_id() as id;"""
+	          ).apply().head
+	      id =l[Long]("id")
 		}
+     val location = new Location(id, town_id, name, address)
     location
   }
   
   /**
    * Delete a Location.
    */
-  def delete(id : Long) = {
+  def delete(id : Long):Int = {
      DB.withConnection { implicit connection =>
         	SQL("""
         		DELETE 
         		FROM location 
-        		WHERE id = {i})
+        		WHERE id = {i}
         	""").on(
 	    		'i -> id
         	).executeUpdate()

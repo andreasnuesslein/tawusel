@@ -8,7 +8,7 @@ import play.api._
 import play.api.mvc._
 
 case class Town(
-  id: Pk[Long],
+  id: Long,
   name: String
   )
 
@@ -18,7 +18,7 @@ object Town {
    * Parse a Town from a ResultSet
    */
   val simple = {
-    get[Pk[Long]]("town.id") ~
+    get[Long]("town.id") ~
     get[String]("town.name") map{
       case i ~ n => Town(i,n)
     }
@@ -47,7 +47,8 @@ object Town {
   /**
    * Create a Town.
    */
-  def create(name: String) = {
+  def create(name: String) :Town = {
+    var id :Long = 0
 	  DB.withConnection { implicit connection =>
 	  SQL("""
 		INSERT 
@@ -55,8 +56,13 @@ object Town {
 	    VALUES ({n})
 	    """).on(
 	    'n -> name
-	      ).executeUpdate()
+	      ).executeUpdate();
+	     id = SQL("""
+		"SELECT last_insert_id();"""
+	          ).executeUpdate()
 		}
+    var town = new Town(id,name)
+    town
     
   }
   
