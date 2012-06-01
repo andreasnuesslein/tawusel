@@ -97,13 +97,10 @@ object Tour {
         't -> tour_id,
         'mod -> mod
     		  ).executeUpdate()
-    		  val t  = SQL("""
-		SELECT last_insert_id() as id;"""
-	          ).apply().head
-	      tid =t[Long]("id")
-		}
-  val tour = new Tour(tid, date, dep, arr, dep_l, arr_l, comment, meet, auth, tour_id,mod)
-    tour
+	      SQL("""
+		SELECT * FROM tour WHERE id = last_insert_id();"""
+	          ).as(Tour.simple *).head
+  	}
   }
 
   /**
