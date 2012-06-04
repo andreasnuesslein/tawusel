@@ -69,15 +69,12 @@ object Location {
 	    't -> town_id,
 	    'a -> address
 	  ).executeUpdate()
-	
-	  val querylocationId  = SQL("""
-        SELECT last_insert_id() as id;"""
-	  ).apply().head
-	  id = querylocationId[Long]("id")
-    }
-    
-    val location = new Location(id, town_id, name, address)
-    location
+	  SQL("""
+		SELECT * 
+	    FROM location 
+	    WHERE id = last_insert_id();
+	  """).as(Location.simple *).head
+  	}
   }
   
   /**

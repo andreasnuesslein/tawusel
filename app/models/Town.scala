@@ -57,12 +57,10 @@ object Town {
 	    """).on(
 	    'n -> name
 	      ).executeUpdate();
-	     id = SQL("""
-		SELECT last_insert_id();"""
-	          ).executeUpdate()
-		}
-    var town = new Town(id,name)
-    town
+	      SQL("""
+		SELECT * FROM town WHERE id = last_insert_id();"""
+	          ).as(Town.simple *).head
+    }
     
   }
   
