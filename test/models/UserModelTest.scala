@@ -17,7 +17,7 @@ class UserModelTest extends Specification {
         "create a user" in {
           running(FakeApplication()) {
             
-        	//check if it was created correctly
+        	//check if the dummy was created correctly
         	testUser.email must equalTo("max.mustermann@carmeq.com")
         	testUser.firstname must equalTo("Max")
         	testUser.lastname must equalTo("Mustermann")

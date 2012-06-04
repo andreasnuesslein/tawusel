@@ -57,40 +57,44 @@ object Location {
   /**
    * Create a Location.
    */
-  def create(name: String, town_id: Long, address : String):Location = {
-     var id :Long = 0
-	  DB.withConnection { implicit connection =>
+  def create(name: String, town_id: Long, address : String) : Location = {
+    var id :Long = 0
+    DB.withConnection { implicit connection =>
 	  SQL("""
-		INSERT 
+        INSERT 
 	    INTO location (town_id,name,address) 
 	    VALUES ({t},{n},{a})
-	    """).on(
+	  """).on(
 	    'n -> name,
 	    't -> town_id,
 	    'a -> address
-	      ).executeUpdate()
-	      val l  = SQL("""
-		SELECT last_insert_id() as id;"""
-	          ).apply().head
-	      id =l[Long]("id")
-		}
-     val location = new Location(id, town_id, name, address)
+	  ).executeUpdate()
+	
+	  val querylocationId  = SQL("""
+        SELECT last_insert_id() as id;"""
+	  ).apply().head
+	  id = querylocationId[Long]("id")
+    }
+    
+    val location = new Location(id, town_id, name, address)
     location
   }
   
   /**
    * Delete a Location.
    */
-  def delete(id : Long):Int = {
-     DB.withConnection { implicit connection =>
-        	SQL("""
-        		DELETE 
-        		FROM location 
-        		WHERE id = {i}
-        	""").on(
-	    		'i -> id
-        	).executeUpdate()
-        }
+  def delete(id : Long) : Boolean = {
+    var affectedEntries : Int = 0
+    DB.withConnection { implicit connection =>
+      affectedEntries = SQL("""
+        DELETE 
+        FROM location 
+        WHERE id = {i}
+      """).on(
+        'i -> id
+      ).executeUpdate()
+    }
+    if(affectedEntries>0) true else false
   }
   
 }

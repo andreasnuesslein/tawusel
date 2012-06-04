@@ -106,9 +106,9 @@ object User {
    * deleted.
    */
   def delete(email : String): Boolean = {
-    var result: Int = 0
+    var affectedEntries : Int = 0
     DB.withConnection { implicit connection =>
-       result = SQL("""
+        affectedEntries = SQL("""
         DELETE 
     	FROM user 
     	WHERE email = {e}
@@ -116,7 +116,7 @@ object User {
           'e -> email
       ).executeUpdate()
     }
-    if(result>0) true else false
+    if(affectedEntries>0) true else false
   }
   
 }
