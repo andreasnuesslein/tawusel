@@ -8,7 +8,6 @@ import net.sf.ehcache.search.expression.EqualTo
 
 
 class LocationModelTest extends Specification {
-  //create the dummy object
   
   "Location model" should {
     running(TestServer(9000)) {
@@ -25,11 +24,7 @@ class LocationModelTest extends Specification {
         	testLocation.address must equalTo("ABStr. 123")
           }
         }
-        "delete a existing location" in{
-             running(FakeApplication()) {
-        	Location.delete(testLocation.id) must equalTo(1)
-                  }
-        }
+        
     
         "retrieve all locations" in {
           running(FakeApplication()) {
@@ -45,9 +40,15 @@ class LocationModelTest extends Specification {
           }
         }
     
+        "delete an existing location" in{
+          running(FakeApplication()) {
+        	Location.delete(testLocation.id) must equalTo(true)
+          }
+        }
+        
         "delete a non-existing location" in {
           running(FakeApplication()) {
-        	Location.delete(200) must equalTo(0)
+        	Location.delete(200) must equalTo(false)
           }
         }
 

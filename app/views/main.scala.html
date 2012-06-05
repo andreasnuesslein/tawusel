@@ -28,9 +28,12 @@
           </a>
        <a class="brand" href="/"><img src="@routes.Assets.at("/img/logo.png")" alt="TaWusel" height="20px"></a>
 		<div class="topbar_center">
-			<ul class="nav nav-collapse m_margin">
+      <ul class="nav nav-collapse m_margin">
+        @request.session.get("firstname").map{ login =>
 				<li><a href="/newTour">New Tour</a></li>
-				<li><a href=/myTours>My Tours</a></li>
+        <li><a href=/myTours>My Tours</a></li>
+        }.getOrElse {
+        }
 			</ul>
 		</div>
 		<ul class="nav nav-collapse pull-right">
