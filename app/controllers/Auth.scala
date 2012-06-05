@@ -100,6 +100,7 @@ object Auth extends Controller with Secured {
      },
      user => {
       User.create(user)
+      tools.Mail.sendRegisterMail(user)
       Redirect(routes.Application.index).withSession("email" -> user.email,"firstname" -> user.firstname)
     }
    )
