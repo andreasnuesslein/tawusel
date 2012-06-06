@@ -15,9 +15,9 @@ case class Tour(
   arrival: Date,
   dep_location: Long,
   arr_location: Long,
-  comment: String,
-  meetingpoint: String,
-  authentification: String,
+  comment: Option[String],
+  meetingpoint: Option[String],
+  authentification: Option[String],
   tour_state: Long,
   mod_id: Long)
 
@@ -35,9 +35,9 @@ object Tour {
       get[Date]("arrival") ~
       get[Long]("dep_location") ~
       get[Long]("arr_location") ~
-      get[String]("comment") ~
-      get[String]("meetingpoint") ~
-      get[String]("authentification") ~
+      get[Option[String]]("comment") ~
+      get[Option[String]]("meetingpoint") ~
+      get[Option[String]]("authentification") ~
       get[Long]("tour_state") ~
       get[Long]("mod_id") map {
         case i ~ da ~ dep ~ arr ~ dep_l ~ arr_l ~ c ~ m ~ a ~ t ~ mod => Tour(i, da, dep, arr, dep_l, arr_l, c, m, a, t, mod)

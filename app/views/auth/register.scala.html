@@ -1,7 +1,8 @@
 @(signupForm: Form[User])(implicit request: RequestHeader)
 
+@implicitFieldConstructor = @{ FieldConstructor(_formhelpers.f) }
+
 @import helper._
-@import helper.twitterBootstrap._
 
 @title = {
     Sign Up
@@ -24,7 +25,7 @@
   });
 </script>
 
-@helper.form(action = routes.Auth.submit) {
+<form action="@routes.Auth.submit" method="POST" class="form-horizontal" 0>
 
 <fieldset>
   <legend>Account information</legend>
@@ -42,16 +43,16 @@
   )
 
   @inputText(
-  signupForm("email"), 
+  signupForm("email"),
   '_label -> "Email",
-  '_help -> "Enter a valid email address.",	
+  '_help -> "Enter a valid email address.",
   '_error -> signupForm.globalError
   )
 
   @inputText(
-  signupForm("cellphone"), 
+  signupForm("cellphone"),
   '_label -> "Mobile phone",
-  '_help -> "Enter a valid mobile phone number.",	
+  '_help -> "Enter a valid mobile phone number.",
   '_error -> signupForm.error("cellphone")
   )
 
@@ -62,7 +63,7 @@
   )
 
   @inputPassword(
-  signupForm("password.confirm"), 
+  signupForm("password.confirm"),
   '_label -> "Repeat password",
   '_help -> "Please repeat your password again.",
   '_error -> signupForm.error("password")
@@ -75,6 +76,6 @@
   <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 
-}
+</form>
 
 }

@@ -3,7 +3,7 @@
 <div class="control-group @if(e.hasErrors) {error}">
   <label class="control-label" for="@e.id">@e.label</label>
   <div class="controls">
-    <input type="@e.args.get('_type).getOrElse("text")" class="input" id="@e.id" name="@e.id" placeholder="@e.label"/>
+    @e.input
     <span class="help-inline">@e.errors.mkString(", ")</span>
   </div>
 </div>
