@@ -13,8 +13,7 @@ class RegistrationTestWrongData extends Specification{
       running(TestServer(9000), HTMLUNIT) { browser =>
         browser.goTo("http://localhost:9000/register")
         
-        browser.pageSource must contain("Sign Up")
-        browser.pageSource must contain("Account information")
+        browser.pageSource must contain("Register")
 
         
         //try to register without a firstname - shouldn't work
