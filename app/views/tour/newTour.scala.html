@@ -3,36 +3,34 @@
 @import helper._
 
 @title = {
- Eine Neue Tour planen
+ Plan a new tour
  }
 
-@main(title) {
-@request.session.get("firstname").map{ login =>
-        <h2>Hallo @login, </h2>
-        <h2>wo bist du gerade?</h2>
-        }
+@main(title,nav="newtour") {
+  <h2>Hello @request.session.get("firstname"), </h2>
+  <h2>where should your taxi pick you up?</h2>
+  <div class="number_container">
+    1.
+    <div class="loader_rect" id="rect_1">
+    </div>
+    <select  name="dep_town" size="7" class="number-container_select">
+      @towns.map { town =>
+      <option>
+      @town.name
+      </option>
+      }
+    </select>
+  </div>
   <div class="number_container"> 
-       1.
-	<div class="loader_rect" id="rect_1">
-</div>
-  <select  name="dep_town" size="7" class="number-container_select">
-        @towns.map { town =>
-            <option>
-                @town.name
-            </option>
-        }
-    </select>
+    2.
+    <div class="loader_rect" id="rect_1">
     </div>
-    <div class="number_container"> 
-       2.
-	<div class="loader_rect" id="rect_1">
-</div>
-  <select  name="dep_town" size="7" class="number-container_select">
-        @locations.map { location =>
-            <option>
-                @location.name
-            </option>
-        }
+    <select  name="dep_town" size="7" class="number-container_select">
+      @locations.map { location =>
+      <option>
+      @location.name
+      </option>
+      }
     </select>
-    </div>
-}
+  </div>
+  }

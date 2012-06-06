@@ -5,7 +5,7 @@
 @import helper._
 
 @title = {
-    Sign Up
+    Register
 }
 
 @main(title, nav = "signup") {
@@ -28,17 +28,15 @@
 <form action="@routes.Auth.submit" method="POST" class="form-horizontal" 0>
 
 <fieldset>
-  <legend>Account information</legend>
-
   @inputText(
   signupForm("firstname"),
-  '_label -> "Firstname",
+  '_label -> "First name",
   '_error -> signupForm.error("firstname")
   )
 
   @inputText(
   signupForm("lastname"),
-  '_label -> "Lastname",
+  '_label -> "Last name",
   '_error -> signupForm.error("lastname")
   )
 
@@ -72,7 +70,7 @@
 </fieldset>
 
 <div class="form-actions">
-  <input type="submit" id="registerbutton" class="btn primary" value="Sign Up">
+  <input type="submit" id="registerbutton" class="btn primary" value="Register">
   <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 

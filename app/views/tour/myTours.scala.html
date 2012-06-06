@@ -3,24 +3,19 @@
 @import helper._
 
 @title = { My Tours }
-@main(title) {
-  <script type="text/javascript">
-    $(document).ready(function() {
-            $('#tourlist').dataTable( {
-                      "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
-                      } );
-            $.extend( $.fn.dataTableExt.oStdClasses, {
-                  "sWrapper": "dataTables_wrapper form-inline"
-                  } );
+@main(title,nav="mytours") {
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('#tourlist').dataTable( {
+        "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+        } );
+      $.extend( $.fn.dataTableExt.oStdClasses, {
+        "sWrapper": "dataTables_wrapper form-inline"
+        } );
 
-            });
-  </script>
+      });
+</script>
 
-
-  @request.session.get("firstname").map{ login =>
-    <h2>Hallo @login,</h2>
-    <h2>here are your tours</h2>
-  }
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="tourlist">
   <caption>
