@@ -23,11 +23,6 @@ case class Tour(
 
 object Tour {
 
-  // -- Parsers
-
-  /**
-   * Parse a Tour from a ResultSet
-   */
   val simple = {
     get[Long]("id") ~
       get[Date]("date") ~
@@ -44,11 +39,6 @@ object Tour {
       }
   }
 
-  // -- Queries
-
-  /**
-   * Retrieve a Tour by id.
-   */
   def findById(id: Long): Tour = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour where id = {id}").on(
@@ -56,64 +46,31 @@ object Tour {
     }
   }
 
-  /**
-   * Retrieve all Tours.
-   */
   def findAll(): List[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour").as(Tour.simple *)
     }
   }
 
-  /**
-   * Create a Tour.
-   */
   def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
       meet: String, auth: String, tour_id: Long, mod: Long): Tour = {
-   var tid :Long =  0
-   DB.withConnection { implicit connection =>
-      SQL("""
-		INSERT INTO  `mydb`.`tour` (
-    		  `date` ,
-    		  `departure` ,
-    		  `arrival` ,
-    		  `dep_location` ,
-    		  `arr_location` ,
-    		  `comment` ,
-    		  `meetingpoint` ,
-    		  `authentification` ,
-    		  `tour_state` ,
-    		  `mod_id`
-    		  ) VALUES ( {da} , {dep} , {arr} , {dep_l} , {arr_l} , {c} , {m} , {a} , {t} , {mod})
-    		  """).on(
-        'da -> date,
-        'dep -> dep,
-        'arr -> arr,
-        'dep_l -> dep_l,
-        'arr_l -> arr_l,
-        'c -> comment,
-        'm -> meet,
-        'a -> auth,
-        't -> tour_id,
-        'mod -> mod
-    		  ).executeUpdate()
-	      SQL("""
-		SELECT * FROM tour WHERE id = last_insert_id();"""
-	          ).as(Tour.simple *).head
-  	}
+    var tid :Long =  0
+    DB.withConnection { implicit connection =>
+      SQL("""INSERT INTO tour(date,departure,arrival,dep_location,arr_location,
+        comment,meetingpoint,authentification,tour_state,mod_id) VALUES ({da},
+        {dep},{arr},{dep_l},{arr_l},{c},{m},{a},{t},{mod})""").on(
+        'da -> date, 'dep -> dep, 'arr -> arr, 'dep_l -> dep_l,
+        'arr_l -> arr_l, 'c -> comment, 'm -> meet, 'a -> auth,
+        't -> tour_id, 'mod -> mod ).executeUpdate()
+      SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
+      ).as(Tour.simple *).head
+    }
   }
 
-  /**
-   * Delete a Tour.
-   */
   def delete(id: Long) = {
     DB.withConnection { implicit connection =>
-      SQL("""
-        		DELETE 
-        		FROM tour 
-        		WHERE id = {i}
-        	""").on(
-        'i -> id).executeUpdate()
+    SQL("""DELETE FROM tour WHERE id = {i}""").on(
+      'i -> id).executeUpdate()
     }
   }
 

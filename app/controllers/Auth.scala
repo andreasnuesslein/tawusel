@@ -10,12 +10,8 @@ import scala.util.matching.Regex
 import models._
 import views._
 
-
-/**
- * 
- */
 object Auth extends Controller with Secured {
-  
+
   /**
    * Definition of the login formular as a variable including the 
    * verifying request if a user want's to log in.
@@ -26,7 +22,7 @@ object Auth extends Controller with Secured {
       "password" -> text
     ) verifying ("Invalid email or password", result => result match {
         //call the authenticate method of the user model to query the actual verifying
-    	case (email, password) => User.authenticate(email, password).isDefined
+        case (email, password) => User.authenticate(email, password).isDefined
       }
     )
   )
@@ -40,10 +36,10 @@ object Auth extends Controller with Secured {
    */
   val registrationForm: Form[User] = Form(
     mapping(
-      "email" -> email.verifying("This email adress is already in use", User.findByEmail(_).isEmpty),
+      "email" -> email.verifying("This email address is already in use", User.findByEmail(_).isEmpty),
       "firstname" -> text(minLength = 2, maxLength = 45),
       "lastname" -> text(minLength = 2, maxLength = 45),
-      "cellphone" -> text(minLength = 10).verifying("Choose a valid cellphone number", _.matches(cellphonePattern)),
+      "cellphone" -> text(minLength = 10).verifying("Choose a valid mobile phone number", _.matches(cellphonePattern)),
       "password" -> tuple(
             "main" -> text(minLength = 6),
             "confirm" -> text
@@ -112,7 +108,7 @@ object Auth extends Controller with Secured {
    */
   def logout = Action {
     Redirect(routes.Auth.login).withNewSession.flashing(
-      "success" -> "You've been logged out"
+      "success" -> "You've been logged out."
     )
   }
 
