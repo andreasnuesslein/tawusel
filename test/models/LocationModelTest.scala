@@ -33,7 +33,7 @@ class LocationModelTest extends Specification {
         }
     
         "retrieve a location by id" in {
-           val testLocation  =Location(12, 3, "Audi TE", "Tor 9, 85055 Ingolstadt" )
+           val testLocation = Location(12, 3, "Audi TE", "Tor 9, 85055 Ingolstadt" )
           running(FakeApplication()) {
         	val cmpLocation = Location.findById(testLocation.id) 
         	testLocation must equalTo(cmpLocation)
@@ -49,6 +49,14 @@ class LocationModelTest extends Specification {
         "delete a non-existing location" in {
           running(FakeApplication()) {
         	Location.delete(200) must equalTo(false)
+          }
+        }
+        
+        "retrieve a location name by id" in {
+          running(FakeApplication()) {
+        	Location.getName(1) must equalTo("Carmeq Berlin")
+        	Location.getName(2) must equalTo("Carmeq Wolfsburg, Autovision")
+        	Location.getName(10) must equalTo("Volkswagen Prüfgelände Ehra")
           }
         }
 

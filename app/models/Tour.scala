@@ -88,6 +88,39 @@ object Tour {
       ).as(Tour.simple *).head
     }
   }
+  
+  /**
+   * 
+   */
+  def getDepatureLocation(tourId: Long): String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM tour 
+        WHERE id = {tourId}
+      """).on(
+          'tourId -> tourId
+      ).apply().head
+      Location.getName(firstRow[Long]("dep_location"))
+	}
+  }
+  
+  /**
+   * 
+   */
+  def getArrivalLocation(tourId: Long): String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM tour 
+        WHERE id = {tourId}
+      """).on(
+          'tourId -> tourId
+      ).apply().head
+      Location.getName(firstRow[Long]("arr_location"))
+	}
+  }
+  
 
   def delete(id: Long) = {
     DB.withConnection { implicit connection =>
