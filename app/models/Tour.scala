@@ -30,18 +30,18 @@ object Tour {
    */
   val simple = {
     get[Long]("id") ~
-      get[Date]("date") ~
-      get[Date]("departure") ~
-      get[Date]("arrival") ~
-      get[Long]("dep_location") ~
-      get[Long]("arr_location") ~
-      get[String]("comment") ~
-      get[String]("meetingpoint") ~
-      get[String]("authentification") ~
-      get[Long]("tour_state") ~
-      get[Long]("mod_id") map {
-        case i ~ da ~ dep ~ arr ~ dep_l ~ arr_l ~ c ~ m ~ a ~ t ~ mod => Tour(i, da, dep, arr, dep_l, arr_l, c, m, a, t, mod)
-      }
+    get[Date]("date") ~
+    get[Date]("departure") ~
+    get[Date]("arrival") ~
+    get[Long]("dep_location") ~
+    get[Long]("arr_location") ~
+    get[String]("comment") ~
+    get[String]("meetingpoint") ~
+    get[String]("authentification") ~
+    get[Long]("tour_state") ~
+    get[Long]("mod_id") map {
+      case i ~ da ~ dep ~ arr ~ dep_l ~ arr_l ~ c ~ m ~ a ~ t ~ mod => Tour(i, da, dep, arr, dep_l, arr_l, c, m, a, t, mod)
+    }
   }
 
   // -- Queries
@@ -116,5 +116,37 @@ object Tour {
         'i -> id).executeUpdate()
     }
   }
-
+  
+  /**
+   * 
+   */
+  def getDepatureLocation(tourId: Long): String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM tour 
+        WHERE id = {tourId}
+      """).on(
+          'tourId -> tourId
+      ).apply().head
+      Location.getName(firstRow[Long]("dep_location"))
+	}
+  }
+  
+  /**
+   * 
+   */
+  def getArrivalLocation(tourId: Long): String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM tour 
+        WHERE id = {tourId}
+      """).on(
+          'tourId -> tourId
+      ).apply().head
+      Location.getName(firstRow[Long]("arr_location"))
+	}
+  }
+  
 }

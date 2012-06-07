@@ -94,4 +94,19 @@ object Location {
     if(affectedEntries>0) true else false
   }
   
+  /**
+   * 
+   */
+  def getName(locationId : Long) : String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM location 
+        WHERE id = {locationId}
+      """).on(
+          'locationId -> locationId
+      ).apply().head
+      firstRow[String]("name")
+	}
+  }
 }
