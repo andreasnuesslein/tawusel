@@ -45,7 +45,7 @@ object Mail {
       val toLoc = tour.arr_location + " a new passenger has entered.\n"
       val newPas = "The new passenger is " + newCompanion.firstname + " " + newCompanion.lastname + "."
       val content = fromLoc + toLoc + newPas
-      sendMail(subject, user.email, content)
+      sendMail(subject, toUser.email, content)
 
     }
 
@@ -66,7 +66,8 @@ object Mail {
 
     def sendManualCallMail(user: User, taxiNumber: String, id: Long){
 
-      val token = Tour.findById(id).createToken
+      //val token = Tour.findById(id).createToken
+      val token = "bla"
       val subject = "Taxi ordering"
       val contentIntro = "For this tour a taxi could not be ordered automatically.\n"
       val contentCallACab = "As you are the initiator of this tour, please call a taxi,"
