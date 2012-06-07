@@ -2,6 +2,7 @@ package tools
 
 import com.typesafe.plugin._
 import models.User
+import models.Tour
 import play.api.Play.current
 
 object Mail {
@@ -38,12 +39,14 @@ object Mail {
     }
 
     def sendNewTaxiCompanion(toUser: User, tour: Tour, newCompanion: User){
+
       val subject = "A new passenger entered your tour"
       val fromLoc = "For your tour from " + tour.dep_location + " to "
       val toLoc = tour.arr_location + " a new passenger has entered.\n"
       val newPas = "The new passenger is " + newCompanion.firstname + " " + newCompanion.lastname + "."
       val content = fromLoc + toLoc + newPas
       sendMail(subject, user.email, content)
+
     }
 
     def sendTaxiStatusMail(user: User, ordered: Boolean){
@@ -61,8 +64,9 @@ object Mail {
 
     }
 
-    def sendManualCallMail(user: User, taxiNumber: String, id: String, token: String){
+    def sendManualCallMail(user: User, taxiNumber: String, id: Long){
 
+      val token = Tour.findById(id).createToken
       val subject = "Taxi ordering"
       val contentIntro = "For this tour a taxi could not be ordered automatically.\n"
       val contentCallACab = "As you are the initiator of this tour, please call a taxi,"
