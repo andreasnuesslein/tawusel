@@ -152,6 +152,17 @@ COMMIT;
 -- Data for table `sms_api_message`
 -- -----------------------------------------------------
 START TRANSACTION;
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (1,'pending', 'if a taxi was not yet called');
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (2,'success', 'if a taxi was called');
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (3,'fail', 'if a taxi could not be called');
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the tour is finished');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `sms_api_message`
+-- -----------------------------------------------------
+START TRANSACTION;
 INSERT INTO `sms_api_message` (`id`, `message`) VALUES (100, 'SMS wurde erfolgreich verschickt.');
 INSERT INTO `sms_api_message` (`id`, `message`) VALUES (101, 'Versand an mindestens einen Empfänger fehlgeschlagen.');
 INSERT INTO `sms_api_message` (`id`, `message`) VALUES (201, 'Ländercode für diesen SMS-Typ nicht gültig. Bitte als Basic SMS verschicken.'); 
