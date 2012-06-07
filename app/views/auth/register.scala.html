@@ -1,10 +1,11 @@
 @(signupForm: Form[User])(implicit request: RequestHeader)
 
+@implicitFieldConstructor = @{ FieldConstructor(_formhelpers.f) }
+
 @import helper._
-@import helper.twitterBootstrap._
 
 @title = {
-    Sign Up
+    Register
 }
 
 @main(title, nav = "signup") {
@@ -24,34 +25,32 @@
   });
 </script>
 
-@helper.form(action = routes.Auth.submit) {
+<form action="@routes.Auth.submit" method="POST" class="form-horizontal" 0>
 
 <fieldset>
-  <legend>Account information</legend>
-
   @inputText(
   signupForm("firstname"),
-  '_label -> "Firstname",
+  '_label -> "First name",
   '_error -> signupForm.error("firstname")
   )
 
   @inputText(
   signupForm("lastname"),
-  '_label -> "Lastname",
+  '_label -> "Last name",
   '_error -> signupForm.error("lastname")
   )
 
   @inputText(
-  signupForm("email"), 
+  signupForm("email"),
   '_label -> "Email",
-  '_help -> "Enter a valid email address.",	
+  '_help -> "Enter a valid email address.",
   '_error -> signupForm.globalError
   )
 
   @inputText(
-  signupForm("cellphone"), 
-  '_label -> "Cellphone",
-  '_help -> "Enter a valid cellphone number.",	
+  signupForm("cellphone"),
+  '_label -> "Mobile phone",
+  '_help -> "Enter a valid mobile phone number.",
   '_error -> signupForm.error("cellphone")
   )
 
@@ -62,7 +61,7 @@
   )
 
   @inputPassword(
-  signupForm("password.confirm"), 
+  signupForm("password.confirm"),
   '_label -> "Repeat password",
   '_help -> "Please repeat your password again.",
   '_error -> signupForm.error("password")
@@ -70,11 +69,11 @@
 
 </fieldset>
 
-<div class="actions">
-  <input type="submit" id="registerbutton" class="btn primary" value="Sign Up">
+<div class="form-actions">
+  <input type="submit" id="registerbutton" class="btn primary" value="Register">
   <a href="@routes.Application.index" class="btn">Cancel</a>
 </div>
 
-}
+</form>
 
 }

@@ -40,7 +40,7 @@ class LocationModelTest extends Specification {
           }
         }
     
-        "delete a existing location" in{
+        "delete an existing location" in{
           running(FakeApplication()) {
         	Location.delete(testLocation.id) must equalTo(true)
           }

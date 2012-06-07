@@ -9,15 +9,12 @@ import play.api.mvc._
 
 case class Location(
   id: Long,
-  town_id : Long,
+  town_id: Long,
   name: String,
-  address: String
-  )
-
+  address: String)
 
 object Location {
 
-  
   // -- Parsers
 
   /**
@@ -25,15 +22,14 @@ object Location {
    */
   val simple = {
     get[Long]("location.id") ~
-    get[Long]("location.town_id") ~
-    get[String]("location.name") ~
-    get[String]("location.address")map{
-      case i~t~n~a=> Location(i,t,n,a)
-    }
+      get[Long]("location.town_id") ~
+      get[String]("location.name") ~
+      get[String]("location.address") map {
+        case i ~ t ~ n ~ a => Location(i, t, n, a)
+      }
   }
-  
   // -- Queries
-  
+
   /**
    * Retrieve a Location by id.
    */
@@ -43,7 +39,16 @@ object Location {
         'id -> id).as(Location.simple *).head
     }
   }
-  
+  /**
+   * Retrieve a Location by town_id.
+   */
+  def findByTown_id(town_id: Long): List[Location] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from location where town_id = {id}").on(
+        'id -> town_id).as(Location.simple *)
+    }
+  }
+
   /**
    * Retrieve all Locations.
    */
@@ -52,34 +57,33 @@ object Location {
       SQL("select * from location").as(Location.simple *)
     }
   }
-  
-   
   /**
    * Create a Location.
    */
-  def create(name: String, town_id: Long, address : String) : Location = {
-    var id :Long = 0
+  def create(name: String, town_id: Long, address: String): Location = {
+    var id: Long = 0
     DB.withConnection { implicit connection =>
-	  SQL("""
+      SQL("""
         INSERT 
 	    INTO location (town_id,name,address) 
 	    VALUES ({t},{n},{a})
 	  """).on(
-	    'n -> name,
-	    't -> town_id,
-	    'a -> address
-	  ).executeUpdate()
-	  SQL("""
+        'n -> name,
+        't -> town_id,
+        'a -> address
+      ).executeUpdate()
+      SQL("""
 		SELECT * 
 	    FROM location 
 	    WHERE id = last_insert_id();
 	  """).as(Location.simple *).head
-  	}
+    }
   }
-  
+
   /**
    * Delete a Location.
    */
+
   def delete(id : Long) : Boolean = {
     var affectedEntries : Int = 0
     DB.withConnection { implicit connection =>
@@ -87,11 +91,11 @@ object Location {
         DELETE 
         FROM location 
         WHERE id = {i}
-      """).on(
+        """).on(
         'i -> id
       ).executeUpdate()
     }
-    if(affectedEntries>0) true else false
+    if (affectedEntries > 0) true else false
   }
   
   /**
@@ -109,4 +113,5 @@ object Location {
       firstRow[String]("name")
 	}
   }
+
 }
