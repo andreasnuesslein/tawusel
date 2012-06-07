@@ -149,13 +149,21 @@ INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (17, 5, 'Skod
 COMMIT;
 
 -- -----------------------------------------------------
--- Data for table `sms_api_message`
+-- Data for table `tour_state`
 -- -----------------------------------------------------
 START TRANSACTION;
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (1,'pending', 'if a taxi was not yet called');
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (2,'success', 'if a taxi was called');
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (3,'fail', 'if a taxi could not be called');
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the tour is finished');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `tour`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `tour` (`id`, `date`, `departure`, `arrival`, `dep_location`, `arr_location`, `comment`, `meetingpoint`, `authentification`, `tour_state`, `mod_id`, `checked_by_timer` )  VALUES (1, NOW(), CURTIME(), CURTIME(), 2, 1,'bar','kneipe','auth', 1, 1, 0);
 
 COMMIT;
 
