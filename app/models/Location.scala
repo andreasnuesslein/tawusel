@@ -28,7 +28,6 @@ object Location {
         case i ~ t ~ n ~ a => Location(i, t, n, a)
       }
   }
-
   // -- Queries
 
   /**
@@ -58,7 +57,6 @@ object Location {
       SQL("select * from location").as(Location.simple *)
     }
   }
-
   /**
    * Create a Location.
    */
@@ -85,14 +83,15 @@ object Location {
   /**
    * Delete a Location.
    */
-  def delete(id: Long): Boolean = {
-    var affectedEntries: Int = 0
+
+  def delete(id : Long) : Boolean = {
+    var affectedEntries : Int = 0
     DB.withConnection { implicit connection =>
       affectedEntries = SQL("""
         DELETE 
         FROM location 
         WHERE id = {i}
-      """).on(
+        """).on(
         'i -> id
       ).executeUpdate()
     }

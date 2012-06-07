@@ -1,32 +1,20 @@
 @(user: User)(implicit request: RequestHeader)
 
-@main(Html("Account information"), nav = "signup") {
-    
-    <h2>Your account:</h2>
-    
-    <h6>Name</h6>
-    
-    <p>
-        @user.firstname @user.lastname
-    </p>
-    
-    <h6>Email</h6>
-    
-    <p>
-        @user.email
-    </p>
-    
-    <h6>Password</h6>
-    
-    <p>
-        @user.password
-    </p>
-    
-    <h6>Cellphone</h6>
-    
-    <p>
-        @user.cellphone
-    </p>
-    
-    
+@main(Html("Account information"), nav = "account") {
+
+<h6>Name</h6>
+<p>
+@user.firstname @user.lastname
+</p>
+
+<h6>Email</h6>
+<p>
+@user.email
+</p>
+
+<h6>Mobile phone</h6>
+<p>
+@user.cellphone
+</p>
+
 }

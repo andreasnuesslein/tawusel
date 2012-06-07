@@ -8,15 +8,12 @@ import models.User
 
 class RegistrationTestCorrectData extends Specification{
 
-//  def after = (User.delete("max.mustermann@carmeq.com"))
-  
- "Application" should {
-      "work from within a browser" in new afterContext{
-        running(TestServer(9000), HTMLUNIT) { browser =>
+  "Application" should {
+    "work from within a browser" in new afterContext{
+      running(TestServer(9000), HTMLUNIT) { browser =>
         browser.goTo("http://localhost:9000/register")
-        
-        browser.pageSource must contain("Sign Up")
-        browser.pageSource must contain("Account information")
+
+        browser.pageSource must contain("Register")
 
         //try to register with correct entries
         browser.$("#firstname").text("Max")
@@ -31,7 +28,7 @@ class RegistrationTestCorrectData extends Specification{
         browser.pageSource must not contain("Register")
         browser.pageSource must contain("Hello Max")
         browser.pageSource must contain("Log out")
-   
+
         //try to register with the same email adress
         browser.goTo("http://localhost:9000/register")
         browser.$("#firstname").text("Max")
@@ -41,17 +38,17 @@ class RegistrationTestCorrectData extends Specification{
         browser.$("#password_main").text("tester")
         browser.$("#password_confirm").text("tester")
         browser.$("#registerbutton").click()
-        browser.pageSource must contain("This email adress is already in use")
-        }
+        browser.pageSource must contain("This email address is already in use")
       }
+    }
   }
- 
+
   trait afterContext extends After {
-	def after = {
-	  running(FakeApplication()) {
-	   User.delete("max.mustermann@carmeq.com")
-	  }
-	}
-  } 
+    def after = {
+      running(FakeApplication()) {
+        User.delete("max.mustermann@carmeq.com")
+      }
+    }
+  }
 
 }
