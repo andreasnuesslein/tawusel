@@ -7,6 +7,7 @@ import play.api.Play.current
 import play.api._
 import play.api.mvc._
 import java.util.Date
+import java.security.MessageDigest
 
 case class Tour(
   id: Long,
@@ -19,7 +20,19 @@ case class Tour(
   meetingpoint: Option[String],
   authentification: Option[String],
   tour_state: Long,
-  mod_id: Long)
+  mod_id: Long) {
+
+  def createToken(): String = {
+    val hash = MessageDigest.getInstance("SHA-1").digest((this.id+this.date.toString+this.departure+
+      this.arrival+this.mod_id).getBytes).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
+    return hash
+  }
+
+  def checkToken(token: String): Boolean = {
+    return (this.createToken() == token)
+  }
+}
+
 
 object Tour {
 
@@ -73,5 +86,6 @@ object Tour {
       'i -> id).executeUpdate()
     }
   }
+
 
 }

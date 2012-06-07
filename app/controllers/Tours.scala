@@ -9,6 +9,7 @@ import play.api._
 import scala.util.matching.Regex
 import models._
 import views._
+import tools.Mail
 
 object Tours extends Controller with Secured {
 
@@ -25,5 +26,33 @@ object Tours extends Controller with Secured {
     val user = User.findByEmail(email).get
     Ok(views.html.tour.myTours(Tour.findAll()))
   }
+
+
+  def confirmTour(id: Long, token: String) = IsAuthenticated { email => implicit request =>
+    var tour = Tour.findById(id)
+    if( tour.checkToken(token) ) {
+      //TODO Tour.update(status == ok)
+      //TODO SendSuccessMail
+      Ok("Tour was success")
+    } else {
+      //TODO give proper response (not Ok, but Fault/Error/whatever)
+      Ok("error")
+    }
+
+  }
+
+  def cancelTour(id: Long, token: String) = IsAuthenticated { email => implicit request =>
+    var tour = Tour.findById(id)
+    if( tour.checkToken(token) ) {
+      //TODO Tour.update(status == fail)
+      //TODO SendFailureMail
+      Ok("Tour couldn't be booked")
+    } else {
+      //TODO give proper response (not Ok, but Fault/Error/whatever)
+      Ok("error")
+    }
+
+  }
+
 
 }
