@@ -89,6 +89,13 @@ class SMSTest extends Specification {
           SMS.sendUserLeft(testUser, wrongTestUser, testTour, true, true) must equalTo("SMS wurde erfolgreich verschickt.")
         }
       }
+      
+      "send a sms userJoined" in {
+        running(FakeApplication()) {
+          val testTour = Tour.findById(1)
+          SMS.sendUserJoined(testUser, wrongTestUser, testTour, true) must equalTo("SMS wurde erfolgreich verschickt.")
+        }
+      }
     }
   }
 }

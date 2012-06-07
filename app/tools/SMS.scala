@@ -152,6 +152,49 @@ object SMS {
     smsText
   }
 
+  /**
+   * Calls the method to create a specific userJoined text for the user
+   * afterwards it calls the calls the createUrl method to send a notification
+   * sms via the sms77.de http api to the users cellphone. At last the returning
+   * message code is mapped to a message which is safed in the database.
+   * 
+   * @returns a string which contains the status message from sending the sms
+   */
+  def sendUserJoined(user:User, joiningUser: User, tour: Tour, debug: Boolean): String = {
+    val smsText = createUserJoinedText(user, joiningUser, tour)
+    val promise = WS.url(createUrl(user, smsText, debug)).get()  
+    getApiMessage(promise.value.get.body.toInt)
+  }
+  
+  /**
+   * Overloaded method since default parameters doesn't work :( 
+   * 
+   * @returns a string which contains the status message from sending the sms
+   */
+  def sendUserJoined(user:User, joiningUser: User, tour: Tour): String = {
+    sendUserJoined(user, joiningUser, tour, false)
+  }
+  
+  /**
+   * Creates the userJoined text which tells the user that a another user
+   * has left his tour.
+   * 
+   * @returns a string which contains text for the sms
+   */
+  def createUserJoinedText(user:User, joiningUser: User, tour: Tour): String = {
+    var smsText: String = "Hello%20"
+    smsText += user.firstname
+    smsText += ",%20the%20user%20"
+    smsText += joiningUser.firstname 
+    smsText += "%20"
+    smsText += joiningUser.lastname
+    smsText += "%20has%20joined%20the%20tour%20from%20"
+    smsText += Tour.getDepatureLocation(tour.id).replaceAll(" ","%20")
+    smsText += "%20at%20"
+    smsText += tour.departure
+    smsText += "."
+    smsText
+  }
   
   /**
    * Builds the url to call by the http api of sms77.de. 
