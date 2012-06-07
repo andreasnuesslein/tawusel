@@ -58,6 +58,7 @@ object Tour {
         'id -> id).as(Tour.simple *).head
     }
   }
+  
 
   def findAll(): List[Tour] = {
     DB.withConnection { implicit connection =>

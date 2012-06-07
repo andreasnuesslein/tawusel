@@ -16,6 +16,7 @@ POST	/register		controllers.Auth.submit
 GET		/newTour		controllers.Tours.newTour
 GET		/index			controllers.Application.index
 GET		/myTours		controllers.Tours.myTours
+GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file	controllers.Assets.at(path="/public", file)

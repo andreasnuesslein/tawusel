@@ -5,32 +5,50 @@
 @title = {
  Plan a new tour
  }
-
 @main(title,nav="newtour") {
   <h2>Hello @request.session.get("firstname"), </h2>
   <h2>where should your taxi pick you up?</h2>
-  <div class="number_container">
-    1.
-    <div class="loader_rect" id="rect_1">
+        <form name="tourForm">
+  <div class="number_container"> 
+       1.
+	<div class="loader_rect" id="rect_1">
+</div>
+  <select  name="dep_town" size="7" class="number-container_select" onchange="loadLocations('locations',document.tourForm.dep_town.value);">
+        @towns.map { town =>
+        @if(!town.name.equals("Berlin")){
+            <option value="@town.id">
+                @town.name
+            </option>
+            }else{
+            <option value="@town.id" selected="selected">
+                @town.name
+            </option>
+            }
+        }
+    </select>
     </div>
-    <select  name="dep_town" size="7" class="number-container_select">
-      @towns.map { town =>
-      <option>
-      @town.name
-      </option>
-      }
+    <div class="number_container"> 
+       2.
+	<div class="loader_rect" id="rect_1">
+</div>
+  <select  name="dep_location" size="7" class="number-container_select" id="locations">
+        @locations.map { location =>
+        @if(!location.name.equals("Carmeq Berlin")){
+            <option value="@location.id">
+                @location.name
+            </option>
+            }else{
+            <option value="@location.id" selected="selected">
+                @location.name
+            </option>
+            }
+        }
     </select>
   </div>
   <div class="number_container"> 
     2.
     <div class="loader_rect" id="rect_1">
     </div>
-    <select  name="dep_town" size="7" class="number-container_select">
-      @locations.map { location =>
-      <option>
-      @location.name
-      </option>
-      }
-    </select>
-  </div>
-  }
+    </form>
+}
+
