@@ -37,6 +37,15 @@ object Mail {
 
     }
 
+    def sendNewTaxiCompanion(toUser: User, tour: Tour, newCompanion: User){
+      val subject = "A new passenger entered your tour"
+      val fromLoc = "For your tour from " + tour.dep_location + " to "
+      val toLoc = tour.arr_location + " a new passenger has entered.\n"
+      val newPas = "The new passenger is " + newCompanion.firstname + " " + newCompanion.lastname + "."
+      val content = fromLoc + toLoc + newPas
+      sendMail(subject, user.email, content)
+    }
+
     def sendTaxiStatusMail(user: User, ordered: Boolean){
 
       val subject = "Status of planned tour has changed"
