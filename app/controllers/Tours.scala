@@ -18,13 +18,13 @@ object Tours extends Controller with Secured {
     val user = User.findByEmail(email).get
     Ok(views.html.tour.newTour(Town.findAll(), Location.findByTown_id(1), townForm))
   }
-  
+
     val townForm = Form(
     "name" -> nonEmptyText)
 
   def myTours = IsAuthenticated { email => implicit request =>
-    val user = User.findByEmail(email).get
-    Ok(views.html.tour.myTours(Tour.findAll()))
+    val user_id = User.getIdByEmail(email)
+    Ok(views.html.tour.myTours(Tour.findAllForUser(user_id)))
   }
 
 

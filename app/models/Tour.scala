@@ -66,6 +66,14 @@ object Tour {
     }
   }
 
+  def findAllForUser(user_id: Int): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      //"select * from tour join user_has_tour on tour.id = user_has_tour.tour_id where user_has_tour.user_id = 1;"
+      SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
+    }
+
+  }
+
   def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
       meet: String, auth: String, tour_id: Long, mod: Long): Tour = {
     var tid :Long =  0

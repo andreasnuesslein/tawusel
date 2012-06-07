@@ -53,6 +53,19 @@ object User {
       ).as(User.simple.singleOpt)
     }
   }
+
+  def getIdByEmail(email: String): Int = {
+    DB.withConnection { implicit connection =>
+    val id = SQL("""
+      SELECT id
+      FROM user
+      WHERE email = {email}
+      """).on(
+        'email -> email
+      ).as(get[Int]("id")*)
+    return id(0)
+    }
+  }
   
   /**
    * Retrieve all users. Returns the sequence of 
