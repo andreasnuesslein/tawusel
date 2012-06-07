@@ -14,7 +14,7 @@ object Tours extends Controller with Secured {
   
 def newTour = IsAuthenticated({ email => implicit request =>
     val user = User.findByEmail(email).get
-    Ok(views.html.tour.newTour(Town.findAll(), Location.findAll(), townForm))
+    Ok(views.html.tour.newTour(Town.findAll(), Location.findByTown_id(1), townForm))
   }, Redirect(routes.Application.index))
   
     val townForm = Form(

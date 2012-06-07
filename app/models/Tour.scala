@@ -55,6 +55,7 @@ object Tour {
         'id -> id).as(Tour.simple *).head
     }
   }
+  
 
   /**
    * Retrieve all Tours.
