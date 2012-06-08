@@ -52,6 +52,7 @@ CREATE  TABLE IF NOT EXISTS `tour` (
   `authentification` VARCHAR(45) NULL ,
   `tour_state` INT NOT NULL ,
   `mod_id` INT NULL ,
+  `checked_by_timer` TINYINT(1) DEFAULT 0, 
   PRIMARY KEY (`id`) ,
   INDEX `location_tour_dep_location` (`dep_location` ASC) ,
   INDEX `location_tour_arr_location` (`arr_location` ASC) ,
@@ -97,6 +98,12 @@ CREATE  TABLE IF NOT EXISTS `user_has_tour` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+CREATE  TABLE IF NOT EXISTS `sms_api_message` (
+  `id` INT NOT NULL ,
+  `message` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
 -- -----------------------------------------------------
 -- Data for table `user`
 -- -----------------------------------------------------
@@ -112,7 +119,7 @@ START TRANSACTION;
 INSERT INTO `town` (`id`, `name`) VALUES (1, 'Berlin');
 INSERT INTO `town` (`id`, `name`) VALUES (2, 'Wolfsburg');
 INSERT INTO `town` (`id`, `name`) VALUES (3, 'Ingolstadt');
-INSERT INTO `town` (`id`, `name`) VALUES (4, 'Stattgart');
+INSERT INTO `town` (`id`, `name`) VALUES (4, 'Stuttgart');
 INSERT INTO `town` (`id`, `name`) VALUES (5, 'Prag');
 
 COMMIT;
@@ -141,8 +148,57 @@ INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (17, 5, 'Skod
 
 COMMIT;
 
+-- -----------------------------------------------------
+-- Data for table `tour_state`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (1,'pending', 'if a taxi was not yet called');
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (2,'success', 'if a taxi was called');
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (3,'fail', 'if a taxi could not be called');
+INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the tour is finished');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `tour`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `tour` (`id`, `date`, `departure`, `arrival`, `dep_location`, `arr_location`, `comment`, `meetingpoint`, `authentification`, `tour_state`, `mod_id`, `checked_by_timer` )  VALUES (1, NOW(), CURTIME(), CURTIME(), 2, 1,'bar','kneipe','auth', 1, 1, 0);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `sms_api_message`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (100, 'SMS wurde erfolgreich verschickt.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (101, 'Versand an mindestens einen Empfänger fehlgeschlagen.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (201, 'Ländercode für diesen SMS-Typ nicht gültig. Bitte als Basic SMS verschicken.'); 
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (202, 'Empfängernummer ungültig.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (300, 'Bitte Benutzer/Passwort angeben.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (301, 'Variable to nicht gesetzt.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (304, 'Variable type nicht gesetzt.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (305, 'Variable text nicht gesetzt.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (306, 'Absendernummer ungültig. Diese muss vom Format 0049... sein und eine gültige Handynummer darstellen.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (307, 'Variable url nicht gesetzt.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (400, 'Variable type ungültig. Siehe erlaubte Werte oben..');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (401, 'Variable text ist zu lang.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (402, 'Reloadsperre – diese SMS wurde bereits innerhalb der letzten 90 Sekunden verschickt.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (500, 'Zu wenig Guthaben vorhanden.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (600, 'Carrier Zustellung misslungen');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (700, 'Unbekannter Fehler.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (801, 'Logodatei nicht angegeben.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (802, 'Logodatei existiert nicht.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (803, 'Klingelton nicht angegeben.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (900, 'Benutzer/Passwort-Kombination falsch.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (902, 'http API für diesen Account deaktiviert.');
+INSERT INTO `sms_api_message` (`id`, `message`) VALUES (903, 'Server IP ist falsch.');
+
+COMMIT;
+
 # --- !Downs
 
+DROP TABLE IF EXISTS `sms_api_message` ;
 DROP TABLE IF EXISTS `user_has_tour` ;
 DROP TABLE IF EXISTS `tour` ;
 DROP TABLE IF EXISTS `tour_state` ;

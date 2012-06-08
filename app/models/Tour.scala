@@ -32,6 +32,24 @@ case class Tour(
   def checkToken(token: String): Boolean = {
     return (this.createToken() == token)
   }
+
+  def getAllUsers(): List[User] = {
+    DB.withConnection { implicit connection =>
+      SQL("SELECT * FROM user JOIN user_has_tour on user.id = user_has_tour.user_id WHERE user_has_tour.tour_id = {tourId};").on(
+        'tour_id -> this.id).as(User.simple *)
+    }
+  }
+
+  def updateTourState(state: Long): Boolean = {
+    DB.withConnection { implicit connection =>
+      if(SQL("UPDATE tour SET tour_state = {state} WHERE id = {id};").on(
+        'state -> state, 'id -> this.id).executeUpdate == 1) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
 }
 
 
@@ -86,20 +104,60 @@ object Tour {
     }
   }
     
+  def findAllForUser(user_id: Int): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      //"select * from tour join user_has_tour on tour.id = user_has_tour.tour_id where user_has_tour.user_id = 1;"
+      SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
+    }
+
+  }
+
   def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
-      meet: String, auth: String, tour_id: Long, mod: Long): Tour = {
-    var tid :Long =  0
+      meet: String, auth: String, state: Long, mod: Long): Tour = {
     DB.withConnection { implicit connection =>
       SQL("""INSERT INTO tour(date,departure,arrival,dep_location,arr_location,
         comment,meetingpoint,authentification,tour_state,mod_id) VALUES ({da},
         {dep},{arr},{dep_l},{arr_l},{c},{m},{a},{t},{mod})""").on(
         'da -> date, 'dep -> dep, 'arr -> arr, 'dep_l -> dep_l,
         'arr_l -> arr_l, 'c -> comment, 'm -> meet, 'a -> auth,
-        't -> tour_id, 'mod -> mod ).executeUpdate()
+        't -> state, 'mod -> mod ).executeUpdate()
       SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
       ).as(Tour.simple *).head
     }
   }
+  
+  /**
+   * 
+   */
+  def getDepatureLocation(tourId: Long): String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM tour 
+        WHERE id = {tourId}
+      """).on(
+          'tourId -> tourId
+      ).apply().head
+      Location.getName(firstRow[Long]("dep_location"))
+	}
+  }
+  
+  /**
+   * 
+   */
+  def getArrivalLocation(tourId: Long): String = {
+    DB.withConnection { implicit connection =>
+      val firstRow = SQL("""
+        SELECT * 
+        FROM tour 
+        WHERE id = {tourId}
+      """).on(
+          'tourId -> tourId
+      ).apply().head
+      Location.getName(firstRow[Long]("arr_location"))
+	}
+  }
+  
 
   def delete(id: Long) = {
     DB.withConnection { implicit connection =>

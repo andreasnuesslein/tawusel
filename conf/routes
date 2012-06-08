@@ -5,6 +5,9 @@ GET		/				controllers.Tours.newTour
 GET		/secure			controllers.Application.secure
 
 
+GET		/tour/:id/confirm/:token	controllers.Tours.confirmTour(id: Long, token: String)
+GET		/tour/:id/cancel/:token		controllers.Tours.cancelTour(id: Long, token: String)
+
 
 # Authentication
 GET		/login			controllers.Auth.login
@@ -14,6 +17,7 @@ GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
 GET		/newTour		controllers.Tours.newTour
+POST	/newTour		controllers.Tours.newTourCreate
 GET		/index			controllers.Application.index
 GET		/myTours		controllers.Tours.myTours
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)

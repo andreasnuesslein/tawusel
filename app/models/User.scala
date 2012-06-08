@@ -45,15 +45,28 @@ object User {
   def findByEmail(email: String): Option[User] = {
     DB.withConnection { implicit connection =>
       SQL("""
-        SELECT * 
-        FROM user 
+        SELECT *
+        FROM user
         WHERE email = {email}
       """).on(
           'email -> email
       ).as(User.simple.singleOpt)
     }
   }
-  
+
+  def getIdByEmail(email: String): Int = {
+    DB.withConnection { implicit connection =>
+    val id = SQL("""
+      SELECT id
+      FROM user
+      WHERE email = {email}
+      """).on(
+        'email -> email
+      ).as(get[Int]("id")*)
+    return id(0)
+    }
+  }
+
   /**
    * Retrieve all users. Returns the sequence of 
    * found users.
@@ -63,7 +76,7 @@ object User {
       SQL("SELECT * FROM user").as(User.simple *)
     }
   }
-  
+
   /**
    * Authenticate a User. Returns the found user which can be
    * authenticated.
