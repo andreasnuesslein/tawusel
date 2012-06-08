@@ -25,7 +25,7 @@ import java.sql.Timestamp
 class SMSTest extends Specification {
   //create the dummy object
   val testUser = User("max.mustermann@carmeq.com", "Max", "Mustermann", "01788745240", "password");
-  val wrongTestUser = User("max.mustermann@carmeq.com", "Max", "Mustermann", "0a1788745240", "password");
+  val wrongTestUser = User("tester.testikus@carmeq.com", "Tester", "Testikus", "0a1788745240", "password");
 
   "SMS" should {
     
@@ -54,7 +54,14 @@ class SMSTest extends Specification {
         val currentDate: Date = new Date(Calendar.getInstance().getTime().getTime())
         var depatureDate: Date = new Date(currentDate.getTime()+240000)
         SMS.getTimeToDestination(currentDate, depatureDate) must equalTo("4")
-        SMS.getTimeToDestination(depatureDate) must equalTo("4")
+        SMS.getTimeToDestination(depatureDate) must (equalTo("3") or equalTo("4"))
+      }
+      
+      "not send the sms if the cellphone number is incorrect" in {
+        running(FakeApplication()) {
+          val testTour = Tour.findById(1)
+          SMS.sendTourNotification(wrongTestUser, testTour, true) must equalTo("Empfängernummer ungültig.")
+        }
       }
       
       "send a sms tour notification" in {
@@ -76,10 +83,17 @@ class SMSTest extends Specification {
         }
       }
     
-      "not send the sms if the cellphone number is incorrect" in {
+      "send a sms userLeft" in {
         running(FakeApplication()) {
           val testTour = Tour.findById(1)
-          SMS.sendTourNotification(wrongTestUser, testTour, true) must equalTo("Empfängernummer ungültig.")
+          SMS.sendUserLeft(testUser, wrongTestUser, testTour, true, true) must equalTo("SMS wurde erfolgreich verschickt.")
+        }
+      }
+      
+      "send a sms userJoined" in {
+        running(FakeApplication()) {
+          val testTour = Tour.findById(1)
+          SMS.sendUserJoined(testUser, wrongTestUser, testTour, true) must equalTo("SMS wurde erfolgreich verschickt.")
         }
       }
     }
