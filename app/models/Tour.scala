@@ -75,15 +75,14 @@ object Tour {
   }
 
   def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
-      meet: String, auth: String, tour_id: Long, mod: Long): Tour = {
-    var tid :Long =  0
+      meet: String, auth: String, state: Long, mod: Long): Tour = {
     DB.withConnection { implicit connection =>
       SQL("""INSERT INTO tour(date,departure,arrival,dep_location,arr_location,
         comment,meetingpoint,authentification,tour_state,mod_id) VALUES ({da},
         {dep},{arr},{dep_l},{arr_l},{c},{m},{a},{t},{mod})""").on(
         'da -> date, 'dep -> dep, 'arr -> arr, 'dep_l -> dep_l,
         'arr_l -> arr_l, 'c -> comment, 'm -> meet, 'a -> auth,
-        't -> tour_id, 'mod -> mod ).executeUpdate()
+        't -> state, 'mod -> mod ).executeUpdate()
       SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
       ).as(Tour.simple *).head
     }

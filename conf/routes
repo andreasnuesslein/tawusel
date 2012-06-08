@@ -17,6 +17,7 @@ GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
 GET		/newTour		controllers.Tours.newTour
+POST	/newTour		controllers.Tours.newTourCreate
 GET		/index			controllers.Application.index
 GET		/myTours		controllers.Tours.myTours
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
