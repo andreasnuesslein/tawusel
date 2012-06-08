@@ -8,6 +8,7 @@ import play.api._
 import play.api.mvc._
 import java.util.Date
 import java.security.MessageDigest
+import java.util.Calendar
 
 case class Tour(
   id: Long,
@@ -65,7 +66,26 @@ object Tour {
       SQL("select * from tour").as(Tour.simple *)
     }
   }
+ 
 
+    def findByTown_id(town_id:Long): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from tour " +
+      		"inner join location " +
+      		"on tour.dep_location = location.id " +
+      		"where location.town_id ={t}").on(
+      		    't -> town_id).as(Tour.simple *)
+    }
+  }
+  
+    def findByLocation_id(location_id:Long): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from tour " +
+      		"where tour.dep_location  ={l}").on(
+      		    'l -> location_id).as(Tour.simple *)
+    }
+  }
+    
   def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
       meet: String, auth: String, tour_id: Long, mod: Long): Tour = {
     var tid :Long =  0

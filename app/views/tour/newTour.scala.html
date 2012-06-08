@@ -7,13 +7,14 @@
  }
 @main(title,nav="newtour") {
   <h2>Hello @request.session.get("firstname"), </h2>
-  <h2>where should your taxi pick you up?</h2>
+  <h2 id="header">where should your taxi bring you to?</h2>
+      <script src="@routes.Assets.at("js/newTourHelper.js")" type="text/javascript"></script>
         <form name="tourForm">
   <div class="number_container"> 
-       1.
-	<div class="loader_rect" id="rect_1">
+       1.departure town
+	<div class="bar_active bar_left" id="rect_1" style="border-radius:3px">
 </div>
-  <select  name="dep_town" size="7" class="number-container_select" onchange="loadLocations('locations',document.tourForm.dep_town.value);">
+  <select  name="dep_town" size="7" class="number-container_select" onchange="findDepLocations(document.tourForm.dep_town.value);">
         @towns.map { town =>
         @if(!town.name.equals("Berlin")){
             <option value="@town.id">
@@ -28,10 +29,10 @@
     </select>
     </div>
     <div class="number_container"> 
-       2.
-	<div class="loader_rect" id="rect_1">
+       2. departure location
+	<div class="bar_active" id="rect_2">
 </div>
-  <select  name="dep_location" size="7" class="number-container_select" id="locations">
+  <select  name="dep_location" size="7" class="number-container_select" id="dep_location" onchange="setDepReady(document.tourForm.dep_location.value);">
         @locations.map { location =>
         @if(!location.name.equals("Carmeq Berlin")){
             <option value="@location.id">
@@ -46,9 +47,66 @@
     </select>
   </div>
   <div class="number_container"> 
-    2.
-    <div class="loader_rect" id="rect_1">
+    3. arrival town
+    <div class="bar_deactive" id="rect_3" >
     </div>
+    <select  id="arr_town" name="arr_town" size="7" class="number-container_select" onchange="findArrLocations(document.tourForm.arr_town.value);">
+        @towns.map { town =>
+        @if(!town.name.equals("Berlin")){
+            <option value="@town.id">
+                @town.name
+            </option>
+            }else{
+            <option value="@town.id" selected="selected">
+                @town.name
+            </option>
+            }
+        }
+    </select>
+    </div>
+     <div class="number_container"> 
+       4. arrival location
+   <div class="bar_deactive bar_right" id="rect_4">
+</div>
+  <select  name="arr_location" size="7" class="number-container_select" style='display:none' id="arr_location" onchange="setArrReady(document.tourForm.arr_location.value);">
+        @locations.map { location =>
+        @if(!location.name.equals("Carmeq Berlin")){
+            <option value="@location.id">
+                @location.name
+            </option>
+            }else{
+            <option value="@location.id" selected="selected">
+                @location.name
+            </option>
+            }
+        }
+    </select>
+  </div>
     </form>
+    <div class="tour_container" style="display:none" id="tour_container"> 
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered"  id="tourlist">
+  <caption>
+  </caption>
+  <thead>
+    <tr>
+      <th>From</th>
+      <th>To</th>
+      <th>Departure time</th>
+      <th>Arrival time</th>
+      <th>Meeting point</th>
+      <th>Comment</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+    
+    </tr>
+  </tbody>
+</table>
+<p></p>
+<a class="btn btn-info" href="@routes.Tours.newTour">Create new tour</a>
+    
+    </div>
 }
 

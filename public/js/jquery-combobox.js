@@ -69,10 +69,11 @@
 			.appendTo( ul );
 	};
 
-	$( "<a>" )
+	 $( "<a>" )
 		.attr( "tabIndex", -1 )
 		.attr( "title", "Show All Items" )
 		.appendTo( wrapper )
+		.append("alle")
 		.button({
 			icons: {
 				primary: "ui-icon-triangle-1-s"
