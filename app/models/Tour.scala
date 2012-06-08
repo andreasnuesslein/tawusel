@@ -31,6 +31,24 @@ case class Tour(
   def checkToken(token: String): Boolean = {
     return (this.createToken() == token)
   }
+
+  def getAllUsers(): List[User] = {
+    DB.withConnection { implicit connection =>
+      SQL("SELECT * FROM user JOIN user_has_tour on user.id = user_has_tour.user_id WHERE user_has_tour.tour_id = {tourId};").on(
+        'tour_id -> this.id).as(User.simple *)
+    }
+  }
+
+  def updateTourState(state: Long): Boolean = {
+    DB.withConnection { implicit connection =>
+      if(SQL("UPDATE tour SET tour_state = {state} WHERE id = {id};").on(
+        'state -> state, 'id -> this.id).executeUpdate == 1) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
 }
 
 

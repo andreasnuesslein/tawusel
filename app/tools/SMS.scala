@@ -29,7 +29,7 @@ object SMS {
   
   /**
    * Calls the method to create a specific notification text for the user
-   * afterwards it calls the calls the createUrl method to send a notification
+   * afterwards it calls the createUrl method to send a notification
    * sms via the sms77.de http api to the users cellphone. At last the returning
    * message code is mapped to a message which is safed in the database.
    * 
@@ -107,7 +107,7 @@ object SMS {
   
    /**
    * Calls the method to create a specific userLeft text for the user
-   * afterwards it calls the calls the createUrl method to send a notification
+   * afterwards it calls the createUrl method to send a notification
    * sms via the sms77.de http api to the users cellphone. At last the returning
    * message code is mapped to a message which is safed in the database.
    * 
@@ -147,14 +147,14 @@ object SMS {
     smsText += tour.departure
     smsText += "."
     if(newInitiator) {
-      smsText += "%20You%20are%20the%20new%20initiater!"
+      smsText += "%20You%20are%20the%20new%20initiator!"
     }
     smsText
   }
 
   /**
    * Calls the method to create a specific userJoined text for the user
-   * afterwards it calls the calls the createUrl method to send a notification
+   * afterwards it calls the createUrl method to send a notification
    * sms via the sms77.de http api to the users cellphone. At last the returning
    * message code is mapped to a message which is safed in the database.
    * 

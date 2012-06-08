@@ -55,12 +55,18 @@ object Tours extends Controller with Secured {
     Ok(views.html.tour.myTours(Tour.findAllForUser(user_id)))
   }
 
-
+  /*This method is called by clicking a link in the confirmation email and it does update the state of the tour and informs every user connected to it.
+    (tour_state.id == 1) = pending
+    (tour_state.id == 2) = success
+    (tour_state.id == 3) = fail
+    (tour_state.id == 4) = done
+  */
   def confirmTour(id: Long, token: String) = IsAuthenticated { email => implicit request =>
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
-      //TODO Tour.update(status == ok)
-      //TODO SendSuccessMail
+        if(tour.updateTourState(2)) {
+          tour.getAllUsers().foreach((user: User) => Mail.sendTaxiStatusMail(user, true))
+        }
       Ok("Tour was success")
     } else {
       //TODO give proper response (not Ok, but Fault/Error/whatever)
@@ -69,11 +75,15 @@ object Tours extends Controller with Secured {
 
   }
 
+  /*This method does set the state of the actual tour to fail and informs all connected users.
+  */
   def cancelTour(id: Long, token: String) = IsAuthenticated { email => implicit request =>
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
-      //TODO Tour.update(status == fail)
-      //TODO SendFailureMail
+        if(tour.updateTourState(3)) {
+          tour.getAllUsers().foreach((user: User) => Mail.sendTaxiStatusMail(user, false))
+          Mail.sendManualCallMail(tour.getAllUsers().head, tour, "22456", tour.id, true)
+        }
       Ok("Tour couldn't be booked")
     } else {
       //TODO give proper response (not Ok, but Fault/Error/whatever)
