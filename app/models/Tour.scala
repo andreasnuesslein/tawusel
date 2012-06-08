@@ -9,7 +9,7 @@ import play.api.mvc._
 import java.util.Date
 import java.security.MessageDigest
 import java.util.Calendar
-
+//comment
 case class Tour(
   id: Long,
   date: Date,
