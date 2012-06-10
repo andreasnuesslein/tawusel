@@ -10,24 +10,21 @@ import com.codahale.jerkson.Json
 
 object Application extends Controller with Secured {
 
-  
-  
   def index = Action { implicit request =>
-   // Akka_Test.insertTour(1,new Date(32432))
-    Ok(views.html.index())
-  }
+     Redirect(routes.Tours.tours)
+   }
 
   def secure = IsAuthenticated({ email =>
     implicit request =>
       val user = User.findByEmail(email).get
       Ok(views.html.auth.summary(user))
   }, Redirect(routes.Auth.login).flashing("error" -> "You have to login first."))
- 
+
   def listLocationsByTown_Id(town_id:String) = Action {
     val locations = Location.findByTown_id(town_id.toLong);
- 
+
     val json = Json.generate(locations)
- 
+
     Ok(json).as("application/json")
   }
 
@@ -36,20 +33,19 @@ object Application extends Controller with Secured {
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }
-  
-    def listToursByLocation_Id(location_id:String) = Action {
+
+  def listToursByLocation_Id(location_id:String) = Action {
     val tours = Tour.findByLocation_id(location_id.toLong)
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }
- 
-    def listAllTours() = Action {
+
+  def listAllTours() = Action {
     val tours = Tour.findAll();
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }
-  
-  
+
 }
 
 

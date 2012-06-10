@@ -28,9 +28,18 @@ case class Tour(
       this.arrival+this.mod_id).getBytes).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
     return hash
   }
-
   def checkToken(token: String): Boolean = {
     return (this.createToken() == token)
+  }
+  def updateUserHasTour(userid: Int): Boolean = {
+    DB.withConnection { implicit connection =>
+      SQL("INSERT INTO user_has_tour VALUES({uid},{tid})").on(
+        'uid -> userid,
+        'tid -> this.id).executeUpdate() match {
+        case 1 => return true
+        case _ => return false
+      }
+    }
   }
 
   def getAllUsers(): List[User] = {
@@ -99,14 +108,22 @@ object Tour {
     def findByLocation_id(location_id:Long): List[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour " +
-      		"where tour.dep_location  ={l}").on(
-      		    'l -> location_id).as(Tour.simple *)
+        "where tour.dep_location  ={l}").on(
+          'l -> location_id).as(Tour.simple *)
     }
   }
-    
+
+  def findTemplatesForUser(user_id: Int): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      // TODO select * where date<now() count 8, countby
+      SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
+    }
+
+  }
+
   def findAllForUser(user_id: Int): List[Tour] = {
     DB.withConnection { implicit connection =>
-      //"select * from tour join user_has_tour on tour.id = user_has_tour.tour_id where user_has_tour.user_id = 1;"
+      // TODO select * where date>now()
       SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
     }
 

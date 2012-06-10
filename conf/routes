@@ -1,6 +1,6 @@
 
 # Home page
-GET		/				controllers.Tours.newTour
+GET		/				controllers.Application.index
 
 GET		/secure			controllers.Application.secure
 
@@ -16,10 +16,11 @@ GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
-GET		/newTour		controllers.Tours.newTour
+
+# Tours
 POST	/newTour		controllers.Tours.newTourCreate
-GET		/index			controllers.Application.index
-GET		/myTours		controllers.Tours.myTours
+GET		/tours		controllers.Tours.tours
+
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
 GET     /listToursByTown/*town_id                  controllers.Application.listToursByTown_Id(town_id)
 GET     /listAllTours                           controllers.Application.listAllTours()
