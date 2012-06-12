@@ -31,9 +31,9 @@ object Mail {
 
       val subject = "Welcome to TaWusel"
       val contentWelcome = "Welcome " + user.firstname + " " + user.lastname + " to TaWusel.\n"
-      val contentSuccess = "You successfully registered:\n\n\tFirst name: " + user.firstname
-      val contentLastNameAndEmail = "\n\tLast name: " + user.lastname + "\n\tEmail: " + user.email
-      val contentMobilephone = "\n\tMobile phone: " + user.cellphone
+      val contentSuccess = "You successfully registered:\n\n\tFirst name:\t" + user.firstname
+      val contentLastNameAndEmail = "\n\tLast name:\t" + user.lastname + "\n\tEmail:\t\t" + user.email
+      val contentMobilephone = "\n\tMobile phone:\t" + user.cellphone
       val contentComplete = contentWelcome + contentSuccess + contentLastNameAndEmail + contentMobilephone
       sendMail(subject, user.email, contentComplete)
 

@@ -89,5 +89,10 @@ object Tours extends Controller with Secured {
 
   }
 
+  def remoteCreateTour(token: String) = IsAuthenticated { email => implicit request =>
+   //TODO convert string to email, verification, startingpoint, targetpoint, startingtime and endtime
+   //TODO create tour with data
+     Ok("creating was successful")
+ }
 
 }
