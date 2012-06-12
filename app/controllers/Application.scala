@@ -33,9 +33,16 @@ object Application extends Controller with Secured {
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }
-
-  def listToursByLocation_Id(location_id:String) = Action {
-    val tours = Tour.findByLocation_id(location_id.toLong)
+  
+    def listToursByDepLocation_Id(location_id:String) = Action {
+    val tours = Tour.findByDepLocation_id(location_id.toLong)
+    val json ="{\"aaData\": "+ Json.generate(tours) + "}"
+    Ok(json).as("application/json")
+  }
+ 
+        def listToursByArrLocation_Id(locationDep_id:String,locationArr_id:String) = Action {
+    val tours = Tour.findByArrLocation_id(locationDep_id.toLong,locationArr_id.toLong)
+    
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }

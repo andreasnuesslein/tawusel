@@ -19,15 +19,14 @@ setSelected = (NextSelectObject, RectObject, Value) ->
       
 `findDepLocations = function(TownIdValue){
    if (!(typeof(TownIdValue) == "undefined")){
-      loadLocations('dep_location',TownIdValue);
-         $("#arr_town").hide();
-         $("#arr_location").hide();
-         for(i=2;i<=4;i++){
+      loadLocations('dep_location',TownIdValue); 
+      loadLocations('arr_location',TownIdValue);
+         for(i=2;i<=3;i++){
            $('#rect_'+i).removeClass("bar_active");
            $('#rect_'+i).addClass("bar_deactive");
-           $('#header').text('where should your taxi pick you up?')
-           $('#tour_container').hide();
          }
+      $('#header').text('where should your taxi pick you up?')
+           $('#tourlist').dataTable().fnReloadAjax('http://localhost:9000/listToursByTown/'+TownIdValue);
    }
 }
 
@@ -36,34 +35,20 @@ setDepReady = function(LocationIdValue){
       $('#header').text('where should your taxi bring you to?');
         $('#rect_2').removeClass("bar_deactive");
         $('#rect_2').addClass("bar_active");
-      $('#arr_town').show();
-          $('#tour_container').hide();
+            $('#rect_3').removeClass("bar_active");
+            $('#rect_3').addClass("bar_deactive");
+            $('#tourlist').dataTable().fnReloadAjax('./listToursByDepLocation/'+LocationIdValue);
+             $('#tour_container').show();
+            $("#arr_location").show();
    }
 }
 
-findArrLocations = function(TownIdValue){
-      if (!(typeof(TownIdValue) == "undefined")){
-         loadLocations('arr_location',TownIdValue);
-         $('#header').text('where should your taxi bring you to?');
-            $("#arr_location").show();
-            $('#rect_3').removeClass("bar_deactive");
-            $('#rect_3').addClass("bar_active");
-            $('#rect_4').removeClass("bar_active");
-            $('#rect_4').addClass("bar_deactive");
-            $('#tour_container').show();
-            var oTable= $('#tourlist').dataTable();
-            oTable.fnReloadAjax('/listToursByTown/'+TownIdValue);
-            }
-   }
    
-setArrReady = function(LocationIdValue){
-      if (!(typeof(LocationIdValue) == "undefined")){
-         $('#header').text('Here are all existing tours');
-           $('#rect_4').removeClass("bar_deactive");
-           $('#rect_4').addClass("bar_active");
-         $('#tour_container').show();
-         var oTable= $('#tourlist').dataTable();
-         oTable.fnReloadAjax('/listToursByLocation/'+LocationIdValue);
+setArrReady = function(LocationDepIdValue,LocationArrIdValue){
+   if (!(typeof(LocationArrIdValue) == "undefined")){
+           $('#rect_3').removeClass("bar_deactive");
+           $('#rect_3').addClass("bar_active");
+            $('#tourlist').dataTable().fnReloadAjax('./listToursByArrLocation/'+LocationDepIdValue+'/'+LocationArrIdValue);
       }
    }
 $(document).ready(function() {
@@ -91,7 +76,7 @@ $(document).ready(function() {
    var oTable= $('#activityCodeDataTable').dataTable();
     $('#tourlist').dataTable({
         "bProcessing": true,
-        "sAjaxSource": "/listAllTours",
+        "sAjaxSource": "./listToursByTown/1",
         "aoColumns": [
             { "mDataProp": "dep_location" },
             { "mDataProp": "arr_location" },
