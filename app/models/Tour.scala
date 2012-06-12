@@ -9,7 +9,7 @@ import play.api.mvc._
 import java.util.Date
 import java.security.MessageDigest
 import java.util.Calendar
-
+//comment
 case class Tour(
   id: Long,
   date: Date,
@@ -28,9 +28,18 @@ case class Tour(
       this.arrival+this.mod_id).getBytes).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
     return hash
   }
-
   def checkToken(token: String): Boolean = {
     return (this.createToken() == token)
+  }
+  def updateUserHasTour(userid: Int): Boolean = {
+    DB.withConnection { implicit connection =>
+      SQL("INSERT INTO user_has_tour VALUES({uid},{tid})").on(
+        'uid -> userid,
+        'tid -> this.id).executeUpdate() match {
+        case 1 => return true
+        case _ => return false
+      }
+    }
   }
 
   def getAllUsers(): List[User] = {
@@ -99,8 +108,8 @@ object Tour {
     def findByDepLocation_id(location_id:Long): List[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour " +
-      		"where tour.dep_location  ={l}").on(
-      		    'l -> location_id).as(Tour.simple *)
+        "where tour.dep_location  ={l}").on(
+          'l -> location_id).as(Tour.simple *)
     }
   }
 
@@ -114,9 +123,16 @@ object Tour {
     }
   }
     
+  def findTemplatesForUser(user_id: Int): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      // TODO select * where date<now() count 8, countby
+      SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
+    }
+
+  }
   def findAllForUser(user_id: Int): List[Tour] = {
     DB.withConnection { implicit connection =>
-      //"select * from tour join user_has_tour on tour.id = user_has_tour.tour_id where user_has_tour.user_id = 1;"
+      // TODO select * where date>now()
       SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
     }
 
@@ -175,6 +191,59 @@ object Tour {
       'i -> id).executeUpdate()
     }
   }
-
-
+/**
+   * get users of a certain tour 
+   * */
+  def getAllUsersFor(tour_id:Long): List[User] = {
+    DB.withConnection { implicit connection =>
+      SQL("""
+         SELECT * 
+         FROM user JOIN user_has_tour ON user.id = user_has_tour.user_id
+         WHERE user_has_tour.tour_id = {tour_id}
+      """).on(
+          'tour_id -> tour_id
+      ).as(User.simple *)
+    }
+  }
+/**
+   * find the next tour to notify
+   * called by timer
+   * */
+  def timerCheck:Tour = {
+    var tmp:Long = 0
+    		DB.withConnection { implicit connection =>
+		  tmp =  SQL("""
+          SELECT COUNT(*) 
+          FROM tour 
+          WHERE checked_by_timer = 0 
+		  """).as(scalar[Long].single)  
+		  }
+    		
+		  if(tmp > 0)	
+		  DB.withConnection { implicit connection =>
+		    SQL("""
+          SELECT * 
+          FROM tour 
+          WHERE checked_by_timer = 0 
+          ORDER BY date ASC, departure ASC
+		  LIMIT 1""").as(Tour.simple *).head	  
+		  }
+		  else
+		    null
+	}
+  /**
+   * tour is checked if already notified
+   * called by timer
+   * */
+  def updateCheckedByTimer(id : Long){
+    DB.withConnection { implicit connection =>
+      SQL("""
+        		UPDATE 
+        		tour 
+    		  	SET checked_by_timer = 1
+        		WHERE id = {i}
+        	""").on(
+        'i -> id).executeUpdate()
+    }
+  }
 }

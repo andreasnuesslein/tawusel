@@ -216,3 +216,14 @@ background-color: #B5006A;
 	min-height: 300px;
 	float:right;
 }
+
+.tour_active td {
+  background-color: #EEFFEE;
+}
+.tour_template td {
+  background-color: #EEEEFF;
+}
+
+.keyword {
+  font-weight:bold;
+}

@@ -37,7 +37,7 @@ setDepReady = function(LocationIdValue){
         $('#rect_2').addClass("bar_active");
             $('#rect_3').removeClass("bar_active");
             $('#rect_3').addClass("bar_deactive");
-            $('#tourlist').dataTable().fnReloadAjax('http://localhost:9000/listToursByDepLocation/'+LocationIdValue);
+            $('#tourlist').dataTable().fnReloadAjax('./listToursByDepLocation/'+LocationIdValue);
              $('#tour_container').show();
             $("#arr_location").show();
    }
@@ -48,7 +48,7 @@ setArrReady = function(LocationDepIdValue,LocationArrIdValue){
    if (!(typeof(LocationArrIdValue) == "undefined")){
            $('#rect_3').removeClass("bar_deactive");
            $('#rect_3').addClass("bar_active");
-            $('#tourlist').dataTable().fnReloadAjax('http://localhost:9000/listToursByArrLocation/'+LocationDepIdValue+'/'+LocationArrIdValue);
+            $('#tourlist').dataTable().fnReloadAjax('./listToursByArrLocation/'+LocationDepIdValue+'/'+LocationArrIdValue);
       }
    }
 $(document).ready(function() {
@@ -76,7 +76,7 @@ $(document).ready(function() {
    var oTable= $('#activityCodeDataTable').dataTable();
     $('#tourlist').dataTable({
         "bProcessing": true,
-        "sAjaxSource": "http://localhost:9000/listToursByTown/1",
+        "sAjaxSource": "./listToursByTown/1",
         "aoColumns": [
             { "mDataProp": "dep_location" },
             { "mDataProp": "arr_location" },
