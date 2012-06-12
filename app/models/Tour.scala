@@ -9,6 +9,7 @@ import play.api.mvc._
 import java.util.Date
 import java.security.MessageDigest
 import java.util.Calendar
+import tools.Timer
 //comment
 case class Tour(
   id: Long,
@@ -147,8 +148,10 @@ object Tour {
         'da -> date, 'dep -> dep, 'arr -> arr, 'dep_l -> dep_l,
         'arr_l -> arr_l, 'c -> comment, 'm -> meet, 'a -> auth,
         't -> state, 'mod -> mod ).executeUpdate()
-      SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
-      ).as(Tour.simple *).head
+      var tour = SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
+        ).as(Tour.simple *).head
+      Timer.notify(tour)
+      return tour
     }
   }
   

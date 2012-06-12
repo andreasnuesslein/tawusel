@@ -117,7 +117,7 @@ object Mail {
       val minutes = SMS.getTimeToDestination(tour.departure)
       val subject = "Your tour will start soon"
       val fromTo = "The tour from " + tour.dep_location + " to " + tour.arr_location
-      val willStart = " will start in " + minutes + "."
+      val willStart = " will start in " + minutes + "minutes."
       val content = fromTo + willStart
       sendMail(subject, user.email, content)
 
