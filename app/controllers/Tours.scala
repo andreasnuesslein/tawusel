@@ -19,40 +19,37 @@ object Tours extends Controller with Secured {
 
   val newTourForm = Form(
     tuple(
-      "date" -> date,
       "dep_location" -> number,
       "arr_location" -> number,
-      "departure" -> date,
-      "arrival" -> date,
-      "comment" -> text,
-      "meetingpoint" -> text,
-      "authentication" -> text
+      "departure" -> text,
+      "arrival" -> text
     )
   )
 
 
-  def newTour = IsAuthenticated { email => implicit request =>
-    val user = User.findByEmail(email).get
-    Ok(views.html.tour.newTour(Town.findAll(), Location.findByTown_id(1), townForm))
-  }
-
   def newTourCreate = IsAuthenticated { email => implicit request =>
+    println(request.body)
     println(newTourForm.bindFromRequest)
     newTourForm.bindFromRequest.fold(
       formWithErrors => Ok("XX"),
       tt => {
         val userid = User.getIdByEmail(email)
-        println(userid)
-        var tour = Tour.create(tt._1, tt._4, tt._5, tt._2, tt._3, tt._6, tt._7, tt._8,1,userid)
-        // TODO: sql insert into user_has_tour(tour.id,userid)
-        println(tour)
-        Redirect(routes.Tours.myTours)
+        val date = new java.util.Date(tt._3.toLong)
+        var tour = Tour.create(date,date,date, tt._1, tt._2, "","","",1,userid)
+        tour.updateUserHasTour(userid)
+        Redirect(routes.Tours.tours)
       })
   }
 
-  def myTours = IsAuthenticated { email => implicit request =>
+
+  def tours = IsAuthenticated { email => implicit request =>
     val user_id = User.getIdByEmail(email)
-    Ok(views.html.tour.myTours(Tour.findAllForUser(user_id)))
+    val active_tours = Tour.findAllForUser(user_id)
+    val tour_templates = Tour.findTemplatesForUser(user_id)
+    val available_tours = Tour.findAll()
+    Ok(views.html.tours(active_tours, tour_templates, available_tours,
+      Town.findAll(), Location.findAll()))
+
   }
 
   /*This method is called by clicking a link in the confirmation email and it does update the state of the tour and informs every user connected to it.

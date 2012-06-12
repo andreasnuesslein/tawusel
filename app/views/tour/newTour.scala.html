@@ -22,7 +22,6 @@
      $("#createForm").submit(function (){
        $('#date').val(new Date($('#date').val()));
        $('#dep_timepicker').val($('#date').val());
-       $('#arr_timepicker').val($('#date').val());
      });
    });
  </script>
@@ -34,7 +33,7 @@
        1.departure town
 	<div class="bar_active bar_left" id="rect_1" style="border-radius:3px">
 </div>
-  <select  name="dep_town" size="7" class="number-container_select" onchange="findDepLocations(document.tourForm.dep_town.value);">
+  <select  name="dep_town" size="7" class="number-container_select" onclick="findDepLocations(document.tourForm.dep_town.value);">
         @towns.map { town =>
         @if(!town.name.equals("Berlin")){
             <option value="@town.id">
@@ -66,29 +65,11 @@
         }
     </select>
   </div>
-  <div class="number_container"> 
-    3. arrival town
-    <div class="bar_deactive" id="rect_3" >
-    </div>
-    <select  id="arr_town" name="arr_town" size="7" class="number-container_select" onchange="findArrLocations(document.tourForm.arr_town.value);">
-        @towns.map { town =>
-        @if(!town.name.equals("Berlin")){
-            <option value="@town.id">
-                @town.name
-            </option>
-            }else{
-            <option value="@town.id" selected="selected">
-                @town.name
-            </option>
-            }
-        }
-    </select>
-    </div>
      <div class="number_container"> 
-       4. arrival location
-   <div class="bar_deactive bar_right" id="rect_4">
+       3. arrival location
+   <div class="bar_deactive bar_right" id="rect_3">
 </div>
-  <select  name="arr_location" size="7" class="number-container_select" style='display:none' id="arr_location" onchange="setArrReady(document.tourForm.arr_location.value);">
+  <select  name="arr_location" size="7" class="number-container_select" id="arr_location" onclick="setArrReady(document.tourForm.dep_location.value,document.tourForm.arr_location.value);">
         @locations.map { location =>
         @if(!location.name.equals("Carmeq Berlin")){
             <option value="@location.id">
@@ -103,7 +84,7 @@
     </select>
   </div>
     </form>
-    <div class="tour_container" style="display:none" id="tour_container"> 
+    <div class="tour_container" id="tour_container"> 
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered"  id="tourlist">
   <caption>
   </caption>
