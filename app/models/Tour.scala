@@ -96,11 +96,21 @@ object Tour {
     }
   }
   
-    def findByLocation_id(location_id:Long): List[Tour] = {
+    def findByDepLocation_id(location_id:Long): List[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour " +
       		"where tour.dep_location  ={l}").on(
       		    'l -> location_id).as(Tour.simple *)
+    }
+  }
+
+    def findByArrLocation_id(locationDep_id:Long, locationArr_id:Long): List[Tour] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from tour " +
+      		"where tour.dep_location  ={l} AND tour.arr_location = {la}").on(
+      		    'l -> locationDep_id,
+      		    'la -> locationArr_id
+      		    ).as(Tour.simple *)
     }
   }
     

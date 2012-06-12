@@ -23,8 +23,8 @@ GET		/myTours		controllers.Tours.myTours
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
 GET     /listToursByTown/*town_id                  controllers.Application.listToursByTown_Id(town_id)
 GET     /listAllTours                           controllers.Application.listAllTours()
-GET     /listToursByLocation/*location_id                  controllers.Application.listToursByLocation_Id(location_id)
-
+GET     /listToursByDepLocation/*location_id                  controllers.Application.listToursByDepLocation_Id(location_id)
+GET     /listToursByArrLocation/*locationDep_id/*locationArr_id                 controllers.Application.listToursByArrLocation_Id(locationDep_id, locationArr_id)
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file	controllers.Assets.at(path="/public", file)
