@@ -7,7 +7,7 @@ GET		/secure			controllers.Application.secure
 
 GET		/tour/:id/confirm/:token	controllers.Tours.confirmTour(id: Long, token: String)
 GET		/tour/:id/cancel/:token		controllers.Tours.cancelTour(id: Long, token: String)
-
+GET		/tour/remoteCreateTour/:token	controllers.Tours.remoteCreateTour(token: String)
 
 # Authentication
 GET		/login			controllers.Auth.login
@@ -21,10 +21,6 @@ POST	/newTour		controllers.Tours.newTourCreate
 GET		/index			controllers.Application.index
 GET		/myTours		controllers.Tours.myTours
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
-GET     /listToursByTown/*town_id                  controllers.Application.listToursByTown_Id(town_id)
-GET     /listAllTours                           controllers.Application.listAllTours()
-GET     /listToursByLocation/*location_id                  controllers.Application.listToursByLocation_Id(location_id)
-
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file	controllers.Assets.at(path="/public", file)
