@@ -7,8 +7,11 @@ import play.api.data._
 import play.api.mvc._
 import play.api._
 import scala.util.matching.Regex
+
 import models._
 import views._
+import tools.Mail
+import tools.notification.RegisterNotification
 
 object Auth extends Controller with Secured {
 
@@ -96,7 +99,7 @@ object Auth extends Controller with Secured {
      },
      user => {
       User.create(user)
-      tools.Mail.sendRegisterMail(user)
+      Mail.send(new RegisterNotification(user, null, null))
       Redirect(routes.Tours.tours).withSession("email" -> user.email,"firstname" -> user.firstname)
     }
    )

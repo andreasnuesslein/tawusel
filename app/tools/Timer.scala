@@ -11,6 +11,8 @@ import akka.event.Logging
 import models.Tour
 import java.text.SimpleDateFormat
 import models.User
+import notification.TourStartsSoonNotification
+import tools.notification.Notification
 /**
  * notifies the users in certain time before their taxi tours begin
  * */
@@ -65,13 +67,16 @@ object Timer {
 		val cf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" )
 		cf.parse(df.format(date).toString()+" "+tf.format(time).toString())
 	}
+	
 	class Task extends Actor {
 		def receive = {
 		case CurrentTour(id,date)=> {
-      //TODO has to send mail in a certain time and delete this tour from the list
-	for(tmp : User <- Tour.getAllUsersFor(id)){
-      //send sms
-      SMS.createTourNotificationText(tmp,Tour.findById(id))
+    //TODO has to send mail in a certain time and delete this tour from the list
+    var notification : Notification = null
+    for(tmp : User <- Tour.getAllUsersFor(id)){
+      notification = new TourStartsSoonNotification(tmp, null, Tour.findById(id))
+      //DEBUG PARAMETER SET!!!
+      SMS.send(notification, true)
     }
       Tour.updateCheckedByTimer(id)
       Timer.next(Tour.timerCheck)

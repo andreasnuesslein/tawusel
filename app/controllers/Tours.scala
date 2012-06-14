@@ -1,15 +1,18 @@
 package controllers
 
-import play.data.validation._
-import play.api.data.Forms._
-import play.api.data.format.Formats._
-import play.api.data._
-import play.api.mvc._
-import play.api._
-import scala.util.matching.Regex
+
+import play.api.data.Forms.nonEmptyText
+import play.api.data.Forms.number
+import play.api.data.Forms.text
+import play.api.data.Forms.tuple
+import play.api.data.Form
+import play.api.mvc.Controller
 import models._
-import views._
 import tools.Mail
+import tools.notification.Notification
+import tools.notification.TaxiStatusChangedSuccessNotification
+import tools.notification.TaxiStatusChangedFailNotification
+import tools.notification.ManualCallNotification
 
 object Tours extends Controller with Secured {
 
@@ -62,7 +65,12 @@ object Tours extends Controller with Secured {
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
         if(tour.updateTourState(2)) {
-          tour.getAllUsers().foreach((user: User) => Mail.sendTaxiStatusMail(user, true))
+          var notification: Notification = null
+          tour.getAllUsers().foreach((user: User) => {
+              notification = new TaxiStatusChangedSuccessNotification(user, null, tour)
+              Mail.send(notification)
+            }
+          )
         }
       Ok("Tour was success")
     } else {
@@ -78,8 +86,14 @@ object Tours extends Controller with Secured {
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
         if(tour.updateTourState(3)) {
-          tour.getAllUsers().foreach((user: User) => Mail.sendTaxiStatusMail(user, false))
-          Mail.sendManualCallMail(tour.getAllUsers().head, tour, "22456", tour.id, true)
+          var notification: Notification = null
+          tour.getAllUsers().foreach((user: User) => {
+              notification = new TaxiStatusChangedFailNotification(user, null, tour)
+              Mail.send(notification)
+            }
+          )
+          notification = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
+          Mail.send(notification)
         }
       Ok("Tour couldn't be booked")
     } else {
