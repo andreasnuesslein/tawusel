@@ -14,5 +14,4 @@ object Mail {
       mail.addFrom("tawusel@dev.noova.de")
       mail.send(notification.getText)
     }
-
 }
