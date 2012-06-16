@@ -160,6 +160,8 @@ INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the
 
 COMMIT;
 
+INSERT INTO `tour` (`id`, `date`, `departure`, `arrival`, `dep_location`, `arr_location`, `comment`, `meetingpoint`, `authentification`, `tour_state`, `mod_id`, `checked_by_timer` )  VALUES (1, NOW(), CURTIME(), CURTIME(), 2, 1,'bar','kneipe','auth', 1, 1, 0);
+
 -- -----------------------------------------------------
 -- Data for table `sms_api_message`
 -- -----------------------------------------------------
