@@ -25,7 +25,6 @@ CREATE  TABLE IF NOT EXISTS `location` (
   `address` VARCHAR(80) NULL ,
   PRIMARY KEY (`id`) ,
   INDEX `town_id` (`town_id` ASC) ,
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC) ,
   CONSTRAINT `town_id`
     FOREIGN KEY (`town_id` )
     REFERENCES `town` (`id` )
@@ -129,7 +128,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (1, 1, 'Carmeq Berlin', 'Carnotstraße 4, 10587 Berlin');
+INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (18, 1, 'Hauptbahnhof', 'Europaplatz 1, 10557 Berlin');
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (2, 2, 'Carmeq Wolfsburg, Autovision', 'Major-Hirst-Straße 11, 38442 Wolfsburg');
+INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (19, 2, 'Hauptbahnhof', 'Willy-Brandt-Platz 2, 38440 Wolfsburg');
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (3, 2, 'Volkswagen FE', 'Nordstraße, 38440 Wolfsburg');
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (4, 2, 'Volkswagen TE, Hopfengarten', 'Hopfengarten 37-47, 38442 Wolfsburg');
 INSERT INTO `location` (`id`, `town_id`, `name`, `address`) VALUES (5, 2, 'Volkswagen TE, Rübenkamp', 'Rübenkamp 2, 38442 Wolfsburg');
@@ -156,14 +157,6 @@ INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (1,'pending', 'if 
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (2,'success', 'if a taxi was called');
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (3,'fail', 'if a taxi could not be called');
 INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the tour is finished');
-
-COMMIT;
-
--- -----------------------------------------------------
--- Data for table `tour`
--- -----------------------------------------------------
-START TRANSACTION;
-INSERT INTO `tour` (`id`, `date`, `departure`, `arrival`, `dep_location`, `arr_location`, `comment`, `meetingpoint`, `authentification`, `tour_state`, `mod_id`, `checked_by_timer` )  VALUES (1, NOW(), CURTIME(), CURTIME(), 2, 1,'bar','kneipe','auth', 1, 1, 0);
 
 COMMIT;
 

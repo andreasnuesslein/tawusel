@@ -37,8 +37,9 @@ object Tours extends Controller with Secured {
       formWithErrors => Ok("XX"),
       tt => {
         val userid = User.getIdByEmail(email)
-        val date = new java.util.Date(tt._3.toLong)
-        var tour = Tour.create(date,date,date, tt._1, tt._2, "","","",1,userid)
+        val dep = new java.util.Date(tt._3.toLong)
+        val arr = new java.util.Date(tt._4.toLong)
+        var tour = Tour.create(dep,dep,arr, tt._1, tt._2, "","","",1,userid)
         tour.updateUserHasTour(userid)
         Redirect(routes.Tours.tours)
       })

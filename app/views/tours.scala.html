@@ -12,16 +12,49 @@ Plan a new tour
 <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/bootstrap-datepicker.css")">
 <script src="@routes.Assets.at("js/jquery.timepicker.min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("js/bootstrap-datepicker.js")" type="text/javascript"></script>
-
 <script src="@routes.Assets.at("js/tablefilter_all_min.js")" type="text/javascript"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDbuLn6X-MuK9PnJtt7bF84PoPypXQN53U&sensor=true" type="text/javascript"></script>
 
 <script>
+  var googleest;
+  var loca= new Array();
+  @locations.map { l =>
+      loca[@l.id]= "@l.address";
+  }
+
+  function getGoogleDistance() {
+    var service = new google.maps.DistanceMatrixService();
+
+    var depl = loca[$("#dep_location option:selected").val()];
+    var arrl = loca[$("#arr_location option:selected").val()];
+
+    service.getDistanceMatrix(
+    {
+      origins: [depl],
+      destinations: [arrl],
+      travelMode: google.maps.TravelMode.DRIVING,
+      avoidHighways: false,
+      avoidTolls: false
+    }, distcallback);
+  }
+
+  function distcallback(response, status) {
+    if (status == google.maps.DistanceMatrixStatus.OK) {
+      googleest = response.rows[0].elements[0].duration.value;
+      updateEstimate();
+    }
+    else {
+      alert('problem');
+    }
+  }
+
   function pad(num) {
     if (num < 10) {
       num = "0" + num;
     }
     return num;
   }
+
   function round_tr(hours,min) {
     var h = hours;
     var m;
@@ -36,47 +69,53 @@ Plan a new tour
   }
 
   function updateEstimate() {
+    var est = $("#timepicker").val().split(":");
+    var d = $('#datepicker').val().split(".");
+
+    var odate = new Date(d[2],d[1]-1,d[0],est[0],est[1]);
+    var gdate = Math.ceil(googleest/60);
+    $('#date').val(odate.getTime());
+
     var txt = "Arr";
     if ($("#time-toggle").find('.active').text() == "Arr") {
       txt = "Dep";
+      $('#arrival').val(odate.getTime());
+      odate.setMinutes(odate.getMinutes()-gdate);
+      $('#departure').val(odate.getTime());
+    } else {
+      $('#departure').val(odate.getTime());
+      odate.setMinutes(odate.getMinutes()+gdate);
+      $('#arrival').val(odate.getTime());
     }
-    var est = $("#timepicker").val();
 
-    $("#time-estimate").text(txt+": "+est);
-  };
+    $("#time-estimate").text(txt+": "+pad(odate.getHours())+":"+pad(odate.getMinutes()));
+  }
 
   $(document).ready(function() {
+
+    // initial filling of DIVs
     var now = new Date();
     var now_f = pad(now.getDate()) + "." + pad(now.getMonth()+1) + "." + now.getFullYear();
     $('.datepicker').val(now_f);
     $('.datepicker').datepicker({format:"dd.mm.yyyy"});
-
     now.setMinutes(now.getMinutes()+30);
     $('#timepicker').val(  round_tr(now.getHours(), now.getMinutes()) );
     $('#timepicker').timepicker({ 'scrollDefaultNow': true, 'timeFormat': "H:i" });
-
-    $("#createForm").submit(function (){
-      var d = $('#date').val().split(".");
-      var t = $('#timepicker').val().split(":");
-
-      var y = new Date(d[2],d[1]-1,d[0],t[0],t[1]);
-      $('#date').val(y.getTime());
-      $('#departure').val(y.getTime());
-      $('#arrival').val(y.getTime());
-    });
-
-    var tf0 = setFilterGrid("tourlist",1,{
+    setFilterGrid("tourlist",1,{
       on_keyup:true,
       on_keyup_delay:0,
       highlight_keywords: true,
-      col_0:"select"});
+      col_0:"select"
+    });
 
+    // change and click functions
     $('#city').change(function() {
+      var valu = $('#city').val();
       $('#dep_location').find('option').hide();
       $('#arr_location').find('option').hide();
-      var delems = $('#dep_location').find('.town_'+this.value);
+      var delems = $('#dep_location').find('.town_'+valu);
       delems.show();
-      var aelems = $('#arr_location').find('.town_'+this.value);
+      var aelems = $('#arr_location').find('.town_'+valu);
       aelems.show();
 
       var first = delems[0].value;
@@ -84,16 +123,18 @@ Plan a new tour
 
       $('#dep_location').val(first);
       $('#arr_location').val(snd);
+      getGoogleDistance();
     });
 
-    $("#arrbtn").click(function() {
-      updateEstimate();
-    });
-    $("#depbtn").click(function() {
-      updateEstimate();
-    });
+    $("#dep_location").change(function() {getGoogleDistance(); });
+    $("#arr_location").change(function() {getGoogleDistance(); });
+    $("#arrbtn").click(function() {updateEstimate(); });
+    $("#depbtn").click(function() {updateEstimate(); });
+    $("#timepicker").change(function() {updateEstimate(); });
 
+    $('#city').change();
   });
+
 </script>
 
 
@@ -191,9 +232,9 @@ Plan a new tour
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="date">Date</label>
+          <label class="control-label" for="datepicker">Date</label>
           <div class="controls">
-            <input type="text" id="date" class="datepicker" name="date" value/>
+            <input type="text" id="datepicker" class="datepicker" name="datepicker" value/>
             <span class="help-inline"></span>
           </div>
         </div>
@@ -211,9 +252,8 @@ Plan a new tour
         </div>
         <input type="hidden" id="departure" name="departure" />
         <input type="hidden" id="arrival" name="arrival" />
+        <input type="hidden" id="date" name="date" />
       </fieldset>
-
-      <div><span style="color:red;">*</span>Legal mumbo jumbo... By hitting 'create tour' you agree .. yadda yadda yadda</div>
 
     </div>
     <div class="modal-footer">
