@@ -10,11 +10,10 @@ class JoinExistingTourNotification(
   val subject = "You joined an existing tour"
   
   val joinTour = "You joined an existing tour from "
-  val tourInfo = Location.getName(tour.dep_location) + " to " + Location.getName(tour.arr_location) + " on "
-  val tourTime = tour.date + " at " + tour.departure + "."
+  val tourInfo = Location.getName(tour.dep_location) + " to " + Location.getName(tour.arr_location) + " at "
+  val tourTime = tour.departure + "."
   val text = joinTour + tourInfo + tourTime
 
-  val shortText = "You joined an existing tour to " + Location.getName(tour.arr_location) + " on " + 
-      tour.date + " at " + tour.departure + "."
+  val shortText = "You joined an existing tour to " + Location.getName(tour.arr_location) + " at " + tour.departure + "."
 
 }

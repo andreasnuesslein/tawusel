@@ -30,8 +30,7 @@ class NewTourNotificationTest extends Specification {
           val testNotification = new NewTourNotification(testNotifiedUser, testInteractingUser, testTour)
 	      
 	      val testText = "You created a new tour from " + Location.getName(testTour.dep_location) +
-	        " to " + Location.getName(testTour.arr_location) + " at " + testTour.departure +
-  	        " on " + testTour.date + "."
+	        " to " + Location.getName(testTour.arr_location) + " at " + testTour.departure + "."
 	      testNotification.getText must equalTo(testText)
 	    }
 	  }
@@ -42,7 +41,7 @@ class NewTourNotificationTest extends Specification {
           val testNotification = new NewTourNotification(testNotifiedUser, testInteractingUser, testTour)
 	      
 	      val testShortText = "You created a new tour to " + Location.getName(testTour.arr_location) + 
-            " at " + testTour.departure + " on " + testTour.date + "."
+            " at " + testTour.departure  + "."
 	      testNotification.getShortText must equalTo(testShortText)
 	    }
 	  }

@@ -30,8 +30,7 @@ class JoinExistingTourNotificationTest extends Specification {
           val testNotification = new JoinExistingTourNotification(testNotifiedUser, testInteractingUser, testTour)
 	      
 	      val testText = "You joined an existing tour from " + Location.getName(testTour.dep_location) + 
-	        " to " + Location.getName(testTour.arr_location) + " on " + testTour.date + " at " + 
-	        testTour.departure + "."
+	        " to " + Location.getName(testTour.arr_location) + " at " + testTour.departure + "."
 	      testNotification.getText must equalTo(testText)
 	    }
 	  }
@@ -41,8 +40,8 @@ class JoinExistingTourNotificationTest extends Specification {
 	      val testTour = Tour.findById(1)
           val testNotification = new JoinExistingTourNotification(testNotifiedUser, testInteractingUser, testTour)
 	      
-	      val testShortText = "You joined an existing tour to " + Location.getName(testTour.arr_location) + " on " + 
-	        testTour.date + " at " + testTour.departure + "."
+	      val testShortText = "You joined an existing tour to " + Location.getName(testTour.arr_location) +
+	        " at " + testTour.departure + "."
 	      testNotification.getShortText must equalTo(testShortText)
 	    }
 	  }

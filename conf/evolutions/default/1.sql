@@ -32,6 +32,10 @@ CREATE  TABLE IF NOT EXISTS `location` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+-- This is the dirtiest hack in history but needed for mother***ing Anorm
+CREATE VIEW location2 AS
+SELECT * FROM location;
+
 CREATE  TABLE IF NOT EXISTS `tour_state` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(20) NULL ,
@@ -41,14 +45,10 @@ ENGINE = InnoDB;
 
 CREATE  TABLE IF NOT EXISTS `tour` (
   `id` INT NOT NULL AUTO_INCREMENT ,
-  `date` DATE NOT NULL ,
-  `departure` TIME NOT NULL ,
-  `arrival` TIME NOT NULL ,
+  `departure` DATETIME NOT NULL ,
+  `arrival` DATETIME NOT NULL ,
   `dep_location` INT NOT NULL ,
   `arr_location` INT NOT NULL ,
-  `comment` MEDIUMTEXT NULL ,
-  `meetingpoint` VARCHAR(255) NULL ,
-  `authentification` VARCHAR(45) NULL ,
   `tour_state` INT NOT NULL ,
   `mod_id` INT NULL ,
   `checked_by_timer` TINYINT(1) DEFAULT 0, 
@@ -160,7 +160,7 @@ INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the
 
 COMMIT;
 
-INSERT INTO `tour` (`id`, `date`, `departure`, `arrival`, `dep_location`, `arr_location`, `comment`, `meetingpoint`, `authentification`, `tour_state`, `mod_id`, `checked_by_timer` )  VALUES (1, NOW(), CURTIME(), CURTIME(), 2, 1,'bar','kneipe','auth', 1, 1, 0);
+INSERT INTO `tour` VALUES (1, NOW(), NOW(), 2, 1, 1, 1, 0);
 
 -- -----------------------------------------------------
 -- Data for table `sms_api_message`
@@ -197,6 +197,7 @@ DROP TABLE IF EXISTS `sms_api_message` ;
 DROP TABLE IF EXISTS `user_has_tour` ;
 DROP TABLE IF EXISTS `tour` ;
 DROP TABLE IF EXISTS `tour_state` ;
+DROP VIEW IF EXISTS `location2` ;
 DROP TABLE IF EXISTS `location` ;
 DROP TABLE IF EXISTS `town` ;
 DROP TABLE IF EXISTS `user`;

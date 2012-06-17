@@ -19,7 +19,6 @@ object Tours extends Controller with Secured {
   val townForm = Form(
     "name" -> nonEmptyText)
 
-
   val newTourForm = Form(
     tuple(
       "dep_location" -> number,
@@ -29,31 +28,42 @@ object Tours extends Controller with Secured {
     )
   )
 
-
   def newTourCreate = IsAuthenticated { email => implicit request =>
-    println(request.body)
-    println(newTourForm.bindFromRequest)
     newTourForm.bindFromRequest.fold(
       formWithErrors => Ok("XX"),
       tt => {
         val userid = User.getIdByEmail(email)
         val dep = new java.util.Date(tt._3.toLong)
         val arr = new java.util.Date(tt._4.toLong)
-        var tour = Tour.create(dep,dep,arr, tt._1, tt._2, "","","",1,userid)
-        tour.updateUserHasTour(userid)
+        var tour = Tour.create(dep,arr, tt._1, tt._2, 1,userid)
+        tour.userJoin(userid)
         Redirect(routes.Tours.tours)
       })
   }
-
 
   def tours = IsAuthenticated { email => implicit request =>
     val user_id = User.getIdByEmail(email)
     val active_tours = Tour.findAllForUser(user_id)
     val tour_templates = Tour.findTemplatesForUser(user_id)
-    val available_tours = Tour.findAll()
+    val available_tours = Tour.findAll(user_id)
     Ok(views.html.tours(active_tours, tour_templates, available_tours,
       Town.findAll(), Location.findAll()))
 
+  }
+
+  def joinTour(id:Long) = IsAuthenticated { email => implicit request =>
+    val userid = User.getIdByEmail(email)
+    val tour = Tour.findById(id)
+    tour.userJoin(userid)
+    Redirect(routes.Tours.tours).flashing("success" -> "Successfully joined the tour!")
+
+  }
+
+  def leaveTour(id:Long) = IsAuthenticated { email => implicit request =>
+    val userid = User.getIdByEmail(email)
+    val tour = Tour.findById(id)
+    tour.userLeave(userid)
+    Redirect(routes.Tours.tours).flashing("success" -> "Successfully left the tour!")
   }
 
   /*This method is called by clicking a link in the confirmation email and it does update the state of the tour and informs every user connected to it.

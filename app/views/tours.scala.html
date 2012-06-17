@@ -1,4 +1,5 @@
-@(active_tours: List[Tour], tour_templates: List[Tour], avail_tours: List[Tour],towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
+@(active_tours: List[Tour], tour_templates: List[Tour], avail_tours: List[(Int, String, String, String, java.util.Date, java.util.Date)],
+towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
 
 @implicitFieldConstructor = @{ FieldConstructor(_formhelpers.f) }
 
@@ -156,8 +157,8 @@ Plan a new tour
       <td>@tour.dep_location</td>
       <td>@tour.dep_location</td>
       <td>@tour.arr_location</td>
-      <td>@tour.departure - @tour.arrival</td>
-      <td>-</td>
+      <td>@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
+      <td>@tour.mod_id <a href="/tour/@tour.id/leave"><div class="btn">leave</div></a></td>
     </tr>
     }
     @tour_templates.map { tour =>
@@ -165,18 +166,18 @@ Plan a new tour
       <td>@tour.dep_location</td>
       <td>@tour.dep_location</td>
       <td>@tour.arr_location</td>
-      <td>@tour.departure - @tour.arrival</td>
+      <td>@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
       <td>-</td>
     </tr>
     }
 
     @avail_tours.map { tour =>
     <tr class="tour">
-      <td>@tour.dep_location</td>
-      <td>@tour.dep_location</td>
-      <td>@tour.arr_location</td>
-      <td>@tour.departure - @tour.arrival</td>
-      <td>-</td>
+      <td>@tour._2</td>
+      <td>@tour._3</td>
+      <td>@tour._4</td>
+      <td>@tour._5.getHours:@tour._5.getMinutes - @tour._6.getHours:@tour._6.getMinutes</td>
+      <td><a href="/tour/@tour._1/join"><div class="btn">join</div></a></td>
     </tr>
     }
   </tbody>

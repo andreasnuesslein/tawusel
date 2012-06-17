@@ -11,35 +11,43 @@ import java.security.MessageDigest
 import java.util.Calendar
 import tools.Timer
 //comment
-case class Tour(
-  id: Long,
-  date: Date,
-  departure: Date,
-  arrival: Date,
-  dep_location: Long,
-  arr_location: Long,
-  comment: Option[String],
-  meetingpoint: Option[String],
-  authentification: Option[String],
-  tour_state: Long,
-  mod_id: Long) {
+case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, arr_location: Long, tour_state: Long, mod_id: Long) {
 
   def createToken(): String = {
-    val hash = MessageDigest.getInstance("SHA-1").digest((this.id+this.date.toString+this.departure+
+    val hash = MessageDigest.getInstance("SHA-1").digest((this.id+this.departure.toString+
       this.arrival+this.mod_id).getBytes).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
     return hash
   }
   def checkToken(token: String): Boolean = {
     return (this.createToken() == token)
   }
-  def updateUserHasTour(userid: Int): Boolean = {
+  def userJoin(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
       SQL("INSERT INTO user_has_tour VALUES({uid},{tid})").on(
         'uid -> userid,
-        'tid -> this.id).executeUpdate() match {
-        case 1 => return true
-        case _ => return false
+        'tid -> this.id).execute()
+    }
+  }
+  def userLeave(userid: Int): Boolean = {
+    DB.withConnection { implicit connection =>
+      SQL("DELETE FROM user_has_tour WHERE user_id={uid} and tour_id={tid}").on(
+        'uid -> userid,
+        'tid -> this.id).execute()
+      var useridsql = SQL("SELECT user_id FROM user_has_tour WHERE tour_id={tid}").on('tid -> this.id)
+      var useridlist = useridsql().map( row =>
+        row[Int]("user_id") ).toList
+
+      val was_i_mod_before:Boolean = SQL("SELECT mod_id FROM tour where id={tid}").on('tid -> this.id).as(scalar[Int].single) == userid
+
+      if (useridlist.isEmpty) {
+        SQL("DELETE FROM tour where id={tid}").on('tid -> this.id).execute()
+      } else {
+        if(was_i_mod_before) {
+          SQL("UPDATE tour SET mod_id={uid} WHERE id={tid}").on('uid -> useridlist(0),'tid -> this.id).executeUpdate()
+        }
       }
+      // TODO: updated the mod - do all the emailing, notifying and stuff.
+      return true
     }
   }
 
@@ -60,24 +68,20 @@ case class Tour(
       }
     }
   }
-}
 
+}
 
 object Tour {
 
   val simple = {
     get[Long]("id") ~
-      get[Date]("date") ~
       get[Date]("departure") ~
       get[Date]("arrival") ~
       get[Long]("dep_location") ~
       get[Long]("arr_location") ~
-      get[Option[String]]("comment") ~
-      get[Option[String]]("meetingpoint") ~
-      get[Option[String]]("authentification") ~
       get[Long]("tour_state") ~
       get[Long]("mod_id") map {
-        case i ~ da ~ dep ~ arr ~ dep_l ~ arr_l ~ c ~ m ~ a ~ t ~ mod => Tour(i, da, dep, arr, dep_l, arr_l, c, m, a, t, mod)
+        case i ~ dep ~ arr ~ dep_l ~ arr_l ~ t ~ mod => Tour(i, dep, arr, dep_l, arr_l, t, mod)
       }
   }
 
@@ -89,9 +93,16 @@ object Tour {
   }
   
 
-  def findAll(): List[Tour] = {
+  def findAll(userid:Int = -1): List[(Int, String, String, String, java.util.Date, java.util.Date)] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from tour").as(Tour.simple *)
+      SQL("""select tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name
+        from tour
+        join location  as l1 on dep_location=l1.id
+        join location2 as l2 on arr_location=l2.id
+        join town on town.id = l1.town_id
+        where tour.id not in (select tour_id from user_has_tour where user_id={id} )
+        """).on('id -> userid)
+      .as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") map(flatten) * )
     }
   }
  
@@ -139,14 +150,14 @@ object Tour {
 
   }
 
-  def create(date: Date, dep: Date, arr: Date, dep_l : Long, arr_l :Long, comment: String,
-      meet: String, auth: String, state: Long, mod: Long): Tour = {
+  def create(dep: Date, arr: Date, dep_l : Long, arr_l :Long,
+      state: Long, mod: Long): Tour = {
     DB.withConnection { implicit connection =>
-      SQL("""INSERT INTO tour(date,departure,arrival,dep_location,arr_location,
-        comment,meetingpoint,authentification,tour_state,mod_id) VALUES ({da},
-        {dep},{arr},{dep_l},{arr_l},{c},{m},{a},{t},{mod})""").on(
-        'da -> date, 'dep -> dep, 'arr -> arr, 'dep_l -> dep_l,
-        'arr_l -> arr_l, 'c -> comment, 'm -> meet, 'a -> auth,
+      SQL("""INSERT INTO tour(departure,arrival,dep_location,arr_location,
+        tour_state,mod_id) VALUES (
+        {dep},{arr},{dep_l},{arr_l},{t},{mod})""").on(
+        'dep -> dep, 'arr -> arr, 'dep_l -> dep_l,
+        'arr_l -> arr_l,
         't -> state, 'mod -> mod ).executeUpdate()
       var tour = SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
         ).as(Tour.simple *).head
@@ -228,7 +239,7 @@ object Tour {
           SELECT * 
           FROM tour 
           WHERE checked_by_timer = 0 
-          ORDER BY date ASC, departure ASC
+          ORDER BY departure ASC
 		  LIMIT 1""").as(Tour.simple *).head	  
 		  }
 		  else
