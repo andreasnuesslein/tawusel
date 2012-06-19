@@ -2,6 +2,7 @@ package models
 
 import anorm._
 import anorm.SqlParser._
+import play.api.cache.Cache
 import play.api.db._
 import play.api.Play.current
 import play.api._
@@ -135,17 +136,39 @@ object Tour {
     }
   }
     
+  /*This method returns at most the 8 most planned tours for a specified user.
+    The list of favorised tours should be chached for one day(24h).*/
   def findTemplatesForUser(user_id: Int): List[Tour] = {
-    DB.withConnection { implicit connection =>
-      // TODO select * where date<now() count 8, countby
-      SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
+    val templates: List[Tour] = Cache.getOrElse[List[Tour]]("tours.templates", 86400) {
+      DB.withConnection { implicit connection =>
+        // TODO select only past ones
+        SQL("""SELECT *
+          FROM tour
+          JOIN user_has_tour ON tour.id = user_has_tour.tour_id
+          GROUP BY RIGHT(tour.departure, 8), RIGHT(tour.arrival, 8), tour.dep_location, tour.arr_location
+          HAVING user_has_tour.user_id = {user_id} AND tour.departure < {nowdate}
+          ORDER BY COUNT(*) DESC LIMIT 8
+          """ ).on(
+              'user_id -> user_id,
+              'nowdate -> new java.util.Date()
+            ).as(Tour.simple *)
+      }
     }
-
+    return templates
   }
+
+  /*Displays the ongoing tours for the given user, specified by id.*/
   def findAllForUser(user_id: Int): List[Tour] = {
     DB.withConnection { implicit connection =>
       // TODO select * where date>now()
-      SQL("SELECT * FROM tour JOIN user_has_tour ON tour.id = user_has_tour.tour_id WHERE user_has_tour.user_id = "+user_id).as(Tour.simple *)
+      SQL("""SELECT *
+        FROM tour
+        JOIN user_has_tour ON tour.id = user_has_tour.tour_id
+        WHERE tour.departure > {nowdate} AND user_has_tour.user_id = {user_id}"""
+      ).on(
+        'nowdate -> new java.util.Date(),
+        'user_id -> user_id
+      ).as(Tour.simple *)
     }
 
   }

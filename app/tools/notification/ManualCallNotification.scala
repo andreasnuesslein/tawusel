@@ -8,8 +8,8 @@ class ManualCallNotification(
   tour: Tour,
   newInitiator: Boolean) extends Notification(notifiedUser, interactingUser,tour) {
  
-  //TODO find real number
-  val taxiNumber: String = "123456789"
+  //TODO find real number 22456 for mobile, with 090011 in advance for phone
+  val taxiNumber: String = "22456"
   
   val subject = "Taxi ordering"
 

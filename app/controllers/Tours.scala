@@ -7,12 +7,14 @@ import play.api.data.Forms.text
 import play.api.data.Forms.tuple
 import play.api.data.Form
 import play.api.mvc.Controller
+import play.api.mvc._
 import models._
 import tools.Mail
 import tools.notification.Notification
 import tools.notification.TaxiStatusChangedSuccessNotification
 import tools.notification.TaxiStatusChangedFailNotification
 import tools.notification.ManualCallNotification
+import com.codahale.jerkson.Json
 
 object Tours extends Controller with Secured {
 
@@ -72,7 +74,7 @@ object Tours extends Controller with Secured {
     (tour_state.id == 3) = fail
     (tour_state.id == 4) = done
   */
-  def confirmTour(id: Long, token: String) = IsAuthenticated { email => implicit request =>
+  def confirmTour(id: Long, token: String) = Action {
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
         if(tour.updateTourState(2)) {
@@ -83,17 +85,17 @@ object Tours extends Controller with Secured {
             }
           )
         }
-      Ok("Tour was success")
+      Ok
     } else {
       //TODO give proper response (not Ok, but Fault/Error/whatever)
-      Ok("error")
+      Ok
     }
 
   }
 
   /*This method does set the state of the actual tour to fail and informs all connected users.
   */
-  def cancelTour(id: Long, token: String) = IsAuthenticated { email => implicit request =>
+  def cancelTour(id: Long, token: String) = Action {
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
         if(tour.updateTourState(3)) {
@@ -114,10 +116,20 @@ object Tours extends Controller with Secured {
 
   }
 
-  def remoteCreateTour(token: String) = IsAuthenticated { email => implicit request =>
+  /*This method is given to remotely create an tour for a per mail specified user.*/
+  def remoteCreateTour(token: String) = Action {
    //TODO convert string to email, verification, startingpoint, targetpoint, startingtime and endtime
    //TODO create tour with data
-     Ok("creating was successful")
- }
+     var dep = new java.util.Date(1.toLong);
+     var arr = new java.util.Date(1.toLong);
+     var dep_l = 1;
+     var arr_l = 1;
+//     var userid = User.getIdByEmail("mail@mail.com")
+     var userid = 5
+     var tour = Tour.create(dep,arr, dep_l, arr_l, 1,userid)
+     val json = "{\"aaData\" : " + Json.generate(tour) + "}"
+     //200 if Ok, 500 if internal error, 400 if bad request, 401 if unauthorised
+     Ok("true")
+  }
 
 }

@@ -160,7 +160,14 @@ INSERT INTO `tour_state` (`id`, `name`, `description`) VALUES (4,'done', 'if the
 
 COMMIT;
 
+-- -----------------------------------------------------
+-- Data for table `tour`
+-- -----------------------------------------------------
+START TRANSACTION;
+
 INSERT INTO `tour` VALUES (1, NOW(), NOW(), 2, 1, 1, 1, 0);
+
+COMMIT;
 
 -- -----------------------------------------------------
 -- Data for table `sms_api_message`

@@ -56,14 +56,18 @@ object User {
 
   def getIdByEmail(email: String): Int = {
     DB.withConnection { implicit connection =>
-    val id = SQL("""
-      SELECT id
-      FROM user
-      WHERE email = {email}
-      """).on(
-        'email -> email
-      ).as(get[Int]("id")*)
-    return id(0)
+      val id = SQL("""
+        SELECT id
+        FROM user
+        WHERE email = {email}
+        """).on(
+          'email -> email
+        ).as(get[Int]("id") *)
+      if(id.length > 0) {
+        return id(0)
+      } else {
+        return 0
+      }
     }
   }
 
