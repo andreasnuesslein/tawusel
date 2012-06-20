@@ -20,7 +20,7 @@ GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
 
 # Tours
-POST	/newTour		controllers.Tours.newTourCreate
+POST	/tours		controllers.Tours.newTourCreate
 GET		/tours		controllers.Tours.tours
 
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
