@@ -108,6 +108,12 @@ Plan a new tour
       highlight_keywords: true,
       col_0:"select"
     });
+    $(".modtime").each(function() {
+      var elems = $(this).text().split(" - ");
+      var se1 = elems[0].split(":");
+      var se2 = elems[1].split(":");
+      $(this).text(pad(se1[0])+":"+pad(se1[1])+" - "+pad(se2[0])+":"+pad(se2[1])  );
+    });
 
     // change and click functions
     $('#city').change(function() {
@@ -157,7 +163,7 @@ Plan a new tour
       <td>@tour.dep_location</td>
       <td>@tour.dep_location</td>
       <td>@tour.arr_location</td>
-      <td>@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
+      <td class="modtime">@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
       <td>@tour.mod_id <a href="/tour/@tour.id/leave"><div class="btn">leave</div></a></td>
     </tr>
     }
@@ -166,7 +172,7 @@ Plan a new tour
       <td>@tour.dep_location</td>
       <td>@tour.dep_location</td>
       <td>@tour.arr_location</td>
-      <td>@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
+      <td class="modtime">@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
       <td>-</td>
     </tr>
     }
@@ -176,7 +182,7 @@ Plan a new tour
       <td>@tour._2</td>
       <td>@tour._3</td>
       <td>@tour._4</td>
-      <td>@tour._5.getHours:@tour._5.getMinutes - @tour._6.getHours:@tour._6.getMinutes</td>
+      <td class="modtime">@tour._5.getHours:@tour._5.getMinutes - @tour._6.getHours:@tour._6.getMinutes</td>
       <td><a href="/tour/@tour._1/join"><div class="btn">join</div></a></td>
     </tr>
     }
