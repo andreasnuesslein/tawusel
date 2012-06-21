@@ -1,6 +1,6 @@
-@(active_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)])],
+@(active_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)], Int)],
   tour_templates: List[(String, String, String, java.util.Date, java.util.Date)],
-  avail_tours: List[(Int, String, String, String, java.util.Date, java.util.Date,List[User])],
+  avail_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)], Int)],
 towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
 
 @implicitFieldConstructor = @{ FieldConstructor(_formhelpers.f) }
@@ -112,7 +112,8 @@ Plan a new tour
       on_keyup_delay:0,
       highlight_keywords: true,
       col_0:"select",
-      col_5:"none"
+      col_5:"none",
+      col_6:"none"
     });
     $(".modtime").each(function() {
       var elems = $(this).text().split(" - ");
@@ -124,6 +125,7 @@ Plan a new tour
     $('.passenger').prepend(function(index,html) {
       return "<img src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).attr('email'))+"?s=16\" />";
     });
+    $('.statusicon').popover({placement:"top"});
 
     // change and click functions
     $('#city').change(function() {
@@ -150,6 +152,37 @@ Plan a new tour
     $("#timepicker").change(function() {updateEstimate(); });
 
     $('#city').change();
+
+
+    $(".tour_template a").click(function () {
+      $("#dep_location option").attr("selected", false);
+      $("#arr_location option").attr("selected", false);
+
+      $('#createModal').modal('show');
+      var row = $(this).parent().parent().children("td");
+      $("#city option").filter(function () {
+        return this.text == row[0].textContent;
+      }).attr("selected", true);
+      $('#city').change();
+      $("#dep_location option[class=town_"+$('#city').val()+"]").filter(function () {
+        return this.text == row[1].textContent;
+      }).attr("selected", true);
+      $("#arr_location option[class=town_"+$('#city').val()+"]").filter(function () {
+        return this.text == row[2].textContent;
+      }).attr("selected", true);
+
+      var rowtime = row[3].textContent.split(" - ")[0]
+      var now = new Date();
+      if(now.getHours() > parseInt(rowtime.split(":")[0]) || ( now.getHours() == parseInt(rowtime.split(":")[0]) && now.getMinutes() >= parseInt(rowtime.split(":")[1])))
+      {
+        var now_f = pad(now.getDate()+1) + "." + pad(now.getMonth()+1) + "." + now.getFullYear();
+        $("#datepicker").val(now_f);
+      }
+      $("#timepicker").val(rowtime);
+
+      return false;
+
+    });
   });
 
 </script>
@@ -170,6 +203,7 @@ Plan a new tour
       <th>Time</th>
       <th>Passengers</th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -189,7 +223,20 @@ Plan a new tour
         </span>
         }
       </td>
-      <td><a href="/tour/@tour._1/leave"><div class="btn">leave</div></a></td>
+      <td>
+        <span class="status">@if(tour._9 == 1) {
+          <span class="statusicon" rel="popover" data-content="This tour state is still pending. That means it has neither been confirmed nor cancelled yet." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+          }
+          @if(tour._9 == 2) {
+          <span class="statusicon" rel="popover" data-content="This tour has been confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
+          }
+          @if(tour._9 == 3) {
+          <span class="statusicon" rel="popover" data-content="This tour has been cancelled. It will NOT take place." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
+          }
+        </span>
+      </td>
+      <td>
+        <a href="/tour/@tour._1/leave"><span class="btn btn-mini">leave</span></a></td>
     </tr>
     }
     @tour_templates.map { tour =>
@@ -199,7 +246,8 @@ Plan a new tour
       <td>@tour._3</td>
       <td class="modtime">@tour._4.getHours:@tour._4.getMinutes - @tour._5.getHours:@tour._5.getMinutes</td>
       <td>-</td>
-      <td></td>
+      <td>-</td>
+      <td><a href="" class="btn btn-mini">create</a></td>
     </tr>
     }
 
@@ -209,11 +257,29 @@ Plan a new tour
       <td>@tour._3</td>
       <td>@tour._4</td>
       <td class="modtime">@tour._5.getHours:@tour._5.getMinutes - @tour._6.getHours:@tour._6.getMinutes</td>
-      <td>@tour._7.map { x =>
-        <span class="passenger" style="border-bottom: 1px black dotted;" rel="popover" data-content="Email: @x.email<br />Phone: @x.cellphone" data-original-title="@x.firstname @x.lastname" email="@x.email">@x.firstname</span> 
+      <td>@tour._8.map { x =>
+        @if(x._1 == tour._7) {
+        <span class="mod" style="font-weight:bold;">
+        } else {
+        <span>
+        }
+        <span class="passenger" style="border-bottom: 1px black dotted;" rel="popover" data-content="Email: @x._2<br />Phone: @x._5" data-original-title="@x._3 @x._4" email="@x._2">@x._3</span>
+        </span>
         }
       </td>
-      <td><a href="/tour/@tour._1/join"><div class="btn">join</div></a></td>
+      <td>
+        <span class="status">@if(tour._9 == 1) {
+          <span class="statusicon" rel="popover" data-content="This tour state is still pending. That means it has neither been confirmed nor cancelled yet." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+          }
+          @if(tour._9 == 2) {
+          <span class="statusicon" rel="popover" data-content="This tour has been confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
+          }
+          @if(tour._9 == 3) {
+          <span class="statusicon" rel="popover" data-content="This tour has been cancelled. It will NOT take place." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
+          }
+        </span>
+      </td>
+      <td><a href="/tour/@tour._1/join"><div class="btn btn-mini">join</div></a></td>
     </tr>
     }
   </tbody>
@@ -221,11 +287,11 @@ Plan a new tour
 <div>green - My Tours. blue - Template Tours. white - Available Tours</div>
 
 <div class="offset4 span2">
-  <a class="btn btn-info" data-toggle="modal" href="#deleteModal" >Add tour</a>
+  <a class="btn btn-info" data-toggle="modal" href="#createModal" >Add tour</a>
 </div>
 
 <form name="createForm" id="createForm" class="form-horizontal" action="/tours" method="POST">
-  <div class="modal hide" id="deleteModal">
+  <div class="modal hide" id="createModal">
 
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal">×</button>
