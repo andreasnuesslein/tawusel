@@ -235,10 +235,10 @@ background-color: #6E8F3A;
 	float:right;
 }
 
-.tour_active td {
+.tour_active {
   background-color: #EEFFEE;
 }
-.tour_template td {
+.tour_template {
   background-color: #EEEEFF;
 }
 
