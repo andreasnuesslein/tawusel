@@ -109,6 +109,24 @@ object User {
       ).as(User.simple.singleOpt)
     }
   }
+  
+  /**
+   * Authenticate a User. This method is called when the Android app trys to
+   * authentificate, therefore it's second parameter is a String of a SHA-1
+   * hashed password. Retruns the found user which can be authenticated.
+   */
+  def authenticateWithHashedPassword(email: String, hashedPassword: String): Option[User] = {
+    DB.withConnection { implicit connection =>
+      SQL("""
+         SELECT * 
+         FROM user 
+         WHERE email = {email} AND password = {password}
+      """).on(
+          'email -> email,
+          'password -> hashedPassword
+      ).as(User.simple.singleOpt)
+    }
+  }
    
   /**
    * Create a User. Returns the user which was created.
