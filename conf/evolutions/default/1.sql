@@ -130,8 +130,8 @@ INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_lo
 INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (2, "2012-06-20 17:55:00", "2012-06-20 18:07:00", "Wolfsburg", "Carmeq Wolfsburg, Autovision", "Hauptbahnhof");
 INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (3, "2012-06-20 16:40:00", "2012-06-20 16:55:00", "Wolfsburg", "Volkswagen FE", "Hauptbahnhof");
 INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (4, "2012-06-20 17:55:00", "2012-06-20 18:10:00", "Wolfsburg", "Volkswagen FE", "Hauptbahnhof");
-INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (5, "2012-06-20 16:40:00", "2012-06-20 16:52:00", "Wolfsburg", "Volkswagen LKW-Wache", "Hauptbahnhof");
-INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (6, "2012-06-20 17:55:00", "2012-06-20 18:07:00", "Wolfsburg", "Volkswagen LKW-Wache", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (5, "2012-06-20 16:40:00", "2012-06-20 16:52:00", "Wolfsburg", "Volkswagen LKW Wache", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (6, "2012-06-20 17:55:00", "2012-06-20 18:07:00", "Wolfsburg", "Volkswagen LKW Wache", "Hauptbahnhof");
 INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (7, "2012-06-20 16:40:00", "2012-06-20 16:54:00", "Wolfsburg", "Volkswagen TE, Rübenkamp", "Hauptbahnhof");
 INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (8, "2012-06-20 17:55:00", "2012-06-20 18:09:00", "Wolfsburg", "Volkswagen TE, Rübenkamp", "Hauptbahnhof");
 
