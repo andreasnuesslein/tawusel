@@ -6,6 +6,7 @@ import play.api.db._
 import play.api.Play.current
 import play.api._
 import play.api.mvc._
+import java.net.URLDecoder
 
 case class User(
   email: String,
