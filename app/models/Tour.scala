@@ -10,7 +10,10 @@ import play.api.mvc._
 import java.util.Date
 import java.security.MessageDigest
 import java.util.Calendar
-import tools.Timer
+
+import tools._
+import tools.notification._
+
 //comment
 case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, arr_location: Long, tour_state: Long, mod_id: Long) {
 
@@ -22,11 +25,24 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
   def checkToken(token: String): Boolean = {
     return (this.createToken() == token)
   }
+
   def userJoin(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
       SQL("INSERT INTO user_has_tour VALUES({uid},{tid})").on(
         'uid -> userid,
         'tid -> this.id).execute()
+
+      // notify
+      val initiator = User.findById(userid).get
+      var users = this.getAllUsers()
+      for (u <- users) {
+        if(u != initiator) {
+          var x:Notification = new PassengerJoinedNotification(u,initiator,this)
+          Mail.send(x)
+          SMS.send(x)
+        }
+      }
+      return true
     }
   }
   def userLeave(userid: Int): Boolean = {
@@ -47,15 +63,25 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
           SQL("UPDATE tour SET mod_id={uid} WHERE id={tid}").on('uid -> useridlist(0),'tid -> this.id).executeUpdate()
         }
       }
-      // TODO: updated the mod - do all the emailing, notifying and stuff.
+
+      // notify
+      val initiator = User.findById(userid).get
+      var users = this.getAllUsers()
+      for (u <- users) {
+        if(u!= initiator) {
+          var x:Notification = new PassengerLeftNotification(u,initiator,this)
+          Mail.send(x)
+          SMS.send(x)
+        }
+      }
       return true
     }
   }
 
   def getAllUsers(): List[User] = {
     DB.withConnection { implicit connection =>
-      SQL("SELECT * FROM user JOIN user_has_tour on user.id = user_has_tour.user_id WHERE user_has_tour.tour_id = {tourId};").on(
-        'tour_id -> this.id).as(User.simple *)
+      SQL("SELECT * FROM user JOIN user_has_tour on user.id = user_has_tour.user_id WHERE user_has_tour.tour_id = {tid};").on(
+        'tid -> this.id).as(User.simple *)
     }
   }
 
