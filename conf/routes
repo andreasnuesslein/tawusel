@@ -29,6 +29,7 @@ GET     /listToursByTown/*town_id                  controllers.Application.listT
 GET     /listAllTours                           controllers.Application.listAllTours()
 GET     /listToursByDepLocation/*location_id                  controllers.Application.listToursByDepLocation_Id(location_id)
 GET     /listToursByArrLocation/*locationDep_id/*locationArr_id                 controllers.Application.listToursByArrLocation_Id(locationDep_id, locationArr_id)
+GET     /authentificateByApp/*email/*password                           controllers.Application.authentificateByApp(email,password)
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file	controllers.Assets.at(path="/public", file)
