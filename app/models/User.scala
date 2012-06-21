@@ -54,6 +54,18 @@ object User {
     }
   }
 
+  def findById(id: Int): Option[User] = {
+    DB.withConnection { implicit connection =>
+      SQL("""
+        SELECT *
+        FROM user
+        WHERE id = {id}
+      """).on(
+          'id -> id
+      ).as(User.simple.singleOpt)
+    }
+  }
+
   def getIdByEmail(email: String): Int = {
     DB.withConnection { implicit connection =>
       val id = SQL("""
