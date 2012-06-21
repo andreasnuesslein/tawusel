@@ -1,92 +1,52 @@
 package tools
 import akka.actor.Actor
-import akka.actor.Props
-import akka.util.duration._
 import akka.actor.ActorSystem
-import java.util._
-import scala.collection.mutable.HashMap
+import akka.actor.Props
 import akka.actor.Cancellable
-import scala.collection.Iterator
-import akka.event.Logging
-import models.Tour
-import java.text.SimpleDateFormat
-import models.User
-import notification.TourStartsSoonNotification
-import tools.notification.Notification
-/**
- * notifies the users in certain time before their taxi tours begin
- * */
- case class CurrentTour(id:Long,date:Date)
+import akka.actor.Scheduler
+import akka.util.duration._
 
- object Timer {
-   private var cancellable:Cancellable = null
-   private val system = ActorSystem("jobs")
-   private var curr : CurrentTour = null
+import models._
 
-   def notify(tr:Tour) {
-     if(tr == null){
-       println("notify none")
-       curr = null
-     }
-     else {
-       println("notify else")
-       var id = tr.id
-       var date = timeFusion(tr.departure)
-       val tour = system.actorOf(Props(new Task))
-       if(curr == null){
-         curr = new CurrentTour(id,date)
-         cancellable = system.scheduler.scheduleOnce(2 minutes,tour,curr)
-       }
-       else{
-         if(curr.date.getTime() > date.getTime()){
-           curr = new CurrentTour(id,date)
-           cancellable.cancel()
-           cancellable = system.scheduler.scheduleOnce(2 minutes,tour,curr)
-         }
-       }
-     }
-   }
+object Timer {
+  private val system = ActorSystem("jobs")
+  private var cancellable:Cancellable = null
+  val exi = system.actorOf(Props(new Executor))
 
-   def next(tr:Tour) {
-     println("next")
-     if(tr == null){
-       println("next none")
-       curr = null
-     } else {
-       var id = tr.id
-       var date = timeFusion(tr.departure)
-       val tour = system.actorOf(Props(new Task))
-       curr = new CurrentTour(id,date)
-       cancellable = system.scheduler.scheduleOnce(2 minutes,tour,curr)
-     }
-   }
+  def poll(dur:akka.util.FiniteDuration = 0 seconds) = {
+    system.scheduler.scheduleOnce(dur ,exi, null)
+  }
 
-   def timeFusion(datetime:Date):Date = {
-     val df = new SimpleDateFormat( "yyyy-MM-dd" )
-     val tf = new SimpleDateFormat( "HH:mm:ss" )
-     val cf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" )
-     cf.parse(df.format(datetime).toString()+" "+tf.format(datetime).toString())
-   }
+}
 
-   class Task extends Actor {
+class Executor extends Actor {
+  def receive = {
+    case poll => {
+      checkTheTime
+    }
+  }
 
-     def receive = {
-       case CurrentTour(id,date)=> {
-         val actualTour = Tour.findById(id)
-           var notification : Notification = null
-         for(notifiedUser : User <- Tour.getAllUsersFor(id)){
-           notification = new TourStartsSoonNotification(notifiedUser, null, Tour.findById(id))
+  def checkTheTime = {
+    try {
+      var t:Tour = Tour.timerTours.get
+      val difference = (t.departure.getTime() - new java.util.Date().getTime())/1000/60
 
-           //send E-Mail
-           Mail.send(notification)
-           //send sms
-           //TODO delete debug-flag
-           SMS.send(notification, true)
-         }
-         Tour.updateCheckedByTimer(id)
-         Timer.next(Tour.timerCheck)
-       }
-       system.stop(self)
-     }
-   }
- }
+      if(difference <= 30) {
+        // wake up and execture tour
+        t.book
+        Timer.poll()
+      } else {
+        // sleep for X minutes, where X = time-to-next-tour - 30
+        var sleep = difference - 30
+        Timer.poll(sleep minutes)
+      }
+    } catch {
+      case e => {
+        // there are no tours in the future..
+        //Timer.poll(3 seconds)
+      }
+    }
+
+  }
+
+}

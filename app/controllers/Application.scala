@@ -52,13 +52,13 @@ object Application extends Controller with Secured {
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }
-  
-  def authentificateByApp(email: String, password:String) = Action{
-    var u = User.authenticateWithHashPassword(email,password);
-    val json = Json.generate(u);
+
+  def authentificateByApp(email:String, hashedPassword:String) = Action {
+    val user = User.authenticateWithHashedPassword(email, hashedPassword)
+    val json ="{\"aaData\": "+ Json.generate(user) + "}"
     Ok(json).as("application/json")
   }
-  
+
 
 }
 

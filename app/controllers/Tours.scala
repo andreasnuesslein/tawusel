@@ -32,7 +32,7 @@ object Tours extends Controller with Secured {
 
   def newTourCreate = IsAuthenticated { email => implicit request =>
     newTourForm.bindFromRequest.fold(
-      formWithErrors => Ok("XX"),
+      formWithErrors => BadRequest("X"),
       tt => {
         val userid = User.getIdByEmail(email)
         val dep = new java.util.Date(tt._3.toLong)

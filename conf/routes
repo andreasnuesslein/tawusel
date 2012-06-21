@@ -18,9 +18,10 @@ GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
+GET		/authentificateByApp/*email/*hashedPassword				controllers.Application.authentificateByApp(email, hashedPassword)
 
 # Tours
-POST	/newTour		controllers.Tours.newTourCreate
+POST	/tours		controllers.Tours.newTourCreate
 GET		/tours		controllers.Tours.tours
 
 GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
