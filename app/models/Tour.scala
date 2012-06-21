@@ -316,61 +316,6 @@ object Tour {
       'i -> id).executeUpdate()
     }
   }
-/**
-   * get users of a certain tour 
-   * */
-  def getAllUsersFor(tour_id:Long): List[User] = {
-    DB.withConnection { implicit connection =>
-      SQL("""
-         SELECT * 
-         FROM user JOIN user_has_tour ON user.id = user_has_tour.user_id
-         WHERE user_has_tour.tour_id = {tour_id}
-      """).on(
-          'tour_id -> tour_id
-      ).as(User.simple *)
-    }
-  }
-/**
-   * find the next tour to notify
-   * called by timer
-   * */
-  def timerCheck:Tour = {
-    var tmp:Long = 0
-    		DB.withConnection { implicit connection =>
-		  tmp =  SQL("""
-          SELECT COUNT(*) 
-          FROM tour 
-          WHERE checked_by_timer = 0 
-		  """).as(scalar[Long].single)  
-		  }
-    		
-		  if(tmp > 0)	
-		  DB.withConnection { implicit connection =>
-		    SQL("""
-          SELECT * 
-          FROM tour 
-          WHERE checked_by_timer = 0 
-          ORDER BY departure ASC
-		  LIMIT 1""").as(Tour.simple *).head	  
-		  }
-		  else
-		    null
-	}
-  /**
-   * tour is checked if already notified
-   * called by timer
-   * */
-  def updateCheckedByTimer(id : Long){
-    DB.withConnection { implicit connection =>
-      SQL("""
-        		UPDATE 
-        		tour 
-    		  	SET checked_by_timer = 1
-        		WHERE id = {i}
-        	""").on(
-        'i -> id).executeUpdate()
-    }
-  }
 
   def timerTours:Option[Tour] = {
     DB.withConnection { implicit connection =>

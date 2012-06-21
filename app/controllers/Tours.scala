@@ -85,10 +85,14 @@ object Tours extends Controller with Secured {
             }
           )
         }
-      Ok
+      Redirect(routes.Tours.tours).flashing(
+        "success" -> "You changed the status of the tour to success."
+      )
     } else {
       //TODO give proper response (not Ok, but Fault/Error/whatever)
-      Ok
+      Redirect(routes.Tours.tours).flashing(
+        "error" -> "Due to bad request, nothing changed."
+      )
     }
 
   }
@@ -108,10 +112,14 @@ object Tours extends Controller with Secured {
           notification = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
           Mail.send(notification)
         }
-      Ok("Tour couldn't be booked")
+      Redirect(routes.Tours.tours).flashing(
+        "warning" -> "The status of the tour has not changed, the next passenger will be informed."
+      )
     } else {
       //TODO give proper response (not Ok, but Fault/Error/whatever)
-      Ok("error")
+      Redirect(routes.Tours.tours).flashing(
+        "error" -> "Due to bad request, nothing changed."
+      )
     }
 
   }
