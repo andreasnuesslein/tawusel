@@ -1,5 +1,5 @@
 @(active_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)])],
-  tour_templates: List[Tour],
+  tour_templates: List[(String, String, String, java.util.Date, java.util.Date)],
   avail_tours: List[(Int, String, String, String, java.util.Date, java.util.Date,List[User])],
 towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
 
@@ -194,10 +194,10 @@ Plan a new tour
     }
     @tour_templates.map { tour =>
     <tr class="tour_template">
-      <td>@tour.dep_location</td>
-      <td>@tour.dep_location</td>
-      <td>@tour.arr_location</td>
-      <td class="modtime">@tour.departure.getHours:@tour.departure.getMinutes - @tour.arrival.getHours:@tour.arrival.getMinutes</td>
+      <td>@tour._2</td>
+      <td>@tour._3</td>
+      <td>@tour._4</td>
+      <td class="modtime">@tour._5.getHours:@tour._5.getMinutes - @tour._5.getHours:@tour._5.getMinutes</td>
       <td>-</td>
       <td></td>
     </tr>

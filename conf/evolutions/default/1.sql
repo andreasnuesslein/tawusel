@@ -103,6 +103,38 @@ CREATE  TABLE IF NOT EXISTS `sms_api_message` (
   PRIMARY KEY (`id`) )
 ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `initial_template` (
+	`id` INT NOT NULL,
+	`town` VARCHAR(45),
+	`departure` DATETIME NOT NULL,
+	`arrival` DATETIME NOT NULL,
+	`dep_location` VARCHAR(45),
+	`arr_location` VARCHAR(45),
+	PRIMARY KEY (`id`)
+	)
+ENGINE = InnoDB;
+
+CREATE VIEW favorites AS
+SELECT tour.departure AS departure, tour.arrival AS arrival, tour.dep_location AS dep_location, tour.arr_location AS arr_location, user_has_tour.user_id AS user_id
+	FROM tour
+	JOIN user_has_tour ON tour.id = user_has_tour.tour_id
+	GROUP BY RIGHT(tour.departure, 8), RIGHT(tour.arrival, 8), tour.dep_location, tour.arr_location
+	HAVING tour.departure < NOW()
+	ORDER BY COUNT(*) DESC LIMIT 8;
+
+-- -----------------------------------------------------
+-- Data for table `initial_template`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (1, "2012-06-20 17:05:00", "2012-06-20 17:17:00", "Wolfsburg", "Carmeq Wolfsburg, Autovision", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (2, "2012-06-20 17:55:00", "2012-06-20 18:07:00", "Wolfsburg", "Carmeq Wolfsburg, Autovision", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (3, "2012-06-20 16:40:00", "2012-06-20 16:55:00", "Wolfsburg", "Volkswagen FE", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (4, "2012-06-20 17:55:00", "2012-06-20 18:10:00", "Wolfsburg", "Volkswagen FE", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (5, "2012-06-20 16:40:00", "2012-06-20 16:52:00", "Wolfsburg", "Volkswagen LKW-Wache", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (6, "2012-06-20 17:55:00", "2012-06-20 18:07:00", "Wolfsburg", "Volkswagen LKW-Wache", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (7, "2012-06-20 16:40:00", "2012-06-20 16:54:00", "Wolfsburg", "Volkswagen TE, Rübenkamp", "Hauptbahnhof");
+INSERT INTO initial_template (id, departure, arrival, town, dep_location, arr_location) VALUES (8, "2012-06-20 17:55:00", "2012-06-20 18:09:00", "Wolfsburg", "Volkswagen TE, Rübenkamp", "Hauptbahnhof");
+
 -- -----------------------------------------------------
 -- Data for table `user`
 -- -----------------------------------------------------
@@ -208,3 +240,5 @@ DROP VIEW IF EXISTS `location2` ;
 DROP TABLE IF EXISTS `location` ;
 DROP TABLE IF EXISTS `town` ;
 DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `initial_template`;
+DROP VIEW IF EXISTS `favorites`;

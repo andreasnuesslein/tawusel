@@ -166,8 +166,10 @@ object Tour {
         join location  as l1 on dep_location=l1.id
         join location2 as l2 on arr_location=l2.id
         join town on town.id = l1.town_id
-        where tour.id not in (select tour_id from user_has_tour where user_id={id} )
-        """).on('id -> userid)
+        where tour.id not in (select tour_id from user_has_tour where user_id={id} ) and tour.departure > NOW()
+        """).on(
+            'id -> userid
+          )
       .as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") map(flatten) * )
       var x:List[(Int, String, String, String, java.util.Date, java.util.Date,List[User])] = for(t <- tours;
         p = SQL("""select * from user join user_has_tour on user_has_tour.user_id=user.id where tour_id={tid}""").on('tid -> t._1).as(User.simple *)
@@ -206,40 +208,47 @@ object Tour {
   }
     
   /*This method returns at most the 8 most planned tours for a specified user.
-    The list of favorised tours should be chached for one day(24h).*/
-  def findTemplatesForUser(user_id: Int): List[Tour] = {
-    val templates: List[Tour] = Cache.getOrElse[List[Tour]]("tours.templates", 86400) {
+    The list of favorised tours should be chached for one day(24h/86400s).*/
+  def findTemplatesForUser(user_id: Int): List[(String, String, String, java.util.Date, java.util.Date)] = {
+    //val templates: List[Tour] = Cache.getOrElse[List[Tour]]("tours.templates", 86400) {
       DB.withConnection { implicit connection =>
-        // TODO select only past ones
-        SQL("""SELECT *
-          FROM tour
-          JOIN user_has_tour ON tour.id = user_has_tour.tour_id
-          GROUP BY RIGHT(tour.departure, 8), RIGHT(tour.arrival, 8), tour.dep_location, tour.arr_location
-          HAVING user_has_tour.user_id = {user_id} AND tour.departure < {nowdate}
-          ORDER BY COUNT(*) DESC LIMIT 8
+        val favorites: List[(String, String, String, java.util.Date, java.util.Date)] = SQL("""SELECT *
+          FROM favorites
+          JOIN location AS l1 ON dep_location = l1.id
+          JOIN location2 AS l2 ON arr_location = l2.id
+          JOIN town ON town.id = l1.town_id
+          WHERE user_id = {user_id}
           """ ).on(
-              'user_id -> user_id,
-              'nowdate -> new java.util.Date()
-            ).as(Tour.simple *)
+                'user_id -> user_id
+              ).as(str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") map(flatten) *)
+        var templates = favorites
+        if(favorites.length < 8) {
+          val number = 8 - favorites.length
+          val initial_templates = SQL("""SELECT *
+            FROM initial_template
+            ORDER BY initial_template.id ASC LIMIT {number}
+            """).on(
+                 'number -> number
+               ).as(str("initial_template.town") ~ str("initial_template.dep_location") ~ str("initial_template.arr_location") ~date("departure") ~ date("arrival") map(flatten) *)
+          templates ++= initial_templates
+        }
+        return templates
       }
-    }
-    return templates
+    //}//TODO if templates.length < 8 add the templates from the taxi-list(which are stored in a seperate table)
+    //return templates
   }
 
   /*Displays the ongoing tours for the given user, specified by id.*/
   def findAllForUser(user_id: Int): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)])] = {
     DB.withConnection { implicit connection =>
-      // TODO select * where date>now()
       var tours = SQL("""SELECT tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name, tour.mod_id
         FROM tour
         JOIN user_has_tour ON tour.id = user_has_tour.tour_id
         join location  as l1 on dep_location=l1.id
         join location2 as l2 on arr_location=l2.id
         join town on town.id = l1.town_id
-        WHERE user_has_tour.user_id = {user_id}"""
-        //WHERE tour.departure > {nowdate} AND user_has_tour.user_id = {user_id}"""
+        WHERE user_has_tour.user_id = {user_id} AND tour.departure > NOW()"""
       ).on(
-        'nowdate -> new java.util.Date(),
         'user_id -> user_id
       ).as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") ~ int("mod_id") map(flatten) *)
     var x = for(t <- tours;
