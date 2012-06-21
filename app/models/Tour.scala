@@ -95,6 +95,45 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
       }
     }
   }
+  def updateTimerState: Boolean = {
+    DB.withConnection { implicit connection =>
+      if(SQL("UPDATE tour SET checked_by_timer = 1 WHERE id = {id};").on(
+        'id -> this.id).executeUpdate == 1) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
+  def getMod: User = {
+    DB.withConnection { implicit connection =>
+      SQL("SELECT * FROM user JOIN tour on user.id = tour.mod_id WHERE tour.id = {tid};").on(
+            'tid -> this.id).as(User.simple.singleOpt).get
+        }
+  }
+
+  def book: Boolean = {
+    // TODO API Call when available
+
+    val mod = this.getMod
+    var x:Notification = new ManualCallNotification(mod, null, this, false)
+    Mail.send(x)
+
+    // notifications
+    for(u : User <- this.getAllUsers()){
+      val notification = new TourStartsSoonNotification(u, null, this)
+      //send E-Mail
+      Mail.send(notification)
+      //send sms
+      //TODO delete debug-flag
+      SMS.send(notification, true)
+    }
+
+    this.updateTimerState
+    return true
+  }
+
 
 }
 
@@ -224,7 +263,7 @@ object Tour {
         't -> state, 'mod -> mod ).executeUpdate()
       var tour = SQL("""SELECT * FROM tour WHERE id = last_insert_id();"""
         ).as(Tour.simple *).head
-      Timer.notify(tour)
+      Timer.poll()
       return tour
     }
   }
@@ -321,6 +360,17 @@ object Tour {
         		WHERE id = {i}
         	""").on(
         'i -> id).executeUpdate()
+    }
+  }
+
+  def timerTours:Option[Tour] = {
+    DB.withConnection { implicit connection =>
+        SQL(""" SELECT *
+          FROM tour
+          WHERE checked_by_timer = 0
+          AND departure > NOW()
+          ORDER BY departure ASC
+          LIMIT 1""").as(Tour.simple.singleOpt)
     }
   }
 }
