@@ -18,6 +18,7 @@ GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
+GET		/authentificateByApp/*email/*hashedPassword				controllers.Application.authentificateByApp(email, hashedPassword)
 
 # Tours
 POST	/tours		controllers.Tours.newTourCreate
