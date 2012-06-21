@@ -1,7 +1,16 @@
 @(user: User)(implicit request: RequestHeader)
 
 @main(Html("Account information"), nav = "account") {
+<script>
+  $(document).ready(function() {
+    $("#gravatar").html(function(index,html) {
+      return "<img style=\"margin-top:-8px;margin-right:4px; border: 1px dotted;\" src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).val())+"?s=118\" />";
+    });
+  });
 
+</script>
+<table>
+  <tr><td><span id="gravatar">@user.email</span></td><td>
 <h6>Name</h6>
 <p>
 @user.firstname @user.lastname
@@ -16,5 +25,7 @@
 <p>
 @user.cellphone
 </p>
-
+</td>
+</tr>
+</table>
 }
