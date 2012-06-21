@@ -39,7 +39,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
         if(u != initiator) {
           var x:Notification = new PassengerJoinedNotification(u,initiator,this)
           Mail.send(x)
-          SMS.send(x)
+          SMS.send(x, true)
         }
       }
       return true
@@ -71,7 +71,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
         if(u!= initiator) {
           var x:Notification = new PassengerLeftNotification(u,initiator,this)
           Mail.send(x)
-          SMS.send(x)
+          SMS.send(x,true)
         }
       }
       return true
