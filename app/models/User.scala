@@ -6,6 +6,7 @@ import play.api.db._
 import play.api.Play.current
 import play.api._
 import play.api.mvc._
+import java.net.URLDecoder
 
 case class User(
   email: String,
@@ -93,6 +94,20 @@ object User {
          WHERE email = {email} AND password = SHA1({password})
       """).on(
           'email -> email,
+          'password -> password
+      ).as(User.simple.singleOpt)
+    }
+  }
+  
+    def authenticateWithHashPassword(email: String, password: String): Option[User] = {
+      var decodedEmail = URLDecoder.decode(email, "UTF-8");
+      DB.withConnection { implicit connection =>
+      SQL("""
+         SELECT * 
+         FROM user 
+         WHERE email = {email} AND password = {password}
+      """).on(
+          'email -> decodedEmail,
           'password -> password
       ).as(User.simple.singleOpt)
     }

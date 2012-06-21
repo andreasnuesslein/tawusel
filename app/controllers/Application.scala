@@ -52,6 +52,13 @@ object Application extends Controller with Secured {
     val json ="{\"aaData\": "+ Json.generate(tours) + "}"
     Ok(json).as("application/json")
   }
+  
+  def authentificateByApp(email: String, password:String) = Action{
+    var u = User.authenticateWithHashPassword(email,password);
+    val json = Json.generate(u);
+    Ok(json).as("application/json")
+  }
+  
 
 }
 
