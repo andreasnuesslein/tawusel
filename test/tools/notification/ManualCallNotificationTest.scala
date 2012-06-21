@@ -33,10 +33,10 @@ class ManualCallNotificationTest extends Specification {
 	        "For the tour from " + Location.getName(testTour.dep_location) + " to " + 
             Location.getName(testTour.arr_location) + " a taxi could not be ordered automatically.\n" +
             "As you are the initiator of this tour, please call a taxi, using the following number:\n\t" +
-            testNotification.taxiNumber + "If you have ordered successfully, please confirm:\t" +
-            "dev.noova.de/tour/" + testTour.id + "/confirm/" + testNotification.token + "\n\n" +
+            testNotification.taxiNumber + "\n\nIf you have ordered successfully, please confirm:\t" +
+            "wusel.noova.de/tour/" + testTour.id + "/confirm/" + testNotification.token + "\n\n" +
             "If you are not able to call a taxi, please cancel:\t" +
-            "dev.noova.de/tour/" + testTour.id + "/cancel/" + testNotification.token
+            "wusel.noova.de/tour/" + testTour.id + "/cancel/" + testNotification.token
 	      testNotification.getText must equalTo(testText)
 	    }
 	  }
@@ -50,10 +50,10 @@ class ManualCallNotificationTest extends Specification {
 	        "For the tour from " + Location.getName(testTour.dep_location) + " to " + 
             Location.getName(testTour.arr_location) + " a taxi could not be ordered automatically.\n" +
             "As you are the new initiator of this tour, please call a taxi, using the following number:\n\t" +
-            testNotification.taxiNumber + "If you have ordered successfully, please confirm:\t" +
-            "dev.noova.de/tour/" + testTour.id + "/confirm/" + testNotification.token + "\n\n" +
+            testNotification.taxiNumber + "\n\nIf you have ordered successfully, please confirm:\t" +
+            "wusel.noova.de/tour/" + testTour.id + "/confirm/" + testNotification.token + "\n\n" +
             "If you are not able to call a taxi, please cancel:\t" +
-            "dev.noova.de/tour/" + testTour.id + "/cancel/" + testNotification.token
+            "wusel.noova.de/tour/" + testTour.id + "/cancel/" + testNotification.token
 	      testNotification.getText must equalTo(testText)
 	      testNotification.getText must equalTo(testText)
 	    }
