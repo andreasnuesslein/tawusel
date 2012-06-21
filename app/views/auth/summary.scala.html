@@ -4,7 +4,7 @@
 <script>
   $(document).ready(function() {
     $("#gravatar").html(function(index,html) {
-      return "<img style=\"margin-top:-8px;margin-right:4px; border: 1px dotted;\" src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).val())+"?s=118\" />";
+      return "<img style=\"margin-top:-8px;margin-right:4px; border: 1px dotted;\" src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).text())+"?s=118\" />";
     });
   });
 
