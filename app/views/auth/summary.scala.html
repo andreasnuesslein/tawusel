@@ -10,22 +10,25 @@
 
 </script>
 <table>
-  <tr><td><span id="gravatar">@user.email</span></td><td>
-<h6>Name</h6>
-<p>
-@user.firstname @user.lastname
-</p>
-
-<h6>Email</h6>
-<p>
-@user.email
-</p>
-
-<h6>Mobile phone</h6>
-<p>
-@user.cellphone
-</p>
-</td>
-</tr>
+  <tr>
+    <td><span id="gravatar">@user.email</span></td>
+    <td>
+      <h6>Name</h6>
+      <p>
+        @user.firstname @user.lastname
+      </p>
+      <h6>Email</h6>
+      <p>
+        @user.email
+      </p>
+      <h6>Mobile phone</h6>
+      <p>
+        @user.cellphone
+      </p>
+    </td>
+    <td>
+      <a href="/tour/resetFavorites/@user.email" style="margin-left:15px;"><div class="btn btn-mini">reset tour favorites</div></a>
+    </td>
+  </tr>
 </table>
 }

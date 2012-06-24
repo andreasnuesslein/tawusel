@@ -1,0 +1,13 @@
+@(siteHeader: String, message: String)(implicit request: RequestHeader)
+
+@import helper._
+
+@title = {
+  @siteHeader
+}
+
+@main(title, nav = "") {
+  @if(message.nonEmpty) {
+    <span>@message</span></br>
+  }
+}

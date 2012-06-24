@@ -125,6 +125,7 @@ Plan a new tour
       return "<img src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).attr('email'))+"?s=16\" />";
     });
     $('.statusicon').popover({placement:"top"});
+    $('.legend').popover({placement:"bottom"});
 
     // change and click functions
     $('#city').change(function() {
@@ -191,6 +192,11 @@ Plan a new tour
     margin: -8px 0 -5px -5px;
   }
 </style>
+<div class="offset4 span2" style="margin-top:-50px">
+  <a class="btn btn-info" data-toggle="modal" href="#createModal" >Add tour</a>
+</div>
+
+<div><span class="legend" rel="popover" data-content="These are the tours you are currently planning on participating in." data-original-title="My Tours"><div class="tour_active colour_box">     </div> - My Tours.</span> <span class="legend" rel="popover" data-content="These 5 tours are either predetermined templates to give some often used tours for fast creating. Or they are your personal favorites, determined by your previous tours, you are able to reset these in your profile settings." data-original-title="Favorite Tours"><div class="tour_template colour_box">     </div> - Favorite Tours.</span> <span class="legend" rel="popover" data-content="These are tours planned by other users. You are able to join these tours." data-original-title="Available Tours"><div class="colour_box">     </div> - Available Tours</span></div>
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered"  id="tourlist">
   <caption>
@@ -269,13 +275,13 @@ Plan a new tour
       </td>
       <td>
         <span class="status">@if(tour._9 == 1) {
-          <span class="statusicon" rel="popover" data-content="This tour state is still pending. That means it has neither been confirmed nor cancelled yet." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+          <span class="statusicon" rel="popover" data-content="This tour state is still pending. That means a taxi has neither been confirmed nor cancelled yet." data-original-title="Pending"><a class="icon-question-sign"></a></span>
           }
           @if(tour._9 == 2) {
-          <span class="statusicon" rel="popover" data-content="This tour has been confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
+          <span class="statusicon" rel="popover" data-content="This tour has been confirmed, therefore a taxi will be waiting." data-original-title="Booked"><a class="icon-ok"></a></span>
           }
           @if(tour._9 == 3) {
-          <span class="statusicon" rel="popover" data-content="This tour has been cancelled. It will NOT take place." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
+          <span class="statusicon" rel="popover" data-content="This tour has been cancelled. Which means, a taxi has not been ordered, maybe another passenger than the initiator will call a taxi and confirm this. If that happens, the status will be changed." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
           }
         </span>
       </td>
@@ -284,11 +290,6 @@ Plan a new tour
     }
   </tbody>
 </table>
-<div>green - My Tours. blue - Template Tours. white - Available Tours</div>
-
-<div class="offset4 span2">
-  <a class="btn btn-info" data-toggle="modal" href="#createModal" >Add tour</a>
-</div>
 
 <form name="createForm" id="createForm" class="form-horizontal" action="/tours" method="POST">
   <div class="modal hide" id="createModal">

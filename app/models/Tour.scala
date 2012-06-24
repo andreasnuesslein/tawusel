@@ -217,13 +217,13 @@ object Tour {
           JOIN location AS l1 ON dep_location = l1.id
           JOIN location2 AS l2 ON arr_location = l2.id
           JOIN town ON town.id = l1.town_id
-          WHERE user_id = {user_id}
+          WHERE user_id = {user_id} AND resetted_favorite = 0
           """ ).on(
                 'user_id -> user_id
               ).as(str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") map(flatten) *)
         var templates = favorites
-        if(favorites.length < 8) {
-          val number = 8 - favorites.length
+        if(favorites.length < 5) {
+          val number = 5 - favorites.length
           val initial_templates = SQL("""SELECT *
             FROM initial_template
             ORDER BY initial_template.id ASC LIMIT {number}
@@ -234,8 +234,6 @@ object Tour {
         }
         return templates
       }
-    //}//TODO if templates.length < 8 add the templates from the taxi-list(which are stored in a seperate table)
-    //return templates
   }
 
   /*Displays the ongoing tours for the given user, specified by id.*/
@@ -327,4 +325,27 @@ object Tour {
           LIMIT 1""").as(Tour.simple.singleOpt)
     }
   }
+
+  def resetFavoritesForUser(user_id: Int): Boolean = {
+    DB.withConnection { implicit connection =>
+      val dbCount = SQL("""SELECT COUNT(*)
+          FROM user_has_tour
+          JOIN tour ON user_has_tour.tour_id = tour.id
+          WHERE user_has_tour.user_id = {user_id} AND tour.departure < NOW()
+          """).on(
+          'user_id -> user_id).as(scalar[Long].single)
+      val execCount = SQL("""UPDATE user_has_tour
+          JOIN tour ON user_has_tour.tour_id = tour.id
+          SET resetted_favorite = 1
+          WHERE user_has_tour.user_id = {user_id} AND tour.departure < NOW()
+          """).on(
+          'user_id -> user_id).executeUpdate
+      if(dbCount == execCount) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
 }

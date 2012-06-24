@@ -1,15 +1,16 @@
 
 # Home page
-GET		/				controllers.Application.index
+GET		/															controllers.Application.index
 
-GET		/secure			controllers.Application.secure
+GET		/secure														controllers.Application.secure
 
 
-GET		/tour/:id/confirm/:token	controllers.Tours.confirmTour(id: Long, token: String)
-GET		/tour/:id/cancel/:token		controllers.Tours.cancelTour(id: Long, token: String)
-GET		/tour/remoteCreateTour/:token	controllers.Tours.remoteCreateTour(token: String)
-GET		/tour/:id/join				controllers.Tours.joinTour(id: Long)
-GET		/tour/:id/leave				controllers.Tours.leaveTour(id: Long)
+GET		/tour/:id/confirm/:token									controllers.Tours.confirmTour(id: Long, token: String)
+GET		/tour/:id/cancel/:token										controllers.Tours.cancelTour(id: Long, token: String)
+GET		/tour/remoteCreateTour/:token								controllers.Tours.remoteCreateTour(token: String)
+GET		/tour/:id/join												controllers.Tours.joinTour(id: Long)
+GET		/tour/:id/leave												controllers.Tours.leaveTour(id: Long)
+GET		/tour/resetFavorites/:email									controllers.Tours.resetFavoritesForUser(email: String)
 
 # Authentication
 GET		/login			controllers.Auth.login
@@ -18,18 +19,18 @@ GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
-GET		/authentificateByApp/*email/*hashedPassword				controllers.Application.authentificateByApp(email, hashedPassword)
+GET		/authentificateByApp/*email/*hashedPassword					controllers.Application.authentificateByApp(email, hashedPassword)
 
 # Tours
 POST	/tours		controllers.Tours.newTourCreate
 GET		/tours		controllers.Tours.tours
 
-GET     /listLocations/*town_id                  controllers.Application.listLocationsByTown_Id(town_id)
-GET     /listToursByTown/*town_id                  controllers.Application.listToursByTown_Id(town_id)
-GET     /listAllTours                           controllers.Application.listAllTours()
-GET     /listToursByDepLocation/*location_id                  controllers.Application.listToursByDepLocation_Id(location_id)
-GET     /listToursByArrLocation/*locationDep_id/*locationArr_id                 controllers.Application.listToursByArrLocation_Id(locationDep_id, locationArr_id)
-GET     /authentificateByApp/*email/*password                           controllers.Application.authentificateByApp(email,password)
+GET		/listLocations/*town_id										controllers.Application.listLocationsByTown_Id(town_id)
+GET		/listToursByTown/*town_id									controllers.Application.listToursByTown_Id(town_id)
+GET		/listAllTours												controllers.Application.listAllTours()
+GET		/listToursByDepLocation/*location_id						controllers.Application.listToursByDepLocation_Id(location_id)
+GET		/listToursByArrLocation/*locationDep_id/*locationArr_id		controllers.Application.listToursByArrLocation_Id(locationDep_id, locationArr_id)
+GET		/authentificateByApp/*email/*password						controllers.Application.authentificateByApp(email,password)
 
 # Map static resources from the /public folder to the /assets URL path
-GET		/assets/*file	controllers.Assets.at(path="/public", file)
+GET		/assets/*file												controllers.Assets.at(path="/public", file)

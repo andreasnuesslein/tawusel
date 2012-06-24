@@ -47,7 +47,7 @@ CREATE  TABLE IF NOT EXISTS `tour` (
   `arr_location` INT NOT NULL ,
   `tour_state` INT NOT NULL ,
   `mod_id` INT NULL ,
-  `checked_by_timer` TINYINT(1) DEFAULT 0, 
+  `checked_by_timer` TINYINT(1) DEFAULT 0,
   PRIMARY KEY (`id`) ,
   INDEX `location_tour_dep_location` (`dep_location` ASC) ,
   INDEX `location_tour_arr_location` (`arr_location` ASC) ,
@@ -114,6 +114,7 @@ ENGINE = InnoDB;
 CREATE VIEW location2 AS
 SELECT * FROM location;
 
+-- This is being used for getting the favorite tours
 CREATE VIEW favorites AS
 SELECT tour.departure AS departure, tour.arrival AS arrival, tour.dep_location AS dep_location, tour.arr_location AS arr_location, user_has_tour.user_id AS user_id
 	FROM tour

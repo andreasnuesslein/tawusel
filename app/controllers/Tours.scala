@@ -9,6 +9,7 @@ import play.api.data.Form
 import play.api.mvc.Controller
 import play.api.mvc._
 import models._
+import views._
 import tools.Mail
 import tools.notification.Notification
 import tools.notification.TaxiStatusChangedSuccessNotification
@@ -39,7 +40,7 @@ object Tours extends Controller with Secured {
         val arr = new java.util.Date(tt._4.toLong)
         var tour = Tour.create(dep,arr, tt._1, tt._2, 1,userid)
         tour.userJoin(userid)
-        Redirect(routes.Tours.tours)
+        Redirect(routes.Tours.tours).flashing("success" -> "Successfully created the tour!")
       })
   }
 
@@ -74,7 +75,7 @@ object Tours extends Controller with Secured {
     (tour_state.id == 3) = fail
     (tour_state.id == 4) = done
   */
-  def confirmTour(id: Long, token: String) = Action {
+  def confirmTour(id: Long, token: String) = Action {implicit request =>
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
         if(tour.updateTourState(2)) {
@@ -85,23 +86,18 @@ object Tours extends Controller with Secured {
             }
           )
         }
-      Redirect(routes.Tours.tours).flashing(
-        "success" -> "You changed the status of the tour to success."
-      )
+      Ok(html.status("Taxi-Ordering", "You changed the status of the tour successfully, every passenger will be informed, that a taxi has been ordered."))
     } else {
-      //TODO give proper response (not Ok, but Fault/Error/whatever)
-      Redirect(routes.Tours.tours).flashing(
-        "error" -> "Due to bad request, nothing changed."
-      )
+      Ok(html.status("Error occured", "Due to bad request, nothing changed."))
     }
-
   }
 
   /*This method does set the state of the actual tour to fail and informs all connected users.
   */
-  def cancelTour(id: Long, token: String) = Action {
+  def cancelTour(id: Long, token: String) = Action { implicit request =>
     var tour = Tour.findById(id)
     if( tour.checkToken(token) ) {
+        var statusText = ""
         if(tour.updateTourState(3)) {
           var notification: Notification = null
           tour.getAllUsers().foreach((user: User) => {
@@ -109,22 +105,26 @@ object Tours extends Controller with Secured {
               Mail.send(notification)
             }
           )
-          notification = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
-          Mail.send(notification)
+          if(tour.getAllUsers().length > 1) {
+            if(User.getIdByEmail(tour.getAllUsers().head.email).equals(tour.mod_id.toInt)) {
+              val userToNotify = tour.getAllUsers().tail.head
+              notification = new ManualCallNotification(userToNotify, null, tour, true)
+            } else {
+              notification = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
+            }
+            Mail.send(notification)
+            statusText = "The status of the tour has not changed. The next passenger will be informed to call a taxi."
+          } else {
+            statusText = "The status of the tour has not changed. We are sorry to inform you, that there is no other passenger to call a taxi."
+          }
         }
-      Redirect(routes.Tours.tours).flashing(
-        "warning" -> "The status of the tour has not changed, the next passenger will be informed."
-      )
+      Ok(html.status("Taxi-Ordering", statusText))
     } else {
-      //TODO give proper response (not Ok, but Fault/Error/whatever)
-      Redirect(routes.Tours.tours).flashing(
-        "error" -> "Due to bad request, nothing changed."
-      )
+      Ok(html.status("Error occured", "Due to bad request, nothing changed."))
     }
-
   }
 
-  /*This method is given to remotely create an tour for a per mail specified user.*/
+  /*This method is given to remotely create a tour for a per mail specified user.*/
   def remoteCreateTour(token: String) = Action {
    //TODO convert string to email, verification, startingpoint, targetpoint, startingtime and endtime
    //TODO create tour with data
@@ -138,6 +138,15 @@ object Tours extends Controller with Secured {
      val json = "{\"aaData\" : " + Json.generate(tour) + "}"
      //200 if Ok, 500 if internal error, 400 if bad request, 401 if unauthorised
      Ok("true")
+  }
+
+  def resetFavoritesForUser(email: String) = Action {
+    val user_id = User.getIdByEmail(email)
+    if(Tour.resetFavoritesForUser(user_id)) {
+      Redirect(routes.Auth.account).flashing("success" -> "Successfully resetted tour favorites!")
+    } else {
+      Redirect(routes.Auth.account).flashing("warning" -> "Resetting the tour favorites was not successful. Please try again later or contact the support if this problem is ongoing.")
+    }
   }
 
 }
