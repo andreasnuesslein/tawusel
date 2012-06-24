@@ -2,7 +2,7 @@
 
 ALTER TABLE user_has_tour ADD `resetted_favorite` TINYINT(1) DEFAULT 0;
 
-
+DROP VIEW IF EXISTS `favorites`;
 -- This is being used for getting the favorite tours
 CREATE VIEW favorites AS
 SELECT tour.departure AS departure, tour.arrival AS arrival, tour.dep_location AS dep_location, tour.arr_location AS arr_location, user_has_tour.user_id AS user_id, user_has_tour.resetted_favorite AS resetted_favorite
