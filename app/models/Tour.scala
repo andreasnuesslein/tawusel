@@ -28,7 +28,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
   def userJoin(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
-      SQL("INSERT INTO user_has_tour VALUES({uid},{tid})").on(
+      SQL("INSERT INTO user_has_tour VALUES({uid},{tid},0)").on(
         'uid -> userid,
         'tid -> this.id).execute()
 
