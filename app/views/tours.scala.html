@@ -12,12 +12,11 @@ Plan a new tour
 }
 @main(title,nav="newtour") {
 <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/jquery.timepicker.css")">
-<link rel="stylesheet" media="screen" href="@routes.Assets.at("css/bootstrap-datepicker.css")">
 <script src="@routes.Assets.at("js/jquery.timepicker.min.js")" type="text/javascript"></script>
-<script src="@routes.Assets.at("js/bootstrap-datepicker.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("js/tablefilter_all_min.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("js/bootstrap-tooltip.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("js/bootstrap-popover.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("js/main.js")" type="text/javascript"></script>
 <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDbuLn6X-MuK9PnJtt7bF84PoPypXQN53U&sensor=true" type="text/javascript"></script>
 
 <script>
@@ -53,26 +52,6 @@ Plan a new tour
     }
   }
 
-  function pad(num) {
-    if (num < 10) {
-      num = "0" + num;
-    }
-    return num;
-  }
-
-  function round_tr(hours,min) {
-    var h = hours;
-    var m;
-
-    if (min>30){
-      h = hours+1;
-      m = 0;
-      } else {
-      m = 30;
-    }
-    return pad(h)+":"+pad(m);
-  }
-
   function updateEstimate() {
     var est = $("#timepicker").val().split(":");
     var d = $('#datepicker').val().split(".");
@@ -81,9 +60,9 @@ Plan a new tour
     var gdate = Math.ceil(googleest/60);
     $('#date').val(odate.getTime());
 
-    var txt = "Arr";
+    var txt = "estimated Arrival";
     if ($("#time-toggle").find('.active').text() == "Arr") {
-      txt = "Dep";
+      txt = "calculated Departure";
       $('#arrival').val(odate.getTime());
       odate.setMinutes(odate.getMinutes()-gdate);
       $('#departure').val(odate.getTime());
@@ -92,20 +71,12 @@ Plan a new tour
       odate.setMinutes(odate.getMinutes()+gdate);
       $('#arrival').val(odate.getTime());
     }
-
     $("#time-estimate").text(txt+": "+pad(odate.getHours())+":"+pad(odate.getMinutes()));
   }
 
   $(document).ready(function() {
 
-    // initial filling of DIVs
-    var now = new Date();
-    var now_f = pad(now.getDate()) + "." + pad(now.getMonth()+1) + "." + now.getFullYear();
-    $('.datepicker').val(now_f);
-    $('.datepicker').datepicker({format:"dd.mm.yyyy"});
-    now.setMinutes(now.getMinutes()+30);
-    $('#timepicker').val(  round_tr(now.getHours(), now.getMinutes()) );
-    $('#timepicker').timepicker({ 'scrollDefaultNow': true, 'timeFormat': "H:i" });
+    // Pretty table
     setFilterGrid("tourlist",1,{
       on_keyup:true,
       on_keyup_delay:0,
@@ -127,6 +98,16 @@ Plan a new tour
     $('.statusicon').popover({placement:"top"});
     $('.legend').popover({placement:"bottom"});
 
+    // Date- and Timepicker
+    var now = new Date();
+    var now_f = pad(now.getDate()) + "." + pad(now.getMonth()+1) + "." + now.getFullYear();
+    $('.datepicker').val(now_f);
+
+    now.setMinutes(now.getMinutes()+30);
+    $('#timepicker').val(  round_tr(now.getHours(), now.getMinutes()) );
+    $('#timepicker').timepicker({ 'scrollDefaultNow': true, 'timeFormat': "H:i" });
+
+
     // change and click functions
     $('#city').change(function() {
       var valu = $('#city').val();
@@ -136,33 +117,43 @@ Plan a new tour
       delems.show();
       var aelems = $('#arr_location').find('.town_'+valu);
       aelems.show();
-
-      var first = delems[0].value;
-      var snd = aelems[1].value;
-
-      $('#dep_location').val(first);
-      $('#arr_location').val(snd);
+      $('#dep_location').val(delems[0].value);
+      $('#arr_location').val(aelems[1].value);
       getGoogleDistance();
     });
-
     $("#dep_location").change(function() {getGoogleDistance(); });
     $("#arr_location").change(function() {getGoogleDistance(); });
+
     $("#arrbtn").click(function() {updateEstimate(); });
     $("#depbtn").click(function() {updateEstimate(); });
     $("#timepicker").change(function() {updateEstimate(); });
 
+    // datepicker-dealy
+    $(".datebtn").click(function() {
+      $("#datepicker").val(
+      pad(now.getDate()+parseInt($(this).attr("offset"))) + "." + pad(now.getMonth()+1) + "." + now.getFullYear()
+      );
+      $(".datebtn").removeClass("active");
+      $(this).addClass("active");
+    });
+    $("#datepicker").change(function() {
+      $(".datebtn").removeClass("active");
+    });
+
     $('#city').change();
 
+    $("#createForm").submit(function() {
+      updateEstimate();
+    });
 
+    // Template creation stuff
     $(".tour_template a").click(function () {
       $("#dep_location option").attr("selected", false);
       $("#arr_location option").attr("selected", false);
 
       $('#createModal').modal('show');
       var row = $(this).parent().parent().children("td");
-      $("#city option").filter(function () {
-        return this.text == row[0].textContent;
-      }).attr("selected", true);
+      $("#city option").filter(function () { return this.text == row[0].textContent; }).attr("selected", true);
       $('#city').change();
       $("#dep_location option[class=town_"+$('#city').val()+"]").filter(function () {
         return this.text == row[1].textContent;
@@ -338,8 +329,13 @@ Plan a new tour
         <div class="control-group">
           <label class="control-label" for="datepicker">Date</label>
           <div class="controls">
-            <input type="text" id="datepicker" class="datepicker" name="datepicker" value/>
-            <span class="help-inline"></span>
+            <div class="input-append">
+              <input type="text" id="datepicker" class="datepicker" name="datepicker" style="width:6em;" value/>
+              <button class="btn datebtn active" offset="0" type="button" id="todaybtn">today</button>
+              <button class="btn datebtn" offset="1" type="button" id="plus1btn">+1</button>
+              <button class="btn datebtn" offset="2" type="button" id="plus2btn">+2</button>
+              <span class="help-inline"></span>
+            </div>
           </div>
         </div>
 
@@ -350,7 +346,7 @@ Plan a new tour
             <div class="btn-group" data-toggle="buttons-radio" id="time-toggle" style="display:inline;">
               <div class="btn active" id="depbtn">Dep</div>
               <div class="btn" id="arrbtn">Arr</div>
-            </div>
+            </div><br />
             <span class="help-inline"><span id="time-estimate"></span></span>
           </div>
         </div>
