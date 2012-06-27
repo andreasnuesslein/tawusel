@@ -51,7 +51,7 @@ object Auth extends Controller with Secured {
         "Passwords don't match", passwords => passwords._1 == passwords._2
       )
     ) { (email, firstname, lastname, cellphone, passwords)
-      => User(email, firstname, lastname, cellphone, passwords._1)
+      => User(-1, email, firstname, lastname, cellphone, passwords._1)
     }
     {
       user => Some(user.email, user.firstname, user.lastname, user.cellphone, (user.password, ""))
@@ -106,9 +106,9 @@ object Auth extends Controller with Secured {
   }
 
   def updateNotifications = IsAuthenticated { email => implicit request =>
-    val userid = User.getIdByEmail(email)
+    val user = User.findByEmail(email).get
     var x =request.body.asFormUrlEncoded.get
-    UserNotification.update(userid,x.contains("sbdy_joined_email"),
+    UserNotification.update(user.id,x.contains("sbdy_joined_email"),
       x.contains("sbdy_joined_sms"), x.contains("sbdy_left_email"),
       x.contains("sbdy_left_sms"), x.contains("xmin_email"), x.contains("xmin_sms"),
       x.contains("must_call_email"), x.contains("must_call_sms"),
@@ -129,7 +129,7 @@ object Auth extends Controller with Secured {
 
   def account = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val notifications = UserNotification.getForUser(User.getIdByEmail(user.email))
+    val notifications = UserNotification.getForUser(user.id)
     Ok(html.auth.summary(user, notifications))
   }
 

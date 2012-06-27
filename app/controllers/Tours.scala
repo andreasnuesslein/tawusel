@@ -35,37 +35,37 @@ object Tours extends Controller with Secured {
     newTourForm.bindFromRequest.fold(
       formWithErrors => BadRequest("X"),
       tt => {
-        val userid = User.getIdByEmail(email)
+        val user = User.findByEmail(email).get
         val dep = new java.util.Date(tt._3.toLong)
         val arr = new java.util.Date(tt._4.toLong)
-        var tour = Tour.create(dep,arr, tt._1, tt._2, 1,userid)
-        tour.userJoin(userid)
+        var tour = Tour.create(dep,arr, tt._1, tt._2, 1,user.id)
+        tour.userJoin(user.id)
         Redirect(routes.Tours.tours).flashing("success" -> "Successfully created the tour!")
       })
   }
 
   def tours = IsAuthenticated { email => implicit request =>
-    val user_id = User.getIdByEmail(email)
-    val active_tours = Tour.findAllForUser(user_id)
-    val tour_templates = Tour.findTemplatesForUser(user_id)
-    val available_tours = Tour.findAll(user_id)
+    val user = User.findByEmail(email).get
+    val active_tours = Tour.findAllForUser(user.id)
+    val tour_templates = Tour.findTemplatesForUser(user.id)
+    val available_tours = Tour.findAll(user.id)
     Ok(views.html.tours(active_tours, tour_templates, available_tours,
       Town.findAll(), Location.findAll()))
 
   }
 
   def joinTour(id:Long) = IsAuthenticated { email => implicit request =>
-    val userid = User.getIdByEmail(email)
+    val user = User.findByEmail(email).get
     val tour = Tour.findById(id)
-    tour.userJoin(userid)
+    tour.userJoin(user.id)
     Redirect(routes.Tours.tours).flashing("success" -> "Successfully joined the tour!")
 
   }
 
   def leaveTour(id:Long) = IsAuthenticated { email => implicit request =>
-    val userid = User.getIdByEmail(email)
+    val user = User.findByEmail(email).get
     val tour = Tour.findById(id)
-    tour.userLeave(userid)
+    tour.userLeave(user.id)
     Redirect(routes.Tours.tours).flashing("success" -> "Successfully left the tour!")
   }
 
@@ -106,7 +106,7 @@ object Tours extends Controller with Secured {
             }
           )
           if(tour.getAllUsers().length > 1) {
-            if(User.getIdByEmail(tour.getAllUsers().head.email).equals(tour.mod_id.toInt)) {
+            if(User.findByEmail(tour.getAllUsers().head.email).get.id.equals(tour.mod_id.toInt)) {
               val userToNotify = tour.getAllUsers().tail.head
               notification = new ManualCallNotification(userToNotify, null, tour, true)
             } else {
@@ -132,7 +132,7 @@ object Tours extends Controller with Secured {
      var arr = new java.util.Date(1.toLong);
      var dep_l = 1;
      var arr_l = 1;
-//     var userid = User.getIdByEmail("mail@mail.com")
+//     var userid = User.findByEmail("mail@mail.com").id
      var userid = 5
      var tour = Tour.create(dep,arr, dep_l, arr_l, 1,userid)
      val json = "{\"aaData\" : " + Json.generate(tour) + "}"
@@ -141,8 +141,8 @@ object Tours extends Controller with Secured {
   }
 
   def resetFavoritesForUser(email: String) = Action {
-    val user_id = User.getIdByEmail(email)
-    if(Tour.resetFavoritesForUser(user_id)) {
+    val user = User.findByEmail(email).get
+    if(Tour.resetFavoritesForUser(user.id)) {
       Redirect(routes.Auth.account).flashing("success" -> "Successfully resetted tour favorites!")
     } else {
       Redirect(routes.Auth.account).flashing("warning" -> "Resetting the tour favorites was not successful. Please try again later or contact the support if this problem is ongoing.")

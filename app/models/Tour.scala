@@ -114,20 +114,22 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
   }
 
   def book: Boolean = {
-    // TODO API Call when available
+    // TODO API-call when available
 
     val mod = this.getMod
-    var x:Notification = new ManualCallNotification(mod, null, this, false)
-    Mail.send(x)
+    val un = UserNotification.getForUser(mod.id)
+    var n:Notification = new ManualCallNotification(mod, null, this, false)
+    if(un.must_call_email) Mail.send(n)
+    if(un.must_call_sms) SMS.send(n)
+
 
     // notifications
     for(u : User <- this.getAllUsers()){
-      val notification = new TourStartsSoonNotification(u, null, this)
-      //send E-Mail
-      Mail.send(notification)
-      //send sms
-      //TODO delete debug-flag
-      SMS.send(notification, true)
+      val un = UserNotification.getForUser(u.id)
+      val n = new TourStartsSoonNotification(u, null, this)
+      if(un.must_call_email) Mail.send(n)
+      // TODO remove debug flag
+      if(un.must_call_sms) SMS.send(n, true)
     }
 
     this.updateTimerState

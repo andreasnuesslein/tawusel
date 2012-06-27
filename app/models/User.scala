@@ -11,6 +11,7 @@ import java.net.URLDecoder
 import models._
 
 case class User(
+  id: Int,
   email: String,
   firstname: String,
   lastname: String,
@@ -33,12 +34,13 @@ object User {
    * database query before.
    */
   val simple = {
+    get[Int]("user.id") ~
     get[String]("user.email") ~
     get[String]("user.firstname") ~
     get[String]("user.lastname") ~
     get[String]("user.cellphone") ~
     get[String]("user.password") map {
-      case e~fn~ln~c~p => User(e, fn, ln, c, p)
+      case i~e~fn~ln~c~p => User(i, e, fn, ln, c, p)
     }
   }
   
@@ -69,22 +71,6 @@ object User {
     }
   }
 
-  def getIdByEmail(email: String): Int = {
-    DB.withConnection { implicit connection =>
-      val id = SQL("""
-        SELECT id
-        FROM user
-        WHERE email = {email}
-        """).on(
-          'email -> email
-        ).as(get[Int]("id") *)
-      if(id.length > 0) {
-        return id(0)
-      } else {
-        return 0
-      }
-    }
-  }
 
   /**
    * Retrieve all users. Returns the sequence of 
