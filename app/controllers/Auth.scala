@@ -105,6 +105,18 @@ object Auth extends Controller with Secured {
    )
   }
 
+  def updateNotifications = IsAuthenticated { email => implicit request =>
+    val userid = User.getIdByEmail(email)
+    var x =request.body.asFormUrlEncoded.get
+    UserNotification.update(userid,x.contains("sbdy_joined_email"),
+      x.contains("sbdy_joined_sms"), x.contains("sbdy_left_email"),
+      x.contains("sbdy_left_sms"), x.contains("xmin_email"), x.contains("xmin_sms"),
+      x.contains("must_call_email"), x.contains("must_call_sms"),
+      x.contains("status_changed_email"), x.contains("status_changed_sms"))
+    Redirect(routes.Auth.account).flashing(
+      "success" -> "Notifications have been updated")
+  }
+
 
   /**
    * Implementation of the logout method (action).
@@ -117,7 +129,8 @@ object Auth extends Controller with Secured {
 
   def account = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    Ok(html.auth.summary(user))
+    val notifications = UserNotification.getForUser(User.getIdByEmail(user.email))
+    Ok(html.auth.summary(user, notifications))
   }
 
 }

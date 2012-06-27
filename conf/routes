@@ -2,8 +2,6 @@
 # Home page
 GET		/															controllers.Application.index
 
-GET		/secure														controllers.Application.secure
-
 
 GET		/tour/:id/confirm/:token									controllers.Tours.confirmTour(id: Long, token: String)
 GET		/tour/:id/cancel/:token										controllers.Tours.cancelTour(id: Long, token: String)
@@ -19,6 +17,7 @@ GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
+POST	/notifications	controllers.Auth.updateNotifications
 GET		/authentificateByApp/*email/*hashedPassword					controllers.Application.authentificateByApp(email, hashedPassword)
 
 # Tours

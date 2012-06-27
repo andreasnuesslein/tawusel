@@ -8,6 +8,8 @@ import play.api._
 import play.api.mvc._
 import java.net.URLDecoder
 
+import models._
+
 case class User(
   email: String,
   firstname: String,
@@ -134,7 +136,7 @@ object User {
    */
   def create(user: User): User = {
     DB.withConnection { implicit connection =>
-      SQL("""
+      val userid: Long = SQL("""
         INSERT 
 		INTO user (email, firstname, lastname, cellphone, password) 
 		VALUES ({e},{fn},{ln},{c},SHA1({p}))
@@ -144,9 +146,10 @@ object User {
 		  'ln -> user.lastname,
 		  'c -> user.cellphone,
 		  'p -> user.password
-	  ).executeUpdate()
-    } 
-	  user
+	  ).executeInsert().get
+    UserNotification.create(userid.toInt)
+    }
+	user
   }
   
   /**

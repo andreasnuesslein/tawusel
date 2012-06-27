@@ -14,12 +14,6 @@ object Application extends Controller with Secured {
      Redirect(routes.Tours.tours)
    }
 
-  def secure = IsAuthenticated({ email =>
-    implicit request =>
-      val user = User.findByEmail(email).get
-      Ok(views.html.auth.summary(user))
-  }, Redirect(routes.Auth.login).flashing("error" -> "You have to login first."))
-
   def listLocationsByTown_Id(town_id:String) = Action {
     val locations = Location.findByTown_id(town_id.toLong);
 

@@ -1,4 +1,4 @@
-@(user: User)(implicit request: RequestHeader)
+@(user: User, n: UserNotification)(implicit request: RequestHeader)
 
 @main(Html("Account information"), nav = "account") {
 <script>
@@ -9,6 +9,11 @@
   });
 
 </script>
+<style>
+  .noti_checkbox {
+    padding-right: 1em;
+  }
+</style>
 <table>
   <tr>
     <td><span id="gravatar">@user.email</span></td>
@@ -31,4 +36,99 @@
     </td>
   </tr>
 </table>
+
+<br />
+<br />
+<br />
+
+<h2>Notifications</h2>
+
+<div class="span6">
+  <form method="POST" action="/notifications">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Email</th>
+          <th>SMS</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>Somebody joined your tour</td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="sbdy_joined_email" name="sbdy_joined_email" @if(n.sbdy_joined_email){checked} />
+          </label>
+        </td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="sbdy_joined_sms" name="sbdy_joined_sms" @if(n.sbdy_joined_sms){checked} />
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>Somebody left your tour</td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="sbdy_left_email" name="sbdy_left_email" @if(n.sbdy_left_email){checked} />
+          </label>
+        </td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="sbdy_left_sms" name="sbdy_left_sms" @if(n.sbdy_left_sms){checked} />
+          </label>
+        </td>
+      </tr>
+      <tr><td></td><td></td><td></td></tr>
+      <tr>
+        <td>A tour of yours will start in about 30 min</td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="xmin_email" name="xmin_email" @if(n.xmin_email){checked} />
+          </label>
+        </td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="xmin_sms" name="xmin_sms" @if(n.xmin_sms){checked} />
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>A tour requires you to manually call the taxi company</td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="must_call_email" name="must_call_email" disabled="disabled" @if(n.must_call_email){checked} />
+            <input type="hidden" name="must_call_email" />
+          </label>
+        </td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="must_call_sms" name="must_call_sms" @if(n.must_call_sms){checked} />
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>A tour of yours has changed its status (booked, cancelled).</td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="status_changed_email" name="status_changed_email" @if(n.status_changed_email){checked} />
+          </label>
+        </td>
+        <td>
+          <label class="checkbox noti_checkbox">
+            <input type="checkbox" id="status_changed_sms" name="status_changed_sms" @if(n.status_changed_sms){checked} />
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button type="submit" class="btn btn-primary" name="submit" id="submit">Save</button>
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+
+    </table>
+  </form>
+</div>
 }
