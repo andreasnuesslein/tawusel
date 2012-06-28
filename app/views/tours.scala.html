@@ -3,7 +3,7 @@
   avail_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)],
 towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
 
-@implicitFieldConstructor = @{ FieldConstructor(_formhelpers.f) }
+@implicitFieldConstructor = @{ FieldConstructor(templates.formhelper.f) }
 
 @import helper._
 

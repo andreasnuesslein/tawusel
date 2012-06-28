@@ -1,6 +1,6 @@
 @(myform: Form[(String,String)])(implicit request: RequestHeader)
 
-@implicitFieldConstructor = @{ FieldConstructor(_formhelpers.f) }
+@implicitFieldConstructor = @{ FieldConstructor(templates.formhelper.f) }
 
 @import helper._
 
@@ -34,7 +34,8 @@
   <fieldset>
     @inputText(
     myform("email"),
-    '_label -> "Email"
+    '_label -> "Email",
+    '_help -> ""
     )
     @inputPassword(
     myform("password"),
