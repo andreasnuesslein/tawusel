@@ -24,7 +24,7 @@ object SMS {
   def send(notification: Notification, debug: Boolean = false) : String = {
     val smsText = notification.getShortText.replaceAll(" ","%20")
     val promise = WS.url(createUrl(notification.getNotifiedUser, smsText, debug)).get()  
-    getApiMessage(promise.value.get.body.toInt)
+    getApiMessage(promise.await(100000).get.body.toInt)
   } 
   
   /**
