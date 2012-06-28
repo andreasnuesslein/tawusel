@@ -1,0 +1,216 @@
+@(user: User, n: UserNotification,history: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)])(implicit request: RequestHeader)
+
+@main(Html("Account information"), nav = "account") {
+<script src="@routes.Assets.at("js/bootstrap-tab.js")" type="text/javascript"></script>
+<script>
+  $(document).ready(function() {
+    $("#gravatar").html(function(index,html) {
+      return "<img style=\"margin-top:-8px;margin-right:4px; border: 1px dotted;\" src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).text())+"?s=118\" />";
+    });
+    $('#myTab a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    })
+    $("#historytable").dataTable({
+      "bPaginate": false,
+      "bFilter": false,
+      "bInfo": false,
+      "aaSorting": []
+    });
+    $(".modtime").each(function() {
+      var elems = $(this).text().split(" - ");
+      var se1 = elems[0].split(":");
+      var se2 = elems[1].split(":");
+      $(this).text(pad(se1[0])+":"+pad(se1[1])+" - "+pad(se2[0])+":"+pad(se2[1])  );
+    });
+    $('.passenger').popover({placement:"top"});
+    $('.passenger').prepend(function(index,html) {
+      return "<img src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).attr('email'))+"?s=16\" />";
+    });
+    $('.statusicon').popover({placement:"top"});
+    $('.legend').popover({placement:"bottom"});
+
+  });
+
+</script>
+<style>
+  .noti_checkbox {
+    padding-right: 1em;
+  }
+</style>
+
+<ul class="nav nav-tabs" id="myTab">
+  <li class="active"><a href="#profile"><strong>Profile</strong></a></li>
+  <li><a href="#notifications"><strong>Notifications</strong></a></li>
+  <li><a href="#history"><strong>Travel history</strong></a></li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane active" id="profile">
+    <table>
+      <tr>
+        <td><span id="gravatar">@user.email</span></td>
+        <td>
+          <h6>Name</h6>
+          <p>
+          @user.firstname @user.lastname
+          </p>
+          <h6>Email</h6>
+          <p>
+          @user.email
+          </p>
+          <h6>Mobile phone</h6>
+          <p>
+          @user.cellphone
+          </p>
+        </td>
+        <td>
+          <a href="/tour/resetFavorites/@user.email" style="margin-left:15px;"><div class="btn btn-mini">reset tour favorites</div></a>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="tab-pane" id="notifications">
+    <h2>Notifications</h2>
+
+    <div class="span6">
+      <form method="POST" action="/notifications">
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Email</th>
+              <th>SMS</th>
+            </tr>
+          </thead>
+          <tr>
+            <td>Somebody joined your tour</td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="sbdy_joined_email" name="sbdy_joined_email" @if(n.sbdy_joined_email){checked} />
+              </label>
+            </td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="sbdy_joined_sms" name="sbdy_joined_sms" @if(n.sbdy_joined_sms){checked} />
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>Somebody left your tour</td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="sbdy_left_email" name="sbdy_left_email" @if(n.sbdy_left_email){checked} />
+              </label>
+            </td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="sbdy_left_sms" name="sbdy_left_sms" @if(n.sbdy_left_sms){checked} />
+              </label>
+            </td>
+          </tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr>
+            <td>A tour of yours will start in about 30 min</td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="xmin_email" name="xmin_email" @if(n.xmin_email){checked} />
+              </label>
+            </td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="xmin_sms" name="xmin_sms" @if(n.xmin_sms){checked} />
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>A tour requires you to manually call the taxi company</td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="must_call_email" name="must_call_email" disabled="disabled" @if(n.must_call_email){checked} />
+                <input type="hidden" name="must_call_email" />
+              </label>
+            </td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="must_call_sms" name="must_call_sms" @if(n.must_call_sms){checked} />
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>A tour of yours has changed its status (booked, cancelled).</td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="status_changed_email" name="status_changed_email" @if(n.status_changed_email){checked} />
+              </label>
+            </td>
+            <td>
+              <label class="checkbox noti_checkbox">
+                <input type="checkbox" id="status_changed_sms" name="status_changed_sms" @if(n.status_changed_sms){checked} />
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button type="submit" class="btn btn-primary" name="submit" id="submit">Save</button>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+
+        </table>
+      </form>
+    </div>
+  </div>
+  <div class="tab-pane" id="history">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="historytable">
+      <caption>
+      </caption>
+      <thead>
+        <tr>
+          <th>City</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Time</th>
+          <th>Passengers</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @history.map { h =>
+        <tr class="tour">
+          <td>@h._2</td>
+          <td>@h._3</td>
+          <td>@h._4</td>
+          <td><span class="modtime">@h._5.getHours:@h._5.getMinutes - @h._6.getHours:@h._6.getMinutes</span> (@h._5.getDate.@(h._5.getMonth + 1).@(h._5.getYear + 1900))</td>
+          <td>@h._8.map { u =>
+            @if(u.id == h._7) {
+              <span class="mod" style="font-weight:bold;">
+            } else {
+              <span>
+            }
+            <span class="passenger" style="border-bottom: 1px black dotted;" rel="popover" data-content="Email: @u.email<br />Phone: @u.cellphone" data-original-title="@u.firstname @u.lastname" email="@u.email">@u.firstname</span>
+            </span>
+            }
+          </td>
+          <td>
+            <span class="status">@if(h._9 == 1) {
+              <span class="statusicon" rel="popover" data-content="This tour was never confirmed nor cancelled." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+              }
+              @if(h._9 == 2) {
+              <span class="statusicon" rel="popover" data-content="This tour was confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
+              }
+              @if(h._9 == 3) {
+              <span class="statusicon" rel="popover" data-content="This tour was cancelled." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
+              }
+            </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+</div>
+}

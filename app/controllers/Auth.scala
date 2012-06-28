@@ -130,7 +130,8 @@ object Auth extends Controller with Secured {
   def account = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
     val notifications = UserNotification.getForUser(user.id)
-    Ok(html.auth.summary(user, notifications))
+    val history = Tour.getHistoryForUser(user.id)
+    Ok(html.auth.profile(user, notifications,history))
   }
 
 }
