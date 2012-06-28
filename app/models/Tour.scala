@@ -91,22 +91,14 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
   def updateTourState(state: Long): Boolean = {
     DB.withConnection { implicit connection =>
-      if(SQL("UPDATE tour SET tour_state = {state} WHERE id = {id};").on(
-        'state -> state, 'id -> this.id).executeUpdate == 1) {
-        return true
-      } else {
-        return false
-      }
+      (SQL("UPDATE tour SET tour_state = {state} WHERE id = {id}").on(
+        'state -> state, 'id -> this.id).executeUpdate == 1)
     }
   }
   def updateTimerState: Boolean = {
     DB.withConnection { implicit connection =>
-      if(SQL("UPDATE tour SET checked_by_timer = 1 WHERE id = {id};").on(
-        'id -> this.id).executeUpdate == 1) {
-        return true
-      } else {
-        return false
-      }
+      (SQL("UPDATE tour SET checked_by_timer = 1 WHERE id = {id}").on(
+        'id -> this.id).executeUpdate == 1)
     }
   }
 
@@ -165,9 +157,9 @@ object Tour {
         'id -> id).as(Tour.simple.singleOpt)
     }
   }
-  
 
-  def findAll(userid:Int = -1): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)], Int)] = {
+
+  def findAll(userid:Int = -1): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)] = {
     DB.withConnection { implicit connection =>
       var tours = SQL("""select tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name,tour.mod_id, tour.tour_state
         from tour
@@ -179,14 +171,13 @@ object Tour {
             'id -> userid
           )
       .as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") ~ int("mod_id") ~ int("tour_state") map(flatten) * )
-      var x:List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)], Int)] = for(t <- tours;
-        p = SQL("""select * from user join user_has_tour on user_has_tour.user_id=user.id where tour_id={tid}""").on('tid -> t._1).as(
-          int("id") ~ str("email") ~ str("firstname") ~ str("lastname") ~ str("cellphone") map(flatten) *)
+      var x = for(t <- tours;
+        p = SQL("""select * from user join user_has_tour on user_has_tour.user_id=user.id where tour_id={tid}""").on('tid -> t._1).as(User.simple *)
         ) yield (t._1,t._2,t._3,t._4,t._5,t._6,t._7,p,t._8)
       return x
     }
   }
- 
+
 
     def findByTown_id(town_id:Long): List[Tour] = {
     DB.withConnection { implicit connection =>
@@ -245,7 +236,7 @@ object Tour {
   }
 
   /*Displays the ongoing tours for the given user, specified by id.*/
-  def findAllForUser(user_id: Int): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[(Int,String,String,String,String)], Int)] = {
+  def findAllForUser(user_id: Int): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)] = {
     DB.withConnection { implicit connection =>
       var tours = SQL("""SELECT tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name, tour.mod_id, tour.tour_state
         FROM tour
@@ -258,9 +249,9 @@ object Tour {
         'user_id -> user_id
       ).as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") ~ int("mod_id") ~ int("tour_state") map(flatten) *)
       var x = for(t <- tours;
-        p = SQL("""select id, email, firstname, lastname, cellphone
+        p = SQL("""select *
         from user join user_has_tour on user_has_tour.user_id=user.id
-        where tour_id={tid}""").on('tid -> t._1).as(int("id") ~ str("email") ~ str("firstname") ~ str("lastname") ~ str("cellphone") map(flatten) *)
+        where tour_id={tid}""").on('tid -> t._1).as(User.simple *)
       ) yield (t._1,t._2,t._3,t._4,t._5,t._6,t._7,p,t._8)
       return x
     }

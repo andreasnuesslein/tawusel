@@ -26,7 +26,7 @@ class ManualCallNotification(
   } else {
     contentInitiator += "As you are the initiator of this tour, please call a taxi,"
   }
-  contentInitiator += " using the following number:\n\t" + taxiNumber + "\n\n"
+  contentInitiator += " using the following number:\n\t" + taxiNumber + " (or from a landline: 090011/22456 )\n\n"
       
   //create the confirm/cancel links
   val contentConfirmOrder = "If you have ordered successfully, please confirm:\t"

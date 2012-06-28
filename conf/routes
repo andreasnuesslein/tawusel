@@ -15,6 +15,7 @@ GET		/login			controllers.Auth.login
 POST	/login			controllers.Auth.authenticate
 GET		/logout			controllers.Auth.logout
 GET		/account		controllers.Auth.account
+POST	/account		controllers.Auth.editUser
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
 POST	/notifications	controllers.Auth.updateNotifications

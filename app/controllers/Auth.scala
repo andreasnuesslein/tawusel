@@ -51,7 +51,7 @@ object Auth extends Controller with Secured {
         "Passwords don't match", passwords => passwords._1 == passwords._2
       )
     ) { (email, firstname, lastname, cellphone, passwords)
-      => User(-1, email, firstname, lastname, cellphone, passwords._1)
+      => User(-1, email, firstname, lastname, cellphone, passwords._1, null)
     }
     {
       user => Some(user.email, user.firstname, user.lastname, user.cellphone, (user.password, ""))
@@ -118,20 +118,32 @@ object Auth extends Controller with Secured {
   }
 
 
-  /**
-   * Implementation of the logout method (action).
-   */
   def logout = Action {
     Redirect(routes.Auth.login).withNewSession.flashing(
       "success" -> "You've been logged out."
     )
   }
 
+  val editForm = Form(
+    tuple(
+      "email" -> email,
+      "cellphone" -> text,
+      "extension" -> optional(text)
+    )
+  )
+
   def account = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
     val notifications = UserNotification.getForUser(user.id)
     val history = Tour.getHistoryForUser(user.id)
-    Ok(html.auth.profile(user, notifications,history))
+    Ok(html.auth.profile(editForm.fill((user.email,user.cellphone,user.extension)), notifications,history))
+  }
+  def editUser = IsAuthenticated { email => implicit request =>
+    val user = User.findByEmail(email).get
+    val x = request.body.asFormUrlEncoded.get
+    user.update(x("email").first,x("cellphone").first,Option(x("extension").first))
+    Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").first,"firstname" -> user.firstname)
+    .flashing("success" -> "Successfully updated.")
   }
 
 }
