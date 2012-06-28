@@ -37,9 +37,11 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
       var users = this.getAllUsers()
       for (u <- users) {
         if(u != initiator) {
-          var x:Notification = new PassengerJoinedNotification(u,initiator,this)
-          Mail.send(x)
-          SMS.send(x, true)
+          val un = UserNotification.getForUser(u.id)
+          val n = new PassengerJoinedNotification(u,initiator,this)
+          if(un.sbdy_joined_email) Mail.send(n)
+          // TODO: SMS debug flag
+          if(un.sbdy_joined_sms) SMS.send(n, true)
         }
       }
       return true
@@ -68,10 +70,12 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
       val initiator = User.findById(userid).get
       var users = this.getAllUsers()
       for (u <- users) {
-        if(u!= initiator) {
-          var x:Notification = new PassengerLeftNotification(u,initiator,this)
-          Mail.send(x)
-          SMS.send(x,true)
+        if(u != initiator) {
+          val un = UserNotification.getForUser(u.id)
+          val n = new PassengerLeftNotification(u,initiator,this)
+          if(un.sbdy_left_email) Mail.send(n)
+          // TODO: SMS debug flag
+          if(un.sbdy_left_sms) SMS.send(n, true)
         }
       }
       return true
@@ -116,20 +120,22 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
   def book: Boolean = {
     // TODO API-call when available
 
+    // manual way: call a number
     val mod = this.getMod
     val un = UserNotification.getForUser(mod.id)
-    var n:Notification = new ManualCallNotification(mod, null, this, false)
+    val n = new ManualCallNotification(mod, null, this, false)
     if(un.must_call_email) Mail.send(n)
-    if(un.must_call_sms) SMS.send(n)
+    // TODO: SMS debug flag
+    if(un.must_call_sms) SMS.send(n, true)
 
 
     // notifications
     for(u : User <- this.getAllUsers()){
       val un = UserNotification.getForUser(u.id)
       val n = new TourStartsSoonNotification(u, null, this)
-      if(un.must_call_email) Mail.send(n)
-      // TODO remove debug flag
-      if(un.must_call_sms) SMS.send(n, true)
+      if(un.xmin_email) Mail.send(n)
+      // TODO: SMS debug flag
+      if(un.xmin_sms) SMS.send(n, true)
     }
 
     this.updateTimerState

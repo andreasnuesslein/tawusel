@@ -98,7 +98,7 @@ object Auth extends Controller with Secured {
        BadRequest(html.auth.register(formWithErrors))
      },
      user => {
-      User.create(user)
+      user.create
       Mail.send(new RegisterNotification(user, null, null))
       Redirect(routes.Tours.tours).withSession("email" -> user.email,"firstname" -> user.firstname)
     }

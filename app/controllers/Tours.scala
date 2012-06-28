@@ -10,7 +10,7 @@ import play.api.mvc.Controller
 import play.api.mvc._
 import models._
 import views._
-import tools.Mail
+import tools.{Mail,SMS}
 import tools.notification.Notification
 import tools.notification.TaxiStatusChangedSuccessNotification
 import tools.notification.TaxiStatusChangedFailNotification
@@ -80,9 +80,11 @@ object Tours extends Controller with Secured {
     if( tour.checkToken(token) ) {
         if(tour.updateTourState(2)) {
           var notification: Notification = null
-          tour.getAllUsers().foreach((user: User) => {
-              notification = new TaxiStatusChangedSuccessNotification(user, null, tour)
-              Mail.send(notification)
+          tour.getAllUsers().foreach(u => {
+              val un = UserNotification.getForUser(u.id)
+              val n = new TaxiStatusChangedSuccessNotification(u, null, tour)
+              if(un.status_changed_email) Mail.send(n)
+              if(un.status_changed_sms) SMS.send(n, true)
             }
           )
         }
@@ -100,9 +102,11 @@ object Tours extends Controller with Secured {
         var statusText = ""
         if(tour.updateTourState(3)) {
           var notification: Notification = null
-          tour.getAllUsers().foreach((user: User) => {
-              notification = new TaxiStatusChangedFailNotification(user, null, tour)
-              Mail.send(notification)
+          tour.getAllUsers().foreach(u => {
+              val un = UserNotification.getForUser(u.id)
+              val n = new TaxiStatusChangedFailNotification(u, null, tour)
+              if(un.status_changed_email) Mail.send(n)
+              if(un.status_changed_sms) SMS.send(n, true)
             }
           )
           if(tour.getAllUsers().length > 1) {
@@ -112,7 +116,10 @@ object Tours extends Controller with Secured {
             } else {
               notification = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
             }
+
             Mail.send(notification)
+            // TODO: SMS debug flag
+            SMS.send(notification, true)
             statusText = "The status of the tour has not changed. The next passenger will be informed to call a taxi."
           } else {
             statusText = "The status of the tour has not changed. We are sorry to inform you, that there is no other passenger to call a taxi."

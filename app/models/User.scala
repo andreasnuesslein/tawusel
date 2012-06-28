@@ -17,7 +17,15 @@ case class User(
   lastname: String,
   cellphone: String,
   password: String
-  )
+  ) {
+  def create: Int = {
+    User.create(this.email,
+      this.firstname,
+      this.lastname,
+      this.cellphone,
+      this.password)
+  }
+}
 
 /**
  * User object, which encapsulates the attributes email as
@@ -118,26 +126,25 @@ object User {
   }
    
   /**
-   * Create a User. Returns the user which was created.
+   * Create a User. Returns the ID
    */
-  def create(user: User): User = {
+  def create(email:String, firstname: String, lastname: String, cellphone: String, password: String): Int = {
     DB.withConnection { implicit connection =>
-      val userid: Long = SQL("""
-        INSERT 
-		INTO user (email, firstname, lastname, cellphone, password) 
-		VALUES ({e},{fn},{ln},{c},SHA1({p}))
-	  """).on(
-		  'e -> user.email,
-		  'fn -> user.firstname,
-		  'ln -> user.lastname,
-		  'c -> user.cellphone,
-		  'p -> user.password
+      val id: Long = SQL("""
+        INSERT
+        INTO user (email, firstname, lastname, cellphone, password)
+        VALUES ({e},{fn},{ln},{c},SHA1({p}))""").on(
+		  'e -> email,
+		  'fn -> firstname,
+		  'ln -> lastname,
+		  'c -> cellphone,
+		  'p -> password
 	  ).executeInsert().get
-    UserNotification.create(userid.toInt)
+    UserNotification.create(id.toInt)
+    id.toInt
     }
-	user
   }
-  
+
   /**
    * Delete a User. Returns the number of rows which could be
    * deleted.
