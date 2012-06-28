@@ -56,7 +56,7 @@ object Tours extends Controller with Secured {
 
   def joinTour(id:Long) = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val tour = Tour.findById(id)
+    val tour = Tour.findById(id).get
     tour.userJoin(user.id)
     Redirect(routes.Tours.tours).flashing("success" -> "Successfully joined the tour!")
 
@@ -64,7 +64,7 @@ object Tours extends Controller with Secured {
 
   def leaveTour(id:Long) = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val tour = Tour.findById(id)
+    val tour = Tour.findById(id).get
     tour.userLeave(user.id)
     Redirect(routes.Tours.tours).flashing("success" -> "Successfully left the tour!")
   }
@@ -76,28 +76,32 @@ object Tours extends Controller with Secured {
     (tour_state.id == 4) = done
   */
   def confirmTour(id: Long, token: String) = Action {implicit request =>
-    var tour = Tour.findById(id)
-    if( tour.checkToken(token) ) {
+    try {
+      var tour = Tour.findById(id).get
+      if( tour.checkToken(token) ) {
         if(tour.updateTourState(2)) {
           var notification: Notification = null
           tour.getAllUsers().foreach(u => {
-              val un = UserNotification.getForUser(u.id)
-              val n = new TaxiStatusChangedSuccessNotification(u, null, tour)
-              if(un.status_changed_email) Mail.send(n)
-              if(un.status_changed_sms) SMS.send(n, true)
+            val un = UserNotification.getForUser(u.id)
+            val n = new TaxiStatusChangedSuccessNotification(u, null, tour)
+            if(un.status_changed_email) Mail.send(n)
+            if(un.status_changed_sms) SMS.send(n, true)
             }
           )
         }
-      Ok(html.status("Taxi-Ordering", "You changed the status of the tour successfully, every passenger will be informed, that a taxi has been ordered."))
-    } else {
-      Ok(html.status("Error occured", "Due to bad request, nothing changed."))
+        Ok(html.status("Taxi-Ordering", "You changed the status of the tour successfully, every passenger will be informed, that a taxi has been ordered."))
+      } else {
+        Ok(html.status("Error occured", "Due to bad request, nothing changed."))
+      }
+    } catch {
+      case e => Ok(html.status("Missing tour", "This is not the tour you're looking for."))
     }
   }
 
   /*This method does set the state of the actual tour to fail and informs all connected users.
   */
   def cancelTour(id: Long, token: String) = Action { implicit request =>
-    var tour = Tour.findById(id)
+    var tour = Tour.findById(id).get
     if( tour.checkToken(token) ) {
         var statusText = ""
         if(tour.updateTourState(3)) {

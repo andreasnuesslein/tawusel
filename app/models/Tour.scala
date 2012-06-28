@@ -159,10 +159,10 @@ object Tour {
       }
   }
 
-  def findById(id: Long): Tour = {
+  def findById(id: Long): Option[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour where id = {id}").on(
-        'id -> id).as(Tour.simple *).head
+        'id -> id).as(Tour.simple.singleOpt)
     }
   }
   
