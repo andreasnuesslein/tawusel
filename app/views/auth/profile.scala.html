@@ -1,4 +1,4 @@
-@(userform: Form[(String,String,Option[String])], n: UserNotification,history: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)])(implicit request: RequestHeader)
+@(user: User, userform: Form[(String,String,Option[String])], n: UserNotification,history: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)])(implicit request: RequestHeader)
 
 @import helper._
 @implicitField = @{ FieldConstructor(templates.userform.f) }
@@ -52,9 +52,9 @@
   <div class="tab-pane active" id="profile">
     <table>
       <tr>
-        <td valign="top"><span id="gravatar">@userform("email").value</span></td>
+        <td valign="top"><span id="gravatar">@user.email</span></td>
         <td>
-          <div><div class="userform-label"></div><span class="userform-input"><strong>@userform("firstname").value @userform("lastname").value</strong></span></div>
+          <div><div class="userform-label"></div><span class="userform-input"><strong>@user.firstname @user.lastname</strong></span></div>
           <br />
           <form method="POST">
             @inputText(userform("email"), '_label -> "Email")

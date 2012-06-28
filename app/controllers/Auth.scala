@@ -136,7 +136,7 @@ object Auth extends Controller with Secured {
     val user = User.findByEmail(email).get
     val notifications = UserNotification.getForUser(user.id)
     val history = Tour.getHistoryForUser(user.id)
-    Ok(html.auth.profile(editForm.fill((user.email,user.cellphone,user.extension)), notifications,history))
+    Ok(html.auth.profile(user, editForm.fill((user.email,user.cellphone,user.extension)), notifications, history))
   }
   def editUser = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
