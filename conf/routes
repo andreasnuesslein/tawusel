@@ -18,18 +18,18 @@ GET		/account		controllers.Auth.account
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
 POST	/notifications	controllers.Auth.updateNotifications
-GET		/authentificateByApp/*email/*hashedPassword					controllers.Application.authentificateByApp(email, hashedPassword)
+GET		/authentificateByApp/*email/*hashedPassword					controllers.JSON.authentificateByApp(email, hashedPassword)
 
 # Tours
 POST	/tours		controllers.Tours.newTourCreate
 GET		/tours		controllers.Tours.tours
 
-GET		/listLocations/*town_id										controllers.Application.listLocationsByTown_Id(town_id)
-GET		/listToursByTown/*town_id									controllers.Application.listToursByTown_Id(town_id)
-GET		/listAllTours												controllers.Application.listAllTours()
-GET		/listToursByDepLocation/*location_id						controllers.Application.listToursByDepLocation_Id(location_id)
-GET		/listToursByArrLocation/*locationDep_id/*locationArr_id		controllers.Application.listToursByArrLocation_Id(locationDep_id, locationArr_id)
-GET		/authentificateByApp/*email/*password						controllers.Application.authentificateByApp(email,password)
+GET		/listLocations/*town_id										controllers.JSON.listLocationsByTown_Id(town_id)
+GET		/listToursByTown/*town_id									controllers.JSON.listToursByTown_Id(town_id)
+GET		/listAllTours												controllers.JSON.listAllTours()
+GET		/listToursByDepLocation/*location_id						controllers.JSON.listToursByDepLocation_Id(location_id)
+GET		/listToursByArrLocation/*locationDep_id/*locationArr_id		controllers.JSON.listToursByArrLocation_Id(locationDep_id, locationArr_id)
+GET		/authentificateByApp/*email/*password						controllers.JSON.authentificateByApp(email,password)
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file												controllers.Assets.at(path="/public", file)
