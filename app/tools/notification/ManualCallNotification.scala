@@ -30,7 +30,7 @@ class ManualCallNotification(
       
   //create the confirm/cancel links
   val contentConfirmOrder = "If you have ordered successfully, please\t"
-  val contentConfirmLink = "<a href=\"wusel.noova.de/tour/" + tour.id + "/confirm/" + token + "\">confirm the tour</a>.<br /><br />"
+  val contentConfirmLink = "<a href=\"http://wusel.noova.de/tour/" + tour.id + "/confirm/" + token + "\">confirm the tour</a>.<br /><br />"
   val contentCancelOrder = "If you are not able to call a taxi, please\t"
   val contentCancelLink = "<a href=\"http://wusel.noova.de/tour/" + tour.id + "/cancel/" + token + "\">cancel the tour</a>."  
   val contentLinks = contentConfirmOrder + contentConfirmLink + contentCancelOrder + contentCancelLink

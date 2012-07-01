@@ -57,6 +57,16 @@ object Location {
       SQL("select * from location").as(Location.simple *)
     }
   }
+
+  /**
+   * Retrieves all Locations sorted by their names.
+   */
+  def findAllSortedByName(): List[Location] = {
+    DB.withConnection { implicit connection =>
+      SQL("SELECT * FROM location ORDER BY location.name ASC").as(Location.simple *)
+    }
+  }
+
   /**
    * Create a Location.
    */

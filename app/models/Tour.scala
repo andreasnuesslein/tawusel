@@ -178,8 +178,7 @@ object Tour {
     }
   }
 
-
-    def findByTown_id(town_id:Long): List[Tour] = {
+  def findByTown_id(town_id:Long): List[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour " +
       		"inner join location " +

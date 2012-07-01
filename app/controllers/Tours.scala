@@ -50,8 +50,10 @@ object Tours extends Controller with Secured {
     val active_tours = Tour.findAllForUser(user.id)
     val tour_templates = Tour.findTemplatesForUser(user.id)
     val available_tours = Tour.findAll(user.id)
+    var towns = Town.findAllSortedByName()
+    var locations = Location.findAllSortedByName()
     Ok(views.html.tours(active_tours, tour_templates, available_tours,
-      Town.findAll(), Location.findAll()))
+      towns, locations))
 
   }
 
