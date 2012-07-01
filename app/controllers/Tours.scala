@@ -16,6 +16,7 @@ import tools.notification.TaxiStatusChangedSuccessNotification
 import tools.notification.TaxiStatusChangedFailNotification
 import tools.notification.ManualCallNotification
 import com.codahale.jerkson.Json
+import java.util.Calendar
 
 object Tours extends Controller with Secured {
 
@@ -138,15 +139,25 @@ object Tours extends Controller with Secured {
   /*This method is given to remotely create a tour for a per mail specified user.*/
   def remoteCreateTour(token: String) = Action {
    //TODO convert string to email, verification, startingpoint, targetpoint, startingtime and endtime
-   //TODO create tour with data
+   //TODO create tour with data TODO test if a tour with this specifications already exist in the db
+     println(token)
      var dep = new java.util.Date(1.toLong);
      var arr = new java.util.Date(1.toLong);
-     var dep_l = 1;
-     var arr_l = 1;
-//     var userid = User.findByEmail("mail@mail.com").id
+     var dep_l = 16;
+     var arr_l = 17;
+//     var userid = User.getIdByEmail("mail@mail.com")
      var userid = 5
-     var tour = Tour.create(dep,arr, dep_l, arr_l, 1,userid)
-     val json = "{\"aaData\" : " + Json.generate(tour) + "}"
+     var cal = Calendar.getInstance
+     cal.set(2012, 5, 29, 7, 31)
+     val existingTours: List[Tour] = Tour.checkForSimilarTour(cal.getTime, dep_l, arr_l, 5)
+     if(existingTours.nonEmpty) {
+       val existingTour: Tour = existingTours.head
+       println(existingTours)
+       println(existingTour)
+     }
+     //var tour = Tour.create(dep,arr, dep_l, arr_l, 1,userid)
+     //println(existingTour)
+     //val json = "{\"aaData\" : " + Json.generate(tour) + "}"
      //200 if Ok, 500 if internal error, 400 if bad request, 401 if unauthorised
      Ok("true")
   }
