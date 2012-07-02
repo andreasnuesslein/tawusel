@@ -45,6 +45,15 @@ object Town {
   }
   
   /**
+   * Retrieves all Towns sorted by their names.
+   */
+  def findAllSortedByName(): List[Town] = {
+    DB.withConnection { implicit connection =>
+      SQL("SELECT * FROM town ORDER BY town.name ASC").as(Town.simple *)
+    }
+  }
+
+  /**
    * Create a Town.
    */
   def create(name: String) :Town = {

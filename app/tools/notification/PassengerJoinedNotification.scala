@@ -10,7 +10,7 @@ class PassengerJoinedNotification(
   val subject = "A new passenger entered your tour"
 
   val fromLoc = "For your tour from " + Location.getName(tour.dep_location) + " to "
-  val toLoc = Location.getName(tour.arr_location) + " a new passenger has entered.\n"
+  val toLoc = Location.getName(tour.arr_location) + " a new passenger has entered.<br />"
   val newPas = "The new passenger is " + interactingUser.firstname + " " + interactingUser.lastname + "."
   val text = fromLoc + toLoc + newPas
 

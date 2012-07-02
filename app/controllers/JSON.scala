@@ -10,41 +10,31 @@ import com.codahale.jerkson.Json
 
 object JSON extends Controller {
 
-  def listLocationsByTown_Id(town_id:String) = Action {
-    val locations = Location.findByTown_id(town_id.toLong);
-    val json = Json.generate(locations)
-    Ok(json).as("application/json")
-  }
-
-  def listToursByTown_Id(town_id:String) = Action {
-    val tours = Tour.findByTown_id(town_id.toLong)
-    val json ="{\"aaData\": "+ Json.generate(tours) + "}"
-    Ok(json).as("application/json")
-  }
-  
-  def listToursByDepLocation_Id(location_id:String) = Action {
-    val tours = Tour.findByDepLocation_id(location_id.toLong)
-    val json ="{\"aaData\": "+ Json.generate(tours) + "}"
-    Ok(json).as("application/json")
-  }
- 
-  def listToursByArrLocation_Id(locationDep_id:String,locationArr_id:String) = Action {
-    val tours = Tour.findByArrLocation_id(locationDep_id.toLong,locationArr_id.toLong)
-    val json ="{\"aaData\": "+ Json.generate(tours) + "}"
-    Ok(json).as("application/json")
-  }
-
-  def listAllTours() = Action {
-    val tours = Tour.findAll();
-    val json ="{\"aaData\": "+ Json.generate(tours) + "}"
-    Ok(json).as("application/json")
-  }
-
-  def authentificateByApp(email:String, hashedPassword:String) = Action {
+  def authenticateByApp(email:String, hashedPassword:String) = Action {
     val user = User.authenticateWithHashedPassword(email, hashedPassword)
-    val json ="{\"aaData\": "+ Json.generate(user) + "}"
+    val json = Json.generate(user)
     Ok(json).as("application/json")
   }
   
+  def getActiveToursByApp(email: String) = Action {
+    val user = User.findByEmail(email).get
+    val activeTours = Tour.findAllForUser(user.id)
+    val json = Json.generate(activeTours)
+    Ok(json).as("application/json")
+  }
   
+  def getTourTemplatesByApp(email:String) = Action {
+    val user = User.findByEmail(email).get
+    val tourTemplates = Tour.findTemplatesForUser(user.id)
+    val json = Json.generate(tourTemplates)
+    Ok(json).as("application/json")
+  }
+  
+  def getAvailableToursByApp(email:String) = Action {
+    val user = User.findByEmail(email).get
+    val availableTours = Tour.findAll(user.id)
+    val json = Json.generate(availableTours)
+    Ok(json).as("application/json")
+  }
+    
 }
