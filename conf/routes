@@ -19,18 +19,14 @@ POST	/account		controllers.Auth.editUser
 GET		/register		controllers.Auth.register
 POST	/register		controllers.Auth.submit
 POST	/notifications	controllers.Auth.updateNotifications
-GET		/authentificateByApp/*email/*hashedPassword					controllers.JSON.authentificateByApp(email, hashedPassword)
+GET		/authenticateByApp/*email/*hashedPassword					controllers.JSON.authenticateByApp(email, hashedPassword)
 
 # Tours
 POST	/tours		controllers.Tours.newTourCreate
 GET		/tours		controllers.Tours.tours
-
-GET		/listLocations/*town_id										controllers.JSON.listLocationsByTown_Id(town_id)
-GET		/listToursByTown/*town_id									controllers.JSON.listToursByTown_Id(town_id)
-GET		/listAllTours												controllers.JSON.listAllTours()
-GET		/listToursByDepLocation/*location_id						controllers.JSON.listToursByDepLocation_Id(location_id)
-GET		/listToursByArrLocation/*locationDep_id/*locationArr_id		controllers.JSON.listToursByArrLocation_Id(locationDep_id, locationArr_id)
-GET		/authentificateByApp/*email/*password						controllers.JSON.authentificateByApp(email,password)
+GET		/getActiveToursByApp/*email									controllers.JSON.getActiveToursByApp(email)
+GET		/getTourTemplatesByApp/*email									controllers.JSON.getTourTemplatesByApp(email)
+GET		/getAvailableToursByApp/*email									controllers.JSON.getAvailableToursByApp(email)
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file												controllers.Assets.at(path="/public", file)

@@ -12,6 +12,6 @@ object Mail {
       mail.setSubject(notification.getSubject)
       mail.addRecipient(notification.getNotifiedUser.email)
       mail.addFrom("tawusel@dev.noova.de")
-      mail.send(notification.getText)
+      mail.sendHtml(notification.getText)
     }
 }

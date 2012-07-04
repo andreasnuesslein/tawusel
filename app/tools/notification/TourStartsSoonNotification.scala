@@ -9,16 +9,18 @@ class TourStartsSoonNotification(
   notifiedUser: User, 
   interactingUser: User, 
   tour: Tour) extends Notification(notifiedUser, interactingUser,tour) {
- 
+
   val subject = "Your tour will start soon"
 
+  val depTime = tour.departure.toString.take(tour.departure.toString.length - 2)
+
   val fromTo = "The tour from " + Location.getName(tour.dep_location) + " to " + Location.getName(tour.arr_location)
-  val willStart = " will start at " + tour.departure + "."
+  val willStart = " will start at " + depTime + "."
   val text = fromTo + willStart
 
   val shortText = "Hello " + notifiedUser.firstname + ", your taxi on order waits for you at " +
-      tour.departure + "."
-  
+      depTime + "."
+
   /**
    * Retrieves the gap between the current timestamp an the depature of 
    * the tour in minutes and returns it as a string.
@@ -30,7 +32,7 @@ class TourStartsSoonNotification(
     val period = new Period(currentTime.getTime(), depature.getTime())
     period.getMinutes.toString
   }
-  
+
   /**
    * Overloaded method since default parameters doesn't work :( 
    * 
@@ -42,7 +44,7 @@ class TourStartsSoonNotification(
     val newDepatureFormat = createDateFormat(new Date(), depature)
 	getTimeToDestination(currentTime, newDepatureFormat)
   }
-  
+
   /**
    * Creates a shared timestamp format to compare the sql.time
    * format from the database with the java.util.date format created
@@ -56,4 +58,5 @@ class TourStartsSoonNotification(
     val cf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
     cf.parse(df.format(date).toString()+" "+tf.format(time).toString())
   }
+
 }

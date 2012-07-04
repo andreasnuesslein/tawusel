@@ -178,8 +178,7 @@ object Tour {
     }
   }
 
-
-    def findByTown_id(town_id:Long): List[Tour] = {
+  def findByTown_id(town_id:Long): List[Tour] = {
     DB.withConnection { implicit connection =>
       SQL("select * from tour " +
       		"inner join location " +
@@ -364,6 +363,31 @@ object Tour {
       } else {
         return false
       }
+    }
+  }
+
+  /* This method checks if for some given parameters a tour already is existent*/
+  def checkForSimilarTour(dep: Date, dep_loc: Long, arr_loc: Long, time_range: Int): List[Tour] = {
+    var calendar = Calendar.getInstance
+    calendar.setTime(dep)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + time_range)
+    val dep_max: Date = calendar.getTime
+    calendar.setTime(dep)
+    calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - time_range)
+    calendar.set(Calendar.SECOND, 0)
+    val dep_min: Date = calendar.getTime
+    DB.withConnection { implicit connection =>
+      SQL("""SELECT *
+        FROM tour
+        WHERE departure <= {dep_max} AND departure >= {dep_min}
+              AND dep_location = {dep_loc} AND arr_location = {arr_loc}
+        """).on(
+          'dep_max -> dep_max,
+          'dep_min -> dep_min,
+          'arr_loc -> arr_loc,
+          'dep_loc -> dep_loc
+        ).as(Tour.simple *)
     }
   }
 
