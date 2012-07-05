@@ -16,8 +16,7 @@ case class User(id: Int, email: String, firstname: String, lastname: String, cel
       this.firstname,
       this.lastname,
       this.cellphone,
-      this.password,
-      this.extension)
+      this.password)
   }
 
   def update(email:String, cellphone: String, extension: Option[String]): Boolean = {
@@ -119,18 +118,17 @@ object User {
   /**
    * Create a User. Returns the ID
    */
-  def create(email:String, firstname: String, lastname: String, cellphone: String, password: String, extension: Option[String]): Int = {
+  def create(email:String, firstname: String, lastname: String, cellphone: String, password: String): Int = {
     DB.withConnection { implicit connection =>
       val id: Long = SQL("""
         INSERT
-        INTO user (email, firstname, lastname, cellphone, password, extension)
-        VALUES ({e},{fn},{ln},{c},SHA1({p},{ex}))""").on(
+        INTO user (email, firstname, lastname, cellphone, password)
+        VALUES ({e},{fn},{ln},{c},SHA1({p}))""").on(
 		  'e -> email,
 		  'fn -> firstname,
 		  'ln -> lastname,
 		  'c -> cellphone,
-		  'p -> password,
-          'ex -> extension
+		  'p -> password
 	  ).executeInsert().get
     UserNotification.create(id.toInt)
     id.toInt
