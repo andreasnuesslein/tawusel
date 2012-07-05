@@ -28,57 +28,65 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
   def userJoin(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
-      SQL("INSERT INTO user_has_tour VALUES({uid},{tid},0)").on(
-        'uid -> userid,
-        'tid -> this.id).execute()
+      try {
+        SQL("INSERT INTO user_has_tour VALUES({uid},{tid},0)").on(
+          'uid -> userid,
+          'tid -> this.id).execute()
 
-      // notify
-      val initiator = User.findById(userid).get
-      var users = this.getAllUsers()
-      for (u <- users) {
-        if(u != initiator) {
-          val un = UserNotification.getForUser(u.id)
-          val n = new PassengerJoinedNotification(u,initiator,this)
-          if(un.sbdy_joined_email) Mail.send(n)
-          // TODO: SMS debug flag
-          if(un.sbdy_joined_sms) SMS.send(n, true)
-        }
+          // notify
+          val initiator = User.findById(userid).get
+          var users = this.getAllUsers()
+          for (u <- users) {
+	        if(u != initiator) {
+	          val un = UserNotification.getForUser(u.id)
+	          val n = new PassengerJoinedNotification(u,initiator,this)
+	          if(un.sbdy_joined_email) Mail.send(n)
+	          // TODO: SMS debug flag
+	          if(un.sbdy_joined_sms) SMS.send(n, true)
+	        }
+	      }
+	      return true 
+      } catch {
+         case _ => return false
       }
-      return true
     }
   }
+  
   def userLeave(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
-      SQL("DELETE FROM user_has_tour WHERE user_id={uid} and tour_id={tid}").on(
-        'uid -> userid,
-        'tid -> this.id).execute()
-      var useridsql = SQL("SELECT user_id FROM user_has_tour WHERE tour_id={tid}").on('tid -> this.id)
-      var useridlist = useridsql().map( row =>
-        row[Int]("user_id") ).toList
-
-      val was_i_mod_before:Boolean = SQL("SELECT mod_id FROM tour where id={tid}").on('tid -> this.id).as(scalar[Int].single) == userid
-
-      if (useridlist.isEmpty) {
-        SQL("DELETE FROM tour where id={tid}").on('tid -> this.id).execute()
-      } else {
-        if(was_i_mod_before) {
-          SQL("UPDATE tour SET mod_id={uid} WHERE id={tid}").on('uid -> useridlist(0),'tid -> this.id).executeUpdate()
-        }
+      try {
+        SQL("DELETE FROM user_has_tour WHERE user_id={uid} and tour_id={tid}").on(
+	      'uid -> userid,
+	      'tid -> this.id).execute()
+	    var useridsql = SQL("SELECT user_id FROM user_has_tour WHERE tour_id={tid}").on('tid -> this.id)
+	    var useridlist = useridsql().map( row => row[Int]("user_id") ).toList
+	
+	    val was_i_mod_before:Boolean = SQL("SELECT mod_id FROM tour where id={tid}").on('tid -> this.id).as(scalar[Int].single) == userid
+	
+	    if (useridlist.isEmpty) {
+	      SQL("DELETE FROM tour where id={tid}").on('tid -> this.id).execute()
+	    } else {
+	      if(was_i_mod_before) {
+	        SQL("UPDATE tour SET mod_id={uid} WHERE id={tid}").on('uid -> useridlist(0),'tid -> this.id).executeUpdate()
+	      }
+	    }
+	
+	    // notify
+	    val initiator = User.findById(userid).get
+	    var users = this.getAllUsers()
+	    for (u <- users) {
+	      if(u != initiator) {
+	        val un = UserNotification.getForUser(u.id)
+	        val n = new PassengerLeftNotification(u,initiator,this)
+	        if(un.sbdy_left_email) Mail.send(n)
+	        // TODO: SMS debug flag
+	        if(un.sbdy_left_sms) SMS.send(n, true)
+	      }
+	    }
+	    return true
+      } catch {
+         case _ => return false
       }
-
-      // notify
-      val initiator = User.findById(userid).get
-      var users = this.getAllUsers()
-      for (u <- users) {
-        if(u != initiator) {
-          val un = UserNotification.getForUser(u.id)
-          val n = new PassengerLeftNotification(u,initiator,this)
-          if(un.sbdy_left_email) Mail.send(n)
-          // TODO: SMS debug flag
-          if(un.sbdy_left_sms) SMS.send(n, true)
-        }
-      }
-      return true
     }
   }
 
