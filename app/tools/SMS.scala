@@ -22,8 +22,8 @@ object SMS {
    * @returns a string which contains the status message from sending the sms
    */
   def send(notification: Notification, debug: Boolean = false) : String = {
-    val smsText = notification.getShortText.replaceAll(" ","%20")
-    val promise = WS.url(createUrl(notification.getNotifiedUser, smsText, debug)).get()  
+    val smsText = notification.shortText.replaceAll(" ","%20")
+    val promise = WS.url(createUrl(notification.notifiedUser, smsText, debug)).get()  
     getApiMessage(promise.await(100000).get.body.toInt)
   } 
   

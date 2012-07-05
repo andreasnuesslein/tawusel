@@ -7,6 +7,7 @@ import play.api.Play.current
 import play.api._
 import play.api.mvc._
 import java.net.URLDecoder
+import java.security.MessageDigest
 
 import models._
 
@@ -26,6 +27,23 @@ case class User(id: Int, email: String, firstname: String, lastname: String, cel
         'e -> email,
         'c -> cellphone,
         'ex -> extension).executeUpdate == 1)
+    }
+  }
+  def passwordResetToken: String = {
+    val now = new java.util.Date()
+    val today = now.getYear().toString+now.getMonth().toString+now.getDate().toString
+    MessageDigest.getInstance("SHA-1").digest((this.email+this.lastname+this.password+today).getBytes)
+      .map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
+  }
+
+  def checkResetToken(token:String): Boolean = {
+    token == passwordResetToken
+  }
+
+  def changePassword(pw: String): Boolean = {
+    DB.withConnection { implicit connection =>
+      (SQL("UPDATE user SET password=SHA1({p}) WHERE id = {id}").on(
+        'p -> pw,'id -> this.id).executeUpdate == 1)
     }
   }
 

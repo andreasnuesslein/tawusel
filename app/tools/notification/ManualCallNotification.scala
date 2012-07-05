@@ -1,5 +1,6 @@
 package tools.notification
 
+import play.api.Play.current
 import models._
 
 class ManualCallNotification(
@@ -29,10 +30,11 @@ class ManualCallNotification(
   contentInitiator += " using the following number:</br>\t<a href=\"tel:" + taxiNumber + "\">" + taxiNumber + "</a> (or from a landline: <a href=\"tel:09001122456\">09001122456</a>)<br /><br />"
       
   //create the confirm/cancel links
+  val hostname = current.configuration.getString("host.name").get
   val contentConfirmOrder = "If you have ordered successfully, please\t"
-  val contentConfirmLink = "<a href=\"http://wusel.noova.de/tour/" + tour.id + "/confirm/" + token + "\">confirm the tour</a>.<br /><br />"
+  val contentConfirmLink = "<a href=\"http://"+hostname+"/tour/" + tour.id + "/confirm/" + token + "\">confirm the tour</a>.<br /><br />"
   val contentCancelOrder = "If you are not able to call a taxi, please\t"
-  val contentCancelLink = "<a href=\"http://wusel.noova.de/tour/" + tour.id + "/cancel/" + token + "\">cancel the tour</a>."  
+  val contentCancelLink = "<a href=\"http://"+hostname+"/tour/" + tour.id + "/cancel/" + token + "\">cancel the tour</a>."  
   val contentLinks = contentConfirmOrder + contentConfirmLink + contentCancelOrder + contentCancelLink
       
   val text = contentIntro + contentInitiator + contentLinks

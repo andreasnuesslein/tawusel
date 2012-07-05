@@ -1,0 +1,39 @@
+@(signupForm: Form[(String, String)])(implicit request: RequestHeader)
+
+@implicitFieldConstructor = @{ FieldConstructor(templates.formhelper.f) }
+
+@import helper._
+
+@title = {
+    Set new password
+}
+
+@main(title, nav = "signup") {
+
+<form action="@routes.Auth.passwordChange" method="POST" class="form-horizontal" >
+
+<fieldset>
+
+  @inputPassword(
+  signupForm("pwmain"),
+  '_label -> "Password",
+  '_help  -> "A password must be at least 6 characters. "
+  )
+
+  @inputPassword(
+  signupForm("pwconfirm"),
+  '_label -> "Repeat password",
+  '_help  -> "Please repeat your password again.",
+  '_error -> signupForm.error("password")
+  )
+
+</fieldset>
+
+<div class="form-actions">
+  <input type="submit" id="registerbutton" class="btn primary" value="Save">
+  <a href="@routes.Application.index" class="btn">Cancel</a>
+</div>
+
+</form>
+
+}
