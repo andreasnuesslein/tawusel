@@ -5,22 +5,12 @@
 @import helper._
 
 @title = {
-  Login
+  Lost password
 }
 
 @main(title, nav = "login") {
-  <script>
-    $(document).ready(function(){
-      $("form").submit(function() {
-        $email = $("#email").val();
-        if($email.search("@@") == -1){
-          $("#email").val($email+"@@carmeq.com");
-        }
-      });
-    });
-  </script>
 
-<form action="@routes.Auth.login" method="POST" class="form-horizontal" >
+<form action="@routes.Auth.passwordLost" method="POST" class="form-horizontal" >
 
   <div class="alerts">
     @myform.globalError.map { error =>
@@ -37,16 +27,11 @@
     '_label -> "Email",
     '_help -> ""
     )
-    @inputPassword(
-    myform("password"),
-    '_label -> "Password"
-    )
   </fieldset>
 
   <div class="form-actions">
    <input type="submit" id="loginbutton" class="btn primary" value="Login">
    <a href="@routes.Application.index" class="btn">Cancel</a>
-   <a href="@routes.Auth.passwordLost">Lost your password?</a>
  </div>
 
 

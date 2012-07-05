@@ -11,7 +11,7 @@ import scala.util.matching.Regex
 import models._
 import views._
 import tools.Mail
-import tools.notification.RegisterNotification
+import tools.notification._
 
 object Auth extends Controller with Secured {
 
@@ -60,29 +60,25 @@ object Auth extends Controller with Secured {
 
   /**
    * Implementation of the login method (action) which
-   * routes the user to the index.html if it is loged in and to the 
+   * routes the user to the index.html if it is loged in and to the
    * login.html he is not.
    */
   def login = Action { implicit request =>
+    if(request.method == "GET") {
       session.get("email") match {
         case Some(_) => Redirect(routes.Tours.tours).flashing(
           "info" -> "You're already logged in." )
         case None => Ok(html.auth.login(loginForm))
       }
-  }
-  /**
-   * Implementation of the authenticate method (action) which shows
-   * the login formular with errors if they exists and redirects the
-   * user to the index.html otherwise.
-   */
-  def authenticate = Action { implicit request =>
-    loginForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.auth.login(formWithErrors)),
-      email => {
-        var user = User.findByEmail(email._1).get
-        Redirect(routes.Tours.tours).withSession("email" -> user.email, "firstname" -> user.firstname)
+    } else {
+      loginForm.bindFromRequest.fold(
+        formWithErrors => BadRequest(html.auth.login(formWithErrors)),
+        email => {
+          var user = User.findByEmail(email._1).get
+          Redirect(routes.Tours.tours).withSession("email" -> user.email, "firstname" -> user.firstname)
+        }
+      )
     }
-    )
   }
 
   /**
@@ -145,6 +141,61 @@ object Auth extends Controller with Secured {
     Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").first,"firstname" -> user.firstname)
     .flashing("success" -> "Successfully updated.")
   }
+
+  def passwordReset(email: String, token: String) = Action { implicit request =>
+    val user = User.findByEmail(email).get
+    if(user.checkResetToken(token)) {
+      Redirect(routes.Auth.passwordChange).withSession("email" -> user.email,"firstname" -> user.firstname)
+    } else {
+      BadRequest("Invalid token. This might have happened because you have waited to long to click the password reset link or you already resetted your password.")
+    }
+  }
+
+
+  val passForm = Form(
+    tuple(
+      "pwmain" -> text(minLength = 6),
+      "pwconfirm" -> text
+    ).verifying(
+    "Passwords don't match", passwords => passwords._1 == passwords._2
+    )
+  )
+
+  def passwordChange = IsAuthenticated { email => implicit request =>
+    if (request.method == "GET") {
+      Ok(html.auth.passchange(passForm))
+    } else {
+    passForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(html.auth.passchange(formWithErrors))
+      },
+      pw => {
+        val user = User.findByEmail(email).get
+        user.changePassword(pw._1)
+        Redirect(routes.Tours.tours).flashing("success" -> "Changed pw")
+        //Redirect(routes.Tours.tours).withSession("email" -> user.email,"firstname" -> user.firstname)
+     }
+    )
+    }
+    
+  }
+
+  def passwordLost = Action { implicit request =>
+    if (request.method == "GET") {
+       Ok(html.auth.passlost(loginForm))
+    } else {
+      val email = request.body.asFormUrlEncoded.get.get("email").get(0)
+      println(email)
+      try {
+        val user = User.findByEmail(email).get
+        Mail.send(new PasswordReset(user,null,null))
+      } catch { case _ => "x" }
+      Redirect(routes.Auth.login).flashing("info" -> """If the e-mail address you entered (%s) is associated
+        with a customer account in our records, you will receive an e-mail from us with instructions for resetting
+        your password.""".format(email))
+    }
+  }
+
 
 }
 
