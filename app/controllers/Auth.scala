@@ -81,24 +81,21 @@ object Auth extends Controller with Secured {
     }
   }
 
-  /**
-   * Implementation of the register method (action) which 
-   * contains just a redirect to the signup.html.
-   */
   def register = Action { implicit request =>
-    Ok(html.auth.register(registrationForm))
-  }
-  def submit = Action { implicit request =>
-   registrationForm.bindFromRequest.fold(
-     formWithErrors => {
-       BadRequest(html.auth.register(formWithErrors))
-     },
-     user => {
-      user.create
-      Mail.send(new RegisterNotification(user, null, null))
-      Redirect(routes.Tours.tours).withSession("email" -> user.email,"firstname" -> user.firstname)
+    if(request.method == "GET") {
+      Ok(html.auth.register(registrationForm))
+    } else {
+      registrationForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(html.auth.register(formWithErrors))
+        },
+        user => {
+          user.create
+          Mail.send(new RegisterNotification(user, null, null))
+          Redirect(routes.Tours.tours).withSession("email" -> user.email,"firstname" -> user.firstname)
+        }
+      )
     }
-   )
   }
 
   def updateNotifications = IsAuthenticated { email => implicit request =>
@@ -130,16 +127,18 @@ object Auth extends Controller with Secured {
 
   def account = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val notifications = UserNotification.getForUser(user.id)
-    val history = Tour.getHistoryForUser(user.id)
-    Ok(html.auth.profile(user, editForm.fill((user.email,user.cellphone,user.extension)), notifications, history))
-  }
-  def editUser = IsAuthenticated { email => implicit request =>
-    val user = User.findByEmail(email).get
-    val x = request.body.asFormUrlEncoded.get
-    user.update(x("email").first,x("cellphone").first,Option(x("extension").first))
-    Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").first,"firstname" -> user.firstname)
-    .flashing("success" -> "Successfully updated.")
+    if (request.method == "GET") {
+      val notifications = UserNotification.getForUser(user.id)
+      val history = Tour.getHistoryForUser(user.id)
+      Ok(html.auth.profile(user, editForm.fill((user.email,user.cellphone,user.extension)), notifications, history))
+    } else {
+      /* edit email, cellphone and/or extension */
+      val x = request.body.asFormUrlEncoded.get
+      user.update(x("email").head,x("cellphone").head,Option(x("extension").head))
+      Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").head,"firstname" -> user.firstname)
+      .flashing("success" -> "Successfully updated.")
+    }
+
   }
 
   def passwordReset(email: String, token: String) = Action { implicit request =>
