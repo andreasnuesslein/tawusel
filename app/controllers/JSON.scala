@@ -7,6 +7,10 @@ import play.api.data.Forms._
 import models._
 import java.sql.Date
 import com.codahale.jerkson.Json
+import play.api.db._
+import anorm._
+import anorm.SqlParser._
+import play.api.Play.current
 
 object JSON extends Controller {
 
@@ -14,6 +18,16 @@ object JSON extends Controller {
     val user = User.authenticateWithHashedPassword(email, hashedPassword)
     val json = Json.generate(user)
     Ok(json).as("application/json")
+  }
+  
+  def getTourStatusValuesByApp() = Action {
+    DB.withConnection { implicit connection =>
+      val states = SQL("""SELECT *
+        FROM tour_state"""
+      ).as(int("id") ~ str("name") ~ str("description") map(flatten) *)
+      val json = Json.generate(states)
+      Ok(json).as("application/json")
+    }
   }
   
   def getActiveToursByApp(email: String) = Action {
