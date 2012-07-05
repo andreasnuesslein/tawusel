@@ -139,14 +139,14 @@ object Auth extends Controller with Secured {
     )
   )
 
-
-  def account = IsAuthenticated { email =>
-    implicit request =>
-      val user = User.findByEmail(email).get
-      val notifications = UserNotification.getForUser(user.id)
-      val history = Tour.getHistoryForUser(user.id)
-      Ok(html.auth.profile(user, editForm.fill((user.email, user.cellphone, user.extension)), notifications, history))
+  def account = IsAuthenticated { email => implicit request =>
+    val user = User.findByEmail(email).get
+    val notifications = UserNotification.getForUser(user.id)
+    val history = Tour.getHistoryForUser(user.id)
+    val favorites = Tour.getFavoritesForUser(user.id)
+    Ok(html.auth.profile(user, editForm.fill((user.email,user.cellphone,user.extension)), notifications, history, favorites))
   }
+
   def editUser = IsAuthenticated { email =>
     implicit request =>
       val user = User.findByEmail(email).get
@@ -155,6 +155,7 @@ object Auth extends Controller with Secured {
       Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").first, "firstname" -> user.firstname)
         .flashing("success" -> "Successfully updated.")
   }
+
   def passwordReset(email: String, token: String) = Action { implicit request =>
     val user = User.findByEmail(email).get
     if (user.checkResetToken(token)) {

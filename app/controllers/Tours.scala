@@ -137,10 +137,15 @@ object Tours extends Controller with Secured {
   }
 
   /*This method is given to remotely create a tour for a per mail specified user.*/
-  def remoteCreateTour(token: String) = Action {
+  def remoteCreateTour(uemail: String, hash: String, start: String, end: String, stime: String, etime: String) = Action {
    //TODO convert string to email, verification, startingpoint, targetpoint, startingtime and endtime
    //TODO create tour with data TODO test if a tour with this specifications already exist in the db
-     println(token)
+     println(uemail)
+     println(hash)
+     println(start)
+     println(end)
+     println(stime)
+     println(etime)
      var dep = new java.util.Date(1.toLong);
      var arr = new java.util.Date(1.toLong);
      var dep_l = 16;
@@ -168,6 +173,14 @@ object Tours extends Controller with Secured {
       Redirect(routes.Auth.account).flashing("success" -> "Successfully resetted tour favorites!")
     } else {
       Redirect(routes.Auth.account).flashing("warning" -> "Resetting the tour favorites was not successful. Please try again later or contact the support if this problem is ongoing.")
+    }
+  }
+  
+  def resetFavorite(user_id: Int, tour_id: Int) = Action {
+    if(Tour.resetFavorite(user_id, tour_id)) {
+      Redirect(routes.Auth.account).flashing("success" -> "Successfully resetted the favorite!")
+    } else {
+      Redirect(routes.Auth.account).flashing("warning" -> "Resetting the favorites was not successful. Please try again later or contact the support if this problem is ongoing.")
     }
   }
 

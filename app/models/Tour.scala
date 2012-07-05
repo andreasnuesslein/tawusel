@@ -231,6 +231,7 @@ object Tour {
           JOIN location2 AS l2 ON arr_location = l2.id
           JOIN town ON town.id = l1.town_id
           WHERE user_id = {user_id} AND resetted_favorite = 0
+          LIMIT 5
           """ ).on(
                 'user_id -> user_id
               ).as(str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") map(flatten) *)
@@ -314,6 +315,22 @@ object Tour {
       return x
     }
   }
+  
+  /* This method returns all favorites for one specified user.*/
+  def getFavoritesForUser(user_id: Int): List[(String, String, String, java.util.Date, java.util.Date, Boolean, Int, Int)] = {
+      DB.withConnection { implicit connection =>
+        val favorites: List[(String, String, String, java.util.Date, java.util.Date, Boolean, Int, Int)] = SQL("""SELECT *
+          FROM favorites
+          JOIN location AS l1 ON dep_location = l1.id
+          JOIN location2 AS l2 ON arr_location = l2.id
+          JOIN town ON town.id = l1.town_id
+          WHERE user_id = {user_id}
+          """ ).on(
+                'user_id -> user_id
+              ).as(str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") ~ bool("resetted_favorite") ~ int("user_id") ~ int("tour.id") map(flatten) *)
+        return favorites
+      }
+  }
 
   def create(dep: Date, arr: Date, dep_l : Long, arr_l :Long,
       state: Long, mod: Long): Tour = {
@@ -382,6 +399,7 @@ object Tour {
     }
   }
 
+  /*This method tries to reset all favorites for one specified user.*/
   def resetFavoritesForUser(user_id: Int): Boolean = {
     DB.withConnection { implicit connection =>
       val dbCount = SQL("""SELECT COUNT(*)
@@ -404,7 +422,50 @@ object Tour {
     }
   }
 
-  /* This method checks if for some given parameters a tour already is existent*/
+  /*This method tries to reset a specified favorit for the given user.*/
+  def resetFavorite(user_id: Int, tour_id: Int): Boolean = {
+    DB.withConnection { implicit connection =>
+      val tour = SQL("""SELECT *
+        FROM tour
+        WHERE tour.id = {tour_id}
+        """).on(
+        'tour_id -> tour_id
+        ).as(Tour.simple.single)
+      println(tour)
+      val tour_ids: List[Int] = SQL("""SELECT tour.id
+        FROM tour
+        JOIN user_has_tour ON user_has_tour.tour_id = tour.id
+        WHERE tour.dep_location = {dep_location} AND tour.arr_location = {arr_location}
+            AND RIGHT(tour.departure, 8) = RIGHT({departure}, 8) AND RIGHT(tour.arrival, 8) = RIGHT({arrival}, 8)
+            AND tour.departure < NOW() AND user_has_tour.user_id = {user_id}
+        """).on(
+        'dep_location -> tour.dep_location,
+        'arr_location -> tour.arr_location,
+        'departure -> tour.departure,
+        'arrival -> tour.arrival,
+        'user_id -> user_id
+        ).as(scalar[Int] *)
+      println(tour_ids)
+      var execCount = 0
+      for(tourId <- tour_ids) {
+          execCount += SQL("""UPDATE user_has_tour
+              JOIN tour ON user_has_tour.tour_id = tour.id
+              SET resetted_favorite = 1
+             WHERE user_has_tour.user_id = {user_id} AND tour.departure < NOW() AND tour.id = {tour_id}
+             """).on(
+               'user_id -> user_id,
+               'tour_id -> tourId
+             ).executeUpdate
+      }
+      if(tour_ids.length == execCount) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
+  /* This method checks if for some given parameters a tour already is existent.*/
   def checkForSimilarTour(dep: Date, dep_loc: Long, arr_loc: Long, time_range: Int): List[Tour] = {
     var calendar = Calendar.getInstance
     calendar.setTime(dep)

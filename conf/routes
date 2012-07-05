@@ -5,10 +5,11 @@ GET		/															controllers.Application.index
 
 GET		/tour/:id/confirm/:token									controllers.Tours.confirmTour(id: Long, token: String)
 GET		/tour/:id/cancel/:token										controllers.Tours.cancelTour(id: Long, token: String)
-GET		/tour/remoteCreateTour/:token								controllers.Tours.remoteCreateTour(token: String)
+GET		/tour/remoteCreateTour										controllers.Tours.remoteCreateTour(uemail: String, hash: String, start: String, end: String, stime: String, etime: String)
 GET		/tour/:id/join												controllers.Tours.joinTour(id: Long)
 GET		/tour/:id/leave												controllers.Tours.leaveTour(id: Long)
 GET		/tour/resetFavorites/:email									controllers.Tours.resetFavoritesForUser(email: String)
+GET		/tour/resetFavorite/:user_id/:tour_id						controllers.Tours.resetFavorite(user_id: Int, tour_id: Int)
 
 # Authentication
 GET		/login														controllers.Auth.login

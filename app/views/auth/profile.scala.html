@@ -1,4 +1,4 @@
-@(user: User, userform: Form[(String,String,Option[String])], n: UserNotification,history: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)])(implicit request: RequestHeader)
+@(user: User, userform: Form[(String,String,Option[String])], n: UserNotification,history: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)], favorites: List[(String, String, String, java.util.Date, java.util.Date, Boolean, Int, Int)])(implicit request: RequestHeader)
 
 @import helper._
 @implicitField = @{ FieldConstructor(templates.userform.f) }
@@ -46,6 +46,7 @@
   <li class="active"><a href="#profile"><strong>Profile</strong></a></li>
   <li><a href="#notifications"><strong>Notifications</strong></a></li>
   <li><a href="#history"><strong>Travel history</strong></a></li>
+  <li><a href="#favorites"><strong>Favorites</strong></a></li>
 </ul>
 
 <div class="tab-content">
@@ -60,7 +61,6 @@
             @inputText(userform("email"), '_label -> "Email")
             @inputText(userform("cellphone"), '_label -> "Cellphone")
             @inputText(userform("extension"), '_label -> "Extension")
-            <div class="userform-label" style="margin-bottom:10px;">Password</div><a href="@routes.Auth.passwordChange">Set new password</a>
             <div>
               <div class="userform-label"><button type="submit" id="submit">Save</button></div>
             </div>
@@ -202,6 +202,44 @@
               <span class="statusicon" rel="popover" data-content="This tour was cancelled." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
               }
             </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="tab-pane" id="favorites">
+    <div class="row-fluid">
+      <div class="span8"></div>
+      <div class="span1"></div>
+      <div class="span1"></div>
+      <a href"/tour/resetFavoritesForUser/@user.email"><span class="btn btn-primary favoriteButton">Reset all tours</span></a>
+    </div>
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="favoritetable">
+      <caption>
+      </caption>
+      <thead>
+        <tr>
+          <th>City</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Time</th>
+          <th>Reset</th>
+        </tr>
+      </thead>
+      <tbody>
+        @favorites.map { f =>
+        <tr class="tour">
+          <td>@f._1</td>
+          <td>@f._2</td>
+          <td>@f._3</td>
+          <td><span class="modtime">@f._4.getHours:@f._4.getMinutes - @f._5.getHours:@f._5.getMinutes</span> (@f._4.getDate.@(f._4.getMonth + 1).@(f._4.getYear + 1900))</td>
+          <td>
+            @if(f._6) {
+              already resettet
+            } else {
+            <a href="/tour/resetFavorite/@f._7/@f._8"><span class="btn btn-mini">reset</span></a>
+            }
           </td>
         </tr>
         }
