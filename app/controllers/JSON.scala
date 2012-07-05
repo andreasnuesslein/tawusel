@@ -53,17 +53,27 @@ object JSON extends Controller {
     
   def joinTourByApp(email:String, tourId:String) = Action {
 	val user = User.findByEmail(email).get
-	val tour = Tour.findById(tourId.toLong).get
+	var tour = Tour.findById(tourId.toLong).get
 	val isUserJoined = tour.userJoin(user.id)
-	val json = Json.generate(isUserJoined)
-	Ok(json).as("application/json")
+	if(isUserJoined) {
+	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
+	  Ok(json).as("application/json")
+	} else {
+	  val json = "[{\"_1\": \"false\"}]"
+	  Ok(json).as("application/json")
+	} 	
   }
 
   def leaveTourByApp(email:String, tourId:String) = Action {
 	val user = User.findByEmail(email).get
-	val tour = Tour.findById(tourId.toLong).get
+	var tour = Tour.findById(tourId.toLong).get
 	val hasUserLeft = tour.userLeave(user.id)
-	val json = Json.generate(hasUserLeft)
-	Ok(json).as("application/json")
+	if(hasUserLeft) {
+	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
+	  Ok(json).as("application/json")
+	} else {
+	  val json = "[{\"_1\": \"false\"}]"
+	  Ok(json).as("application/json")
+	} 	
   }
 }

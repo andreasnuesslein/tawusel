@@ -13,18 +13,24 @@ GET		/tour/resetFavorites/:email									controllers.Tours.resetFavoritesForUser
 # Authentication
 GET		/login														controllers.Auth.login
 POST	/login														controllers.Auth.login
-GET		/logout														controllers.Auth.logout
-GET		/account													controllers.Auth.account
-POST	/account													controllers.Auth.editUser
-GET		/register													controllers.Auth.register
-POST	/register													controllers.Auth.submit
-GET		/password/reset/*email/*token								controllers.Auth.passwordReset(email, token)
-POST	/password/lost												controllers.Auth.passwordLost
-GET		/password/lost												controllers.Auth.passwordLost
-POST	/password/new												controllers.Auth.passwordChange
-GET		/password/new												controllers.Auth.passwordChange
 
-POST	/notifications	controllers.Auth.updateNotifications
+GET		/logout														controllers.Auth.logout
+
+GET		/account													controllers.Auth.account
+POST	/account													controllers.Auth.account
+POST	/notifications												controllers.Auth.updateNotifications
+
+GET		/register													controllers.Auth.register
+POST	/register													controllers.Auth.register
+
+GET		/password/lost												controllers.Auth.passwordLost
+POST	/password/lost												controllers.Auth.passwordLost
+
+GET		/password/new												controllers.Auth.passwordChange
+POST	/password/new												controllers.Auth.passwordChange
+
+GET		/password/reset/*email/*token								controllers.Auth.passwordReset(email, token)
+
 GET		/authenticateByApp/*email/*hashedPassword					controllers.JSON.authenticateByApp(email, hashedPassword)
 
 POST /registerByApp                                   controllers.Auth.registerPerApp
