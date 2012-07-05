@@ -137,6 +137,7 @@ object User {
    * Create a User. Returns the ID
    */
   def create(email:String, firstname: String, lastname: String, cellphone: String, password: String): Int = {
+    try{
     DB.withConnection { implicit connection =>
       val id: Long = SQL("""
         INSERT
@@ -150,6 +151,9 @@ object User {
 	  ).executeInsert().get
     UserNotification.create(id.toInt)
     id.toInt
+    }
+    }catch{
+      case _ =>  return 0
     }
   }
 

@@ -10,7 +10,6 @@ import play.api.mvc._
 import java.util.Date
 import java.security.MessageDigest
 import java.util.Calendar
-
 import tools._
 import tools.notification._
 
@@ -28,11 +27,9 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
   def userJoin(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
-      try {
         SQL("INSERT INTO user_has_tour VALUES({uid},{tid},0)").on(
           'uid -> userid,
           'tid -> this.id).execute()
-
           // notify
           val initiator = User.findById(userid).get
           var users = this.getAllUsers()
@@ -40,21 +37,26 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 	        if(u != initiator) {
 	          val un = UserNotification.getForUser(u.id)
 	          val n = new PassengerJoinedNotification(u,initiator,this)
-	          if(un.sbdy_joined_email) Mail.send(n)
+	          if(un.sbdy_joined_email) {
+	            try {
+	            	Mail.send(n) 
+	            } catch {
+	              case _ => println("DEBUG: EmailException")
+	            }
+	          }
+	          
 	          // TODO: SMS debug flag
-	          if(un.sbdy_joined_sms) SMS.send(n, true)
+	          if(un.sbdy_joined_sms) {
+	            SMS.send(n, true)
+	          } 
 	        }
 	      }
-	      return true 
-      } catch {
-         case _ => return false
-      }
+	  return true 
     }
   }
   
   def userLeave(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
-      try {
         SQL("DELETE FROM user_has_tour WHERE user_id={uid} and tour_id={tid}").on(
 	      'uid -> userid,
 	      'tid -> this.id).execute()
@@ -78,15 +80,20 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 	      if(u != initiator) {
 	        val un = UserNotification.getForUser(u.id)
 	        val n = new PassengerLeftNotification(u,initiator,this)
-	        if(un.sbdy_left_email) Mail.send(n)
+	        if(un.sbdy_left_email) {
+	          try {
+	            	Mail.send(n) 
+	            } catch {
+	              case _ => println("DEBUG: EmailException")
+	            }
+	        }
 	        // TODO: SMS debug flag
-	        if(un.sbdy_left_sms) SMS.send(n, true)
+	        if(un.sbdy_left_sms) {
+	          SMS.send(n, true)
+	        }
 	      }
 	    }
-	    return true
-      } catch {
-         case _ => return false
-      }
+    return true
     }
   }
 
@@ -264,7 +271,30 @@ object Tour {
     }
   }
 
+  
+  def getTourDetailsForJSON(tour_id: Int): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)] = {
+    DB.withConnection { implicit connection =>
+      var tours = SQL("""SELECT tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name, tour.mod_id, tour.tour_state
+        FROM tour
+        JOIN user_has_tour ON tour.id = user_has_tour.tour_id
+        JOIN location  as l1 on dep_location=l1.id
+        JOIN location2 as l2 on arr_location=l2.id
+        JOIN town on town.id = l1.town_id
+        WHERE tour.id = {tour_id} AND tour.departure > NOW()"""
+      ).on(
+        'tour_id -> tour_id
+      ).as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") ~ int("mod_id") ~ int("tour_state") map(flatten) *)
+      var x = for(t <- tours;
+        p = SQL("""select *
+        from user join user_has_tour on user_has_tour.user_id=user.id
+        where tour_id={tid}""").on('tid -> t._1).as(User.simple *)
+      ) yield (t._1,t._2,t._3,t._4,t._5,t._6,t._7,p,t._8)
+      return x
+    }
+  }
 
+  
+  
   def getHistoryForUser(userid: Int): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)] = {
     DB.withConnection { implicit connection =>
       var tours = SQL("""SELECT tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name, tour.mod_id, tour.tour_state
