@@ -9,9 +9,9 @@ object Mail {
 
     def send(notification: Notification) {
       val mail = use[MailerPlugin].email
-      mail.setSubject(notification.getSubject)
-      mail.addRecipient(notification.getNotifiedUser.email)
+      mail.setSubject(notification.subject)
+      mail.addRecipient(notification.notifiedUser.email)
       mail.addFrom("tawusel@dev.noova.de")
-      mail.sendHtml(notification.getText)
+      mail.sendHtml(notification.text)
     }
 }
