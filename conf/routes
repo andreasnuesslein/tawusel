@@ -27,6 +27,7 @@ GET		/password/new												controllers.Auth.passwordChange
 POST	/notifications	controllers.Auth.updateNotifications
 GET		/authenticateByApp/*email/*hashedPassword					controllers.JSON.authenticateByApp(email, hashedPassword)
 
+POST /registerByApp                                   controllers.Auth.registerPerApp
 # Tours
 POST	/tours														controllers.Tours.newTourCreate
 GET		/tours														controllers.Tours.tours
