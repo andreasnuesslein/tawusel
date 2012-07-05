@@ -11,22 +11,23 @@ GET		/tour/:id/leave												controllers.Tours.leaveTour(id: Long)
 GET		/tour/resetFavorites/:email									controllers.Tours.resetFavoritesForUser(email: String)
 
 # Authentication
-GET		/login			controllers.Auth.login
-POST	/login			controllers.Auth.authenticate
-GET		/logout			controllers.Auth.logout
-GET		/account		controllers.Auth.account
-POST	/account		controllers.Auth.editUser
-GET		/register		controllers.Auth.register
-POST	/register		controllers.Auth.submit
-POST	/notifications	controllers.Auth.updateNotifications
+GET		/login														controllers.Auth.login
+POST	/login														controllers.Auth.authenticate
+GET		/logout														controllers.Auth.logout
+GET		/account													controllers.Auth.account
+POST	/account													controllers.Auth.editUser
+GET		/register													controllers.Auth.register
+POST	/register													controllers.Auth.submit
+POST	/notifications												controllers.Auth.updateNotifications
 GET		/authenticateByApp/*email/*hashedPassword					controllers.JSON.authenticateByApp(email, hashedPassword)
 
 # Tours
-POST	/tours		controllers.Tours.newTourCreate
-GET		/tours		controllers.Tours.tours
+POST	/tours														controllers.Tours.newTourCreate
+GET		/tours														controllers.Tours.tours
 GET		/getActiveToursByApp/*email									controllers.JSON.getActiveToursByApp(email)
-GET		/getTourTemplatesByApp/*email									controllers.JSON.getTourTemplatesByApp(email)
-GET		/getAvailableToursByApp/*email									controllers.JSON.getAvailableToursByApp(email)
+GET		/getTourTemplatesByApp/*email								controllers.JSON.getTourTemplatesByApp(email)
+GET		/getAvailableToursByApp/*email								controllers.JSON.getAvailableToursByApp(email)
+GET		/getTourStatusValuesByApp									controllers.JSON.getTourStatusValuesByApp
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file												controllers.Assets.at(path="/public", file)
