@@ -21,16 +21,20 @@ Plan a new tour
 
 <script>
   var googleest;
-  var loca= new Array();
-  @locations.map { l =>
-      loca[@l.id]= "@l.address";
-  }
+
+  var loa = [
+    @locations.map { l =>
+      {'id': @l.id, 'name': "@l.name", 'address': "@l.address", 'town_id': "@l.town_id" },
+    }
+    ]
+
+
 
   function getGoogleDistance() {
     var service = new google.maps.DistanceMatrixService();
 
-    var depl = loca[$("#dep_location option:selected").val()];
-    var arrl = loca[$("#arr_location option:selected").val()];
+    var depl = loa.filter(function (l) { return l.id == $("#dep_location option:selected").val()})[0].address;
+    var arrl = loa.filter(function (l) { return l.id == $("#arr_location option:selected").val()})[0].address;
 
     service.getDistanceMatrix(
     {
@@ -121,15 +125,21 @@ Plan a new tour
     // change and click functions
     $('#city').change(function() {
       var valu = $('#city').val();
-      $('#dep_location').find('option').hide();
-      $('#arr_location').find('option').hide();
-      var delems = $('#dep_location').find('.town_'+valu);
-      delems.show();
-      var aelems = $('#arr_location').find('.town_'+valu);
-      aelems.show();
-      $('#dep_location').val(delems[0].value);
-      $('#arr_location').val(aelems[1].value);
+      $('#dep_location option').remove();
+      $('#arr_location option').remove();
+
+      loa.forEach(function(l) {
+        if(l.town_id == valu) {
+          if(l.name == "Hauptbahnhof")
+            $('#dep_location').append(new Option(l.name,l.id,true,true));
+          else
+            $('#dep_location').append(new Option(l.name,l.id));
+          $('#arr_location').append(new Option(l.name,l.id));
+        }
+      });
+      $('#arr_location option')[0].setAttribute("selected","selected");
       getGoogleDistance();
+
     });
     $("#dep_location").change(function() {getGoogleDistance(); });
     $("#arr_location").change(function() {getGoogleDistance(); });
@@ -157,7 +167,9 @@ Plan a new tour
     });
 
     // Template creation stuff
-    $(".tour_template a").click(function () {
+    $(".tour_template a").click(function (e) {
+      e.preventDefault();
+
       $("#dep_location option").attr("selected", false);
       $("#arr_location option").attr("selected", false);
 
@@ -193,11 +205,25 @@ Plan a new tour
     margin: -8px 0 -5px -5px;
   }
 </style>
-<div class="offset4 span2" style="margin-top:-50px">
-  <a class="btn btn-info" data-toggle="modal" href="#createModal" >Add tour</a>
-</div>
 
-<div><span class="legend" rel="popover" data-content="These are the tours you are currently planning on participating in." data-original-title="My Tours"><div class="tour_active colour_box">     </div> - My Tours.</span> <span class="legend" rel="popover" data-content="These 5 tours are either predetermined templates to give some often used tours for fast creating. Or they are your personal favorites, determined by your previous tours, you are able to reset these in your profile settings." data-original-title="Favorite Tours"><div class="tour_template colour_box">     </div> - Favorite Tours.</span> <span class="legend" rel="popover" data-content="These are tours planned by other users. You are able to join these tours." data-original-title="Available Tours"><div class="colour_box">     </div> - Available Tours</span></div>
+<div class="row">
+  <span class="span6" style="padding-top:5px;padding-left:5px;">
+    <span class="legend" rel="popover" data-content="These are the tours you are currently planning on participating in." data-original-title="My Tours">
+      <div class="tour_active colour_box">    </div> - My Tours.
+    </span>
+    <span class="legend" rel="popover" data-content="These 5 tours are either predetermined templates to give some often used tours for fast creating.
+      Or they are your personal favorites, determined by your previous tours, you are able to reset these in your profile settings." data-original-title="Favorite Tours">
+      <div class="tour_template colour_box">    </div> - Favorite Tours.
+    </span>
+    <span class="legend" rel="popover" data-content="These are tours planned by other users. You are able to join these tours." data-original-title="Available Tours">
+      <div class="colour_box">    </div> - Available Tours.
+    </span>
+  </span>
+  <span class="span6" align="right" style="margin-left:20px; margin-bottom:2px;">
+      <a class="btn btn-info" data-toggle="modal" href="#createModal" >Add tour</a>
+  </span>
+
+</div>
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="tourlist">
   <caption>
@@ -232,7 +258,7 @@ Plan a new tour
       </td>
       <td>
         <span class="status">@if(tour._9 == 1) {
-          <span class="statusicon" rel="popover" data-content="This tour state is still pending. That means it has neither been confirmed nor cancelled yet." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+          <span class="statusicon" rel="popover" data-content="This tour state is still pending. We will try to confirm the tour 30min before it is supposed to start." data-original-title="Pending"><a class="icon-question-sign"></a></span>
           }
           @if(tour._9 == 2) {
           <span class="statusicon" rel="popover" data-content="This tour has been confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
@@ -276,7 +302,7 @@ Plan a new tour
       </td>
       <td>
         <span class="status">@if(tour._9 == 1) {
-          <span class="statusicon" rel="popover" data-content="This tour state is still pending. That means a taxi has neither been confirmed nor cancelled yet." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+          <span class="statusicon" rel="popover" data-content="This tour state is still pending.  We will try to confirm the tour 30min before it is supposed to start." data-original-title="Pending"><a class="icon-question-sign"></a></span>
           }
           @if(tour._9 == 2) {
           <span class="statusicon" rel="popover" data-content="This tour has been confirmed, therefore a taxi will be waiting." data-original-title="Booked"><a class="icon-ok"></a></span>
@@ -318,9 +344,6 @@ Plan a new tour
           <label class="control-label" for="dep_location">From</label>
           <div class="controls">
             <select name="dep_location" id="dep_location">
-              @locations.map { l =>
-              <option value="@l.id" class="town_@l.town_id">@l.name</option>
-              }
             </select>
             <span class="help-inline"></span>
           </div>
@@ -329,9 +352,6 @@ Plan a new tour
           <label class="control-label" for="arr_location">To</label>
           <div class="controls">
             <select name="arr_location" id="arr_location">
-              @locations.map { l =>
-              <option value="@l.id" class="town_@l.town_id">@l.name</option>
-              }
             </select>
             <span class="help-inline"></span>
           </div>
