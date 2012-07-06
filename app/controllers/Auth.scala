@@ -84,19 +84,20 @@ object Auth extends Controller with Secured {
    * contains just a redirect to the signup.html.
    */
   def register = Action { implicit request =>
-    Ok(html.auth.register(registrationForm))
-  }
-  def submit = Action { implicit request =>
-    registrationForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(html.auth.register(formWithErrors))
-      },
-      user => {
-        user.create
-        Mail.send(new RegisterNotification(user, null, null))
-        Redirect(routes.Tours.tours).withSession("email" -> user.email, "firstname" -> user.firstname)
-      }
-    )
+    if (request.method == "GET") {
+      Ok(html.auth.register(registrationForm))
+    } else {
+      registrationForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(html.auth.register(formWithErrors))
+        },
+        user => {
+          user.create
+          Mail.send(new RegisterNotification(user, null, null))
+          Redirect(routes.Tours.tours).withSession("email" -> user.email, "firstname" -> user.firstname)
+        }
+      )
+    }
   }
 
   def registerPerApp = Action { implicit request =>
