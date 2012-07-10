@@ -41,7 +41,7 @@ object SMS {
     url += user.cellphone
     url += "&text=" 
     url += smsText
-    url += "&type=basicplus"
+    url += "&type=quality"
     url += "&from=TaWusel"
     if(debug) { 
       url+= "&debug=1"

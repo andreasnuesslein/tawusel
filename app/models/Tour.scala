@@ -34,27 +34,23 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
           val initiator = User.findById(userid).get
           var users = this.getAllUsers()
           for (u <- users) {
-	        if(u != initiator) {
-	          val un = UserNotification.getForUser(u.id)
-	          val n = new PassengerJoinedNotification(u,initiator,this)
-	          if(un.sbdy_joined_email) {
-	            try {
-	            	Mail.send(n) 
-	            } catch {
-	              case _ => println("DEBUG: EmailException")
-	            }
-	          }
-	          
-	          // TODO: SMS debug flag
-	          if(un.sbdy_joined_sms) {
-	            SMS.send(n, true)
-	          } 
-	        }
-	      }
-	  return true 
+            if(u != initiator) {
+              val un = UserNotification.getForUser(u.id)
+              val n = new PassengerJoinedNotification(u,initiator,this)
+              if(un.sbdy_joined_email) {
+                try {
+                  Mail.send(n)
+                } catch {
+                  case _ => println("DEBUG: EmailException")
+                }
+              }
+              if(un.sbdy_joined_sms) SMS.send(n)
+            }
+          }
+      return true
     }
   }
-  
+
   def userLeave(userid: Int): Boolean = {
     DB.withConnection { implicit connection =>
         SQL("DELETE FROM user_has_tour WHERE user_id={uid} and tour_id={tid}").on(
@@ -87,9 +83,8 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 	              case _ => println("DEBUG: EmailException")
 	            }
 	        }
-	        // TODO: SMS debug flag
 	        if(un.sbdy_left_sms) {
-	          SMS.send(n, true)
+	          SMS.send(n)
 	        }
 	      }
 	    }
@@ -132,8 +127,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
     val un = UserNotification.getForUser(mod.id)
     val n = new ManualCallNotification(mod, null, this, false)
     if(un.must_call_email) Mail.send(n)
-    // TODO: SMS debug flag
-    if(un.must_call_sms) SMS.send(n, true)
+    if(un.must_call_sms) SMS.send(n)
 
 
     // notifications
@@ -141,8 +135,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
       val un = UserNotification.getForUser(u.id)
       val n = new TourStartsSoonNotification(u, null, this)
       if(un.xmin_email) Mail.send(n)
-      // TODO: SMS debug flag
-      if(un.xmin_sms) SMS.send(n, true)
+      if(un.xmin_sms) SMS.send(n)
     }
 
     this.updateTimerState

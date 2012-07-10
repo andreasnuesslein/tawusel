@@ -81,12 +81,11 @@ object Tours extends Controller with Secured {
       var tour = Tour.findById(id).get
       if( tour.checkToken(token) ) {
         if(tour.updateTourState(2)) {
-          var notification: Notification = null
           tour.getAllUsers().foreach(u => {
             val un = UserNotification.getForUser(u.id)
             val n = new TaxiStatusChangedSuccessNotification(u, null, tour)
             if(un.status_changed_email) Mail.send(n)
-            if(un.status_changed_sms) SMS.send(n, true)
+            if(un.status_changed_sms) SMS.send(n)
             }
           )
         }
@@ -106,25 +105,23 @@ object Tours extends Controller with Secured {
     if( tour.checkToken(token) ) {
         var statusText = ""
         if(tour.updateTourState(3)) {
-          var notification: Notification = null
           tour.getAllUsers().foreach(u => {
               val un = UserNotification.getForUser(u.id)
               val n = new TaxiStatusChangedFailNotification(u, null, tour)
               if(un.status_changed_email) Mail.send(n)
-              if(un.status_changed_sms) SMS.send(n, true)
+              if(un.status_changed_sms) SMS.send(n)
             }
           )
           if(tour.getAllUsers().length > 1) {
             if(User.findByEmail(tour.getAllUsers().head.email).get.id.equals(tour.mod_id.toInt)) {
               val userToNotify = tour.getAllUsers().tail.head
-              notification = new ManualCallNotification(userToNotify, null, tour, true)
+              n = new ManualCallNotification(userToNotify, null, tour, true)
             } else {
-              notification = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
+              n = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
             }
 
-            Mail.send(notification)
-            // TODO: SMS debug flag
-            SMS.send(notification, true)
+            Mail.send(n)
+            SMS.send(n)
             statusText = "The status of the tour has not changed. The next passenger will be informed to call a taxi."
           } else {
             statusText = "The status of the tour has not changed. We are sorry to inform you, that there is no other passenger to call a taxi."
