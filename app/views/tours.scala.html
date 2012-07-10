@@ -64,9 +64,9 @@ Plan a new tour
     var gdate = Math.ceil(googleest/60);
     $('#date').val(odate.getTime());
 
-    var txt = "estimated Arrival";
-    if ($("#time-toggle").find('.active').text() == "Arr") {
-      txt = "calculated Departure";
+    var txt = "approx. Arrival";
+    if ($(".timebtn:checked").val() == "Arr") {
+      txt = "approx. Departure";
       $('#arrival').val(odate.getTime());
       odate.setMinutes(odate.getMinutes()-gdate);
       $('#departure').val(odate.getTime());
@@ -115,6 +115,7 @@ Plan a new tour
     $('#timepicker').val(  round_tr(now.getHours(), now.getMinutes()) );
     $('#timepicker').timepicker({ 'scrollDefaultNow': true, 'timeFormat': "H:i" });
 
+    $('#timepickerhelp').tooltip({'placement':'right','title':'<strong>Please make sure to plan a few minutes extra.</strong><br/>To calculate the time, we use Google Maps API and for now traffic is not taken into account.'});
 
     // change and click functions
     $('#city').change(function() {
@@ -138,8 +139,7 @@ Plan a new tour
     $("#dep_location").change(function() {getGoogleDistance(); });
     $("#arr_location").change(function() {getGoogleDistance(); });
 
-    $("#arrbtn").click(function() {updateEstimate(); });
-    $("#depbtn").click(function() {updateEstimate(); });
+    $(".timebtn").change(function() {updateEstimate(); });
     $("#timepicker").change(function() {updateEstimate(); });
 
     // datepicker-dealy
@@ -366,12 +366,10 @@ Plan a new tour
         <div class="control-group">
           <label class="control-label" for="timepicker">Time</label>
           <div class="controls">
-            <input type="text" id="timepicker" name="timepicker" style="display:inline;width:4em;" />
-            <div class="btn-group" data-toggle="buttons-radio" id="time-toggle" style="display:inline;">
-              <div class="btn active" id="depbtn">Dep</div>
-              <div class="btn" id="arrbtn">Arr</div>
-            </div><br />
-            <span class="help-inline"><span id="time-estimate"></span></span>
+            <label class="radio" style="display:inline-block;"><input type="radio" id="depbtn" class="timebtn" name="timebtn" value="Dep" checked />Dep</label>
+            <label class="radio" style="display:inline-block;"><input type="radio" id="arrbtn" class="timebtn" name="timebtn" value="Arr" />Arr</label>
+            <input type="text" id="timepicker" name="timepicker" style="display:inline-block;width:4em;" />
+            <br /><span class="help-inline"><span id="time-estimate"></span> <a id="timepickerhelp" class="icon-question-sign"></a></span>
           </div>
         </div>
         <input type="hidden" id="departure" name="departure" />
