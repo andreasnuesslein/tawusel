@@ -4,8 +4,8 @@ import PlayProject._
 
 object ApplicationBuild extends Build {
 
-    val appName         = "TaxiMob"
-    val appVersion      = "1.0-SNAPSHOT"
+    val appName         = "TaWusel"
+    val appVersion      = "0.1"
 
     val appDependencies = Seq(
       "mysql" % "mysql-connector-java" % "5.1.18",
@@ -15,7 +15,6 @@ object ApplicationBuild extends Build {
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-    coffeescriptOptions := Seq("bare")
     )
 
 }
