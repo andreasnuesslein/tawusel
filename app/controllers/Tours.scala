@@ -58,9 +58,13 @@ object Tours extends Controller with Secured {
   def joinTour(id:Long) = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
     val tour = Tour.findById(id).get
-    tour.userJoin(user.id)
-    Redirect(routes.Tours.tours).flashing("success" -> "Successfully joined the tour!")
-
+    val users = tour.getAllUsers
+    if ( (tour.tour_state==2) && (users.length %4 ==0) ) {
+      Redirect(routes.Tours.tours).flashing("error" -> "Sorry, but this tour is already booked and full.")
+    } else {
+      tour.userJoin(user.id)
+      Redirect(routes.Tours.tours).flashing("success" -> "Successfully joined the tour!")
+    }
   }
 
   def leaveTour(id:Long) = IsAuthenticated { email => implicit request =>

@@ -18,7 +18,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
   def createToken(): String = {
     val hash = MessageDigest.getInstance("SHA-1").digest((this.id+this.departure.toString+
-      this.arrival+this.mod_id).getBytes).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
+      this.arrival).getBytes).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
     return hash
   }
   def checkToken(token: String): Boolean = {
@@ -66,6 +66,8 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 	    } else {
 	      if(was_i_mod_before) {
 	        SQL("UPDATE tour SET mod_id={uid} WHERE id={tid}").on('uid -> useridlist(0),'tid -> this.id).executeUpdate()
+            val n = new ManualCallNotification(User.findById(useridlist(0)).get,null,this,true)
+            Mail.send(n)
 	      }
 	    }
 	
