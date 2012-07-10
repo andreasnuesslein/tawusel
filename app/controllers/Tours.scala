@@ -113,6 +113,7 @@ object Tours extends Controller with Secured {
             }
           )
           if(tour.getAllUsers().length > 1) {
+            var n:Notification = null
             if(User.findByEmail(tour.getAllUsers().head.email).get.id.equals(tour.mod_id.toInt)) {
               val userToNotify = tour.getAllUsers().tail.head
               n = new ManualCallNotification(userToNotify, null, tour, true)
