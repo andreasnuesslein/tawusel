@@ -24,7 +24,7 @@ Plan a new tour
 
   var loa = [
     @locations.map { l =>
-      {'id': @l.id, 'name': "@l.name", 'address': "@l.address", 'town_id': "@l.town_id" },
+      {'id': @l.id, 'name': "@Html(l.name)", 'address': "@Html(l.address)", 'town_id': "@l.town_id" },
     }
     ]
 
@@ -99,12 +99,6 @@ Plan a new tour
       "aaSorting": []
     });
 
-    $(".modtime").each(function() {
-      var elems = $(this).text().split(" - ");
-      var se1 = elems[0].split(":");
-      var se2 = elems[1].split(":");
-      $(this).text(pad(se1[0])+":"+pad(se1[1])+" - "+pad(se2[0])+":"+pad(se2[1])  );
-    });
     $('.passenger').popover({placement:"top"});
     $('.passenger').prepend(function(index,html) {
       return "<img src=\"http://www.gravatar.com/avatar/"+hex_md5($(this).attr('email'))+"?s=16\" />";
@@ -245,7 +239,7 @@ Plan a new tour
       <td>@tour._2</td>
       <td>@tour._3</td>
       <td>@tour._4</td>
-      <td><span class="modtime">@tour._5.getHours:@tour._5.getMinutes - @tour._6.getHours:@tour._6.getMinutes</span> (@tour._5.getDate.@(tour._5.getMonth + 1).@(tour._5.getYear + 1900))</td>
+      <td><span class="modtime">@tour._5.format("HH:mm") - @tour._6.format("HH:mm")</span> (@tour._5.format("dd.MM.yyyy"))</td>
       <td>@tour._8.map { u =>
         @if(u.id == tour._7) {
         <span class="mod" style="font-weight:bold;">
@@ -277,7 +271,7 @@ Plan a new tour
       <td>@tour._1</td>
       <td>@tour._2</td>
       <td>@tour._3</td>
-      <td class="modtime">@tour._4.getHours:@tour._4.getMinutes - @tour._5.getHours:@tour._5.getMinutes</td>
+      <td class="modtime">@tour._4.format("HH:mm") - @tour._5.format("HH:mm")</td>
       <td>-</td>
       <td>-</td>
       <td><a href="" class="btn btn-mini">create</a></td>
@@ -289,7 +283,7 @@ Plan a new tour
       <td>@tour._2</td>
       <td>@tour._3</td>
       <td>@tour._4</td>
-      <td><span class="modtime">@tour._5.getHours:@tour._5.getMinutes - @tour._6.getHours:@tour._6.getMinutes</span> (@tour._5.getDate.@(tour._5.getMonth + 1).@(tour._5.getYear + 1900))</td>
+      <td><span class="modtime">@tour._5.format("HH:mm") - @tour._6.format("HH:mm")</span> (@tour._5.format("dd.MM.yyyy"))</td>
       <td>@tour._8.map { u =>
         @if(u.id == tour._7) {
         <span class="mod" style="font-weight:bold;">
