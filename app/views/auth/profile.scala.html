@@ -1,4 +1,8 @@
-@(user: User, userform: Form[(String,String,Option[String])], n: UserNotification,history: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)], favorites: List[(String, String, String, java.util.Date, java.util.Date, Boolean, Int, Int)])(implicit request: RequestHeader)
+@(user: User,
+userform: Form[(String,String,Option[String])],
+n: UserNotification,
+history: List[RichTour],
+favorites: List[(String, String, String, java.util.Date, java.util.Date, Boolean, Int, Int)])(implicit request: RequestHeader)
 
 @import helper._
 @implicitField = @{ FieldConstructor(templates.userform.f) }
@@ -19,12 +23,6 @@
       "bFilter": false,
       "bInfo": false,
       "aaSorting": []
-    });
-    $(".modtime").each(function() {
-      var elems = $(this).text().split(" - ");
-      var se1 = elems[0].split(":");
-      var se2 = elems[1].split(":");
-      $(this).text(pad(se1[0])+":"+pad(se1[1])+" - "+pad(se2[0])+":"+pad(se2[1])  );
     });
     $('.passenger').popover({placement:"top"});
     $('.passenger').prepend(function(index,html) {
@@ -178,12 +176,12 @@
       <tbody>
         @history.map { h =>
         <tr class="tour">
-          <td>@h._2</td>
-          <td>@h._3</td>
-          <td>@h._4</td>
-          <td><span class="modtime">@h._5.getHours:@h._5.getMinutes - @h._6.getHours:@h._6.getMinutes</span> (@h._5.getDate.@(h._5.getMonth + 1).@(h._5.getYear + 1900))</td>
-          <td>@h._8.map { u =>
-            @if(u.id == h._7) {
+          <td>@h.town.name</td>
+          <td>@h.l1.name</td>
+          <td>@h.l2.name</td>
+          <td><span class="modtime">@h.dep.format("HH:mm") - @h.arr.format("HH:mm")</span> (@h.dep.format("dd.MM.yyyy"))</td>
+          <td>@h.users.map { u =>
+            @if(u.id == h.mod.id) {
               <span class="mod" style="font-weight:bold;">
             } else {
               <span>
@@ -193,13 +191,13 @@
             }
           </td>
           <td>
-            <span class="status">@if(h._9 == 1) {
+            <span class="status">@if(h.state == 1) {
               <span class="statusicon" rel="popover" data-content="This tour was never confirmed nor cancelled." data-original-title="Pending"><a class="icon-question-sign"></a></span>
               }
-              @if(h._9 == 2) {
+              @if(h.state == 2) {
               <span class="statusicon" rel="popover" data-content="This tour was confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
               }
-              @if(h._9 == 3) {
+              @if(h.state == 3) {
               <span class="statusicon" rel="popover" data-content="This tour was cancelled." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
               }
             </span>

@@ -19,6 +19,12 @@ case class User(id: Int, email: String, firstname: String, lastname: String, cel
       this.cellphone,
       this.password)
   }
+  def delete: Boolean = {
+    DB.withConnection { implicit connection =>
+      (SQL("DELETE FROM user WHERE id = {id}").on(
+        'id -> this.id).executeUpdate == 1)
+    }
+  }
 
   def update(email:String, cellphone: String, extension: Option[String]): Boolean = {
     DB.withConnection { implicit connection =>

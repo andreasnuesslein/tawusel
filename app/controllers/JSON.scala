@@ -32,28 +32,28 @@ object JSON extends Controller {
   
   def getActiveToursByApp(email: String) = Action {
     val user = User.findByEmail(email).get
-    val activeTours = Tour.findAllForUser(user.id)
+    val activeTours = Tour.getActiveForUser(user.id)
     val json = Json.generate(activeTours)
     Ok(json).as("application/json")
   }
   
   def getTourTemplatesByApp(email:String) = Action {
     val user = User.findByEmail(email).get
-    val tourTemplates = Tour.findTemplatesForUser(user.id)
+    val tourTemplates = Tour.getTemplatesForUser(user.id)
     val json = Json.generate(tourTemplates)
     Ok(json).as("application/json")
   }
   
   def getAvailableToursByApp(email:String) = Action {
     val user = User.findByEmail(email).get
-    val availableTours = Tour.findAll(user.id)
+    val availableTours = Tour.getAvailableForUser(user.id)
     val json = Json.generate(availableTours)
     Ok(json).as("application/json")
   }
     
   def joinTourByApp(email:String, tourId:String) = Action {
 	val user = User.findByEmail(email).get
-	var tour = Tour.findById(tourId.toLong).get
+	var tour = Tour.getById(tourId.toLong)
 	val isUserJoined = tour.userJoin(user.id)
 	if(isUserJoined) {
 	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
@@ -66,7 +66,7 @@ object JSON extends Controller {
 
   def leaveTourByApp(email:String, tourId:String) = Action {
 	val user = User.findByEmail(email).get
-	var tour = Tour.findById(tourId.toLong).get
+	var tour = Tour.getById(tourId.toLong)
 	val hasUserLeft = tour.userLeave(user.id)
 	if(hasUserLeft) {
 	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))

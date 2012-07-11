@@ -104,7 +104,7 @@ object Auth extends Controller with Secured {
     println(request.body.asFormUrlEncoded.get)
     var x = request.body.asFormUrlEncoded.get
     var json = null;
-    val userId = User.create(x("email").first, x("firstname").first, x("lastname").first, x("phone").first, x("password").first);
+    val userId = User.create(x("email").head, x("firstname").head, x("lastname").head, x("phone").head, x("password").head);
     if (userId != 0) {
       Ok("success")
     }
@@ -150,8 +150,8 @@ object Auth extends Controller with Secured {
   } else {
       val user = User.findByEmail(email).get
       val x = request.body.asFormUrlEncoded.get
-      user.update(x("email").first, x("cellphone").first, Option(x("extension").first))
-      Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").first, "firstname" -> user.firstname)
+      user.update(x("email").head, x("cellphone").head, Option(x("extension").head))
+      Redirect(routes.Auth.account).withNewSession.withSession("email" -> x("email").head, "firstname" -> user.firstname)
         .flashing("success" -> "Successfully updated.")
   }
 }

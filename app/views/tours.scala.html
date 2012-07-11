@@ -1,6 +1,6 @@
-@(active_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)],
+@(active_tours: List[RichTour],
   tour_templates: List[(String, String, String, java.util.Date, java.util.Date)],
-  avail_tours: List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)],
+  avail_tours: List[RichTour],
 towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
 
 @implicitFieldConstructor = @{ FieldConstructor(templates.formhelper.f) }
@@ -236,12 +236,12 @@ Plan a new tour
   <tbody>
     @active_tours.map { tour =>
     <tr class="tour_active">
-      <td>@tour._2</td>
-      <td>@tour._3</td>
-      <td>@tour._4</td>
-      <td><span class="modtime">@tour._5.format("HH:mm") - @tour._6.format("HH:mm")</span> (@tour._5.format("dd.MM.yyyy"))</td>
-      <td>@tour._8.map { u =>
-        @if(u.id == tour._7) {
+      <td>@tour.town.name</td>
+      <td>@tour.l1.name</td>
+      <td>@tour.l2.name</td>
+      <td><span class="modtime">@tour.dep.format("HH:mm") - @tour.arr.format("HH:mm")</span> (@tour.dep.format("dd.MM.yyyy"))</td>
+      <td>@tour.users.map { u =>
+        @if(u.id == tour.mod.id) {
         <span class="mod" style="font-weight:bold;">
         } else {
         <span>
@@ -251,19 +251,19 @@ Plan a new tour
         }
       </td>
       <td>
-        <span class="status">@if(tour._9 == 1) {
+        <span class="status">@if(tour.state == 1) {
           <span class="statusicon" rel="popover" data-content="This tour state is still pending. We will try to confirm the tour 30min before it is supposed to start." data-original-title="Pending"><a class="icon-question-sign"></a></span>
           }
-          @if(tour._9 == 2) {
+          @if(tour.state == 2) {
           <span class="statusicon" rel="popover" data-content="This tour has been confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
           }
-          @if(tour._9 == 3) {
+          @if(tour.state == 3) {
           <span class="statusicon" rel="popover" data-content="This tour has been cancelled. It will NOT take place." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
           }
         </span>
       </td>
       <td>
-        <a href="/tour/@tour._1/leave"><span class="btn btn-mini">leave</span></a></td>
+        <a href="/tour/@tour.id/leave"><span class="btn btn-mini">leave</span></a></td>
     </tr>
     }
     @tour_templates.map { tour =>
@@ -280,12 +280,12 @@ Plan a new tour
 
     @avail_tours.map { tour =>
     <tr class="tour">
-      <td>@tour._2</td>
-      <td>@tour._3</td>
-      <td>@tour._4</td>
-      <td><span class="modtime">@tour._5.format("HH:mm") - @tour._6.format("HH:mm")</span> (@tour._5.format("dd.MM.yyyy"))</td>
-      <td>@tour._8.map { u =>
-        @if(u.id == tour._7) {
+      <td>@tour.town.name</td>
+      <td>@tour.l1.name</td>
+      <td>@tour.l2.name</td>
+      <td><span class="modtime">@tour.dep.format("HH:mm") - @tour.arr.format("HH:mm")</span> (@tour.dep.format("dd.MM.yyyy"))</td>
+      <td>@tour.users.map { u =>
+        @if(u.id == tour.mod.id) {
         <span class="mod" style="font-weight:bold;">
         } else {
         <span>
@@ -295,18 +295,18 @@ Plan a new tour
         }
       </td>
       <td>
-        <span class="status">@if(tour._9 == 1) {
+        <span class="status">@if(tour.state == 1) {
           <span class="statusicon" rel="popover" data-content="This tour state is still pending.  We will try to confirm the tour 30min before it is supposed to start." data-original-title="Pending"><a class="icon-question-sign"></a></span>
           }
-          @if(tour._9 == 2) {
+          @if(tour.state == 2) {
           <span class="statusicon" rel="popover" data-content="This tour has been confirmed, therefore a taxi will be waiting." data-original-title="Booked"><a class="icon-ok"></a></span>
           }
-          @if(tour._9 == 3) {
+          @if(tour.state == 3) {
           <span class="statusicon" rel="popover" data-content="This tour has been cancelled. Which means, a taxi has not been ordered, maybe another passenger than the initiator will call a taxi and confirm this. If that happens, the status will be changed." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
           }
         </span>
       </td>
-      <td>@if(tour._9!=3){<a href="/tour/@tour._1/join"><div class="btn btn-mini">join</div></a>}</td>
+      <td>@if(tour.state!=3){<a href="/tour/@tour.id/join"><div class="btn btn-mini">join</div></a>}</td>
     </tr>
     }
   </tbody>

@@ -1,6 +1,5 @@
 package controllers
 
-
 import play.api.data.Forms.nonEmptyText
 import play.api.data.Forms.number
 import play.api.data.Forms.text
@@ -20,9 +19,6 @@ import java.util.Calendar
 import java.text.SimpleDateFormat
 
 object Tours extends Controller with Secured {
-
-  val townForm = Form(
-    "name" -> nonEmptyText)
 
   val newTourForm = Form(
     tuple(
@@ -49,9 +45,9 @@ object Tours extends Controller with Secured {
   /* This method is being called if the /tours site is being requested and returns the site with its filled lists for full content. */
   def tours = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val active_tours = Tour.findAllForUser(user.id)
-    val tour_templates = Tour.findTemplatesForUser(user.id)
-    val available_tours = Tour.findAll(user.id)
+    val active_tours = Tour.getActiveForUser(user.id)
+    val tour_templates = Tour.getTemplatesForUser(user.id)
+    val available_tours = Tour.getAvailableForUser(user.id)
     var towns = Town.findAllSortedByName()
     var locations = Location.findAllSortedByName()
     Ok(views.html.tours(active_tours, tour_templates, available_tours, towns, locations))
@@ -59,7 +55,7 @@ object Tours extends Controller with Secured {
   
   def joinTour(id:Long) = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val tour = Tour.findById(id).get
+    val tour = Tour.getById(id)
     val users = tour.getAllUsers
     if ( (tour.tour_state==2) && (users.length %4 ==0) ) {
       Redirect(routes.Tours.tours).flashing("error" -> "Sorry, but this tour is already booked and full.")
@@ -71,7 +67,7 @@ object Tours extends Controller with Secured {
 
   def leaveTour(id:Long) = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
-    val tour = Tour.findById(id).get
+    val tour = Tour.getById(id)
     tour.userLeave(user.id)
     Redirect(routes.Tours.tours).flashing("success" -> "Successfully left the tour!")
   }
@@ -80,13 +76,12 @@ object Tours extends Controller with Secured {
     (tour_state.id == 1) = pending
     (tour_state.id == 2) = success
     (tour_state.id == 3) = fail
-    (tour_state.id == 4) = done
   */
   def confirmTour(id: Long, token: String) = Action {implicit request =>
     try {
-      var tour = Tour.findById(id).get
+      var tour = Tour.getById(id)
       if( tour.checkToken(token) ) {
-        if(tour.updateTourState(2)) {
+        if(tour.updateState(2)) {
           tour.getAllUsers().foreach(u => {
             val un = UserNotification.getForUser(u.id)
             val n = new TaxiStatusChangedSuccessNotification(u, null, tour)
@@ -107,10 +102,10 @@ object Tours extends Controller with Secured {
   /*This method does set the state of the actual tour to fail and informs all connected users.
   */
   def cancelTour(id: Long, token: String) = Action { implicit request =>
-    var tour = Tour.findById(id).get
+    var tour = Tour.getById(id)
     if( tour.checkToken(token) ) {
         var statusText = ""
-        if(tour.updateTourState(3)) {
+        if(tour.updateState(3)) {
           tour.getAllUsers().foreach(u => {
               val un = UserNotification.getForUser(u.id)
               val n = new TaxiStatusChangedFailNotification(u, null, tour)
