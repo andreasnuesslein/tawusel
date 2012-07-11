@@ -12,7 +12,8 @@ object ApplicationBuild extends Build {
       "com.typesafe.akka" % "akka-actor" % "2.+",
       "com.typesafe" %% "play-plugins-mailer" % "2.0.2",
       "com.novocode" % "junit-interface" % "0.8" % "test->default",
-      "org.scalatest" %% "scalatest" % "1.6.1" % "test"
+      "org.scalatest" %% "scalatest" % "1.6.1" % "test",
+      "com.codahale" %% "jerkson" % "0.5.0"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(

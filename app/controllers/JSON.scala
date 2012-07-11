@@ -11,6 +11,7 @@ import play.api.db._
 import anorm._
 import anorm.SqlParser._
 import play.api.Play.current
+import play.api.libs.ws.WS
 
 object JSON extends Controller {
 
@@ -74,6 +75,24 @@ object JSON extends Controller {
 	} else {
 	  val json = "[{\"_1\": \"false\"}]"
 	  Ok(json).as("application/json")
-	} 	
+	}
   }
+  
+  def getGoogleEstimate(dep: Int, arr: Int) = Action {
+    try {
+      val d = Location.getById(dep).address.replace(" ","+")
+      val a = Location.getById(arr).address.replace(" ","+")
+      val url = "http://maps.googleapis.com/maps/api/distancematrix/json?sensor=false&origins="+d+"&destinations="+a
+      
+      val res = WS.url(url).get().await(100000).get.body
+      val sec = res.substring(res.indexOf("value",res.indexOf("duration"))+9).split("\n")(0)
+      val min = math.ceil(sec.toInt/60.0).toInt
+      
+      val json = "[{'dur': '"+min+"'}]"
+      Ok(json).as("application/json")
+    } catch {
+      case e:NoSuchElementException => Ok("""[{"dur": "-1"}]""").as("application/json")
+    }
+  }
+  
 }

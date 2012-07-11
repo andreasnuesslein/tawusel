@@ -44,6 +44,8 @@ GET		/getAvailableToursByApp/*email								controllers.JSON.getAvailableToursByA
 GET		/getTourStatusValuesByApp									controllers.JSON.getTourStatusValuesByApp
 GET		/joinTourByApp/*email/*tourId								controllers.JSON.joinTourByApp(email, tourId)
 GET		/leaveTourByApp/*email/*tourId								controllers.JSON.leaveTourByApp(email, tourId)
+GET		/googleest/:dep/:arr										controllers.JSON.getGoogleEstimate(dep: Int, arr: Int)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file												controllers.Assets.at(path="/public", file)
