@@ -10,8 +10,9 @@ object ApplicationBuild extends Build {
     val appDependencies = Seq(
       "mysql" % "mysql-connector-java" % "5.1.18",
       "com.typesafe.akka" % "akka-actor" % "2.+",
-      "com.typesafe" %% "play-plugins-mailer" % "2.0.2"
-      // Add your project dependencies here,
+      "com.typesafe" %% "play-plugins-mailer" % "2.0.2",
+      "com.novocode" % "junit-interface" % "0.8" % "test->default",
+      "org.scalatest" %% "scalatest" % "1.6.1" % "test"
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
