@@ -9,7 +9,7 @@ import net.sf.ehcache.search.expression.EqualTo
 
 class UserModelTest extends Specification {
   //create the dummy object
-  val testUser = User("max.mustermann@carmeq.com", "Max", "Mustermann", "1234567890", "password");
+  val testUser = User(-1,"max.mustermann@carmeq.com", "Max", "Mustermann", "1234567890", "password",null);
   
   "User model" should {
     running(TestServer(9000)) {
@@ -25,13 +25,7 @@ class UserModelTest extends Specification {
         	testUser.password must equalTo("password")
         	
         	//try to create a new user
-        	User.create(testUser) must equalTo(testUser)
-          }
-        }
-    
-        "retrieve all users" in {
-          running(FakeApplication()) {
-        	User.findAll.size must >(0)
+        	testUser.create must equalTo(testUser)
           }
         }
     
@@ -43,7 +37,7 @@ class UserModelTest extends Specification {
     
         "delete a user" in {
           running(FakeApplication()) {
-        	User.delete(testUser.email) must equalTo(true)
+        	testUser.delete must equalTo(true)
           }
         }
     }

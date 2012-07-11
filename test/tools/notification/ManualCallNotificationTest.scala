@@ -11,22 +11,22 @@ class ManualCallNotificationTest extends Specification {
   "ManualCallNotification" should {
     running(TestServer(9000)) {
       //dummy users
-      val testNotifiedUser = new User("max.mustermann@carmeq.com", "Max", "Mustermann", "01788745240", "password")
-      val testInteractingUser = new User("tester.testikus@carmeq.com", "Tester", "Testikus", "0123456789", "password")
+      val testNotifiedUser = new User(-1,"max.mustermann@carmeq.com", "Max", "Mustermann", "01788745240", "password",null)
+      val testInteractingUser = new User(-1,"tester.testikus@carmeq.com", "Tester", "Testikus", "0123456789", "password",null)
 
       "have the right subject" in {
         running(FakeApplication()) {
-	      val testTour = Tour.findById(1)
+	      val testTour = Tour.getById(1)
           val testNotification = new ManualCallNotification(testNotifiedUser, testInteractingUser, testTour, true)
 	      
 	      val testSubject = "Taxi ordering"
-	      testNotification.getSubject must equalTo(testSubject)
+	      testNotification.subject must equalTo(testSubject)
 	    }
       }
       
       "have the right text" in {
 	    running(FakeApplication()) {
-	      val testTour = Tour.findById(1)
+	      val testTour = Tour.getById(1)
           val testNotification = new ManualCallNotification(testNotifiedUser, testInteractingUser, testTour, false)
 	      
 	      val testText = "Hello " + testNotifiedUser.firstname + " " + testNotifiedUser.lastname + ",\n" + "" +
@@ -37,13 +37,13 @@ class ManualCallNotificationTest extends Specification {
             "wusel.noova.de/tour/" + testTour.id + "/confirm/" + testNotification.token + "\n\n" +
             "If you are not able to call a taxi, please cancel:\t" +
             "wusel.noova.de/tour/" + testTour.id + "/cancel/" + testNotification.token
-	      testNotification.getText must equalTo(testText)
+	      testNotification.text must equalTo(testText)
 	    }
 	  }
       
       "have the right text for new initiator" in {
 	    running(FakeApplication()) {
-	      val testTour = Tour.findById(1)
+	      val testTour = Tour.getById(1)
           val testNotification = new ManualCallNotification(testNotifiedUser, testInteractingUser, testTour, true)
 	      
 	     val testText = "Hello " + testNotifiedUser.firstname + " " + testNotifiedUser.lastname + ",\n" + "" +
@@ -54,19 +54,19 @@ class ManualCallNotificationTest extends Specification {
             "wusel.noova.de/tour/" + testTour.id + "/confirm/" + testNotification.token + "\n\n" +
             "If you are not able to call a taxi, please cancel:\t" +
             "wusel.noova.de/tour/" + testTour.id + "/cancel/" + testNotification.token
-	      testNotification.getText must equalTo(testText)
-	      testNotification.getText must equalTo(testText)
+	      testNotification.text must equalTo(testText)
+	      testNotification.text must equalTo(testText)
 	    }
 	  }
       
 	  "have the right shortText" in {
 	    running(FakeApplication()) {
-	      val testTour = Tour.findById(1)
+	      val testTour = Tour.getById(1)
           val testNotification = new ManualCallNotification(testNotifiedUser, testInteractingUser, testTour,true)
 	      
 	      val testShortText = "Hello " + testNotifiedUser.firstname + " " + testNotifiedUser.lastname + 
       ", please call a taxi using the number: " + testNotification.taxiNumber
-	      testNotification.getShortText must equalTo(testShortText)
+	      testNotification.shortText must equalTo(testShortText)
 	    }
 	  }
     }

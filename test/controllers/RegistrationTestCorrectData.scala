@@ -46,7 +46,7 @@ class RegistrationTestCorrectData extends Specification{
   trait afterContext extends After {
     def after = {
       running(FakeApplication()) {
-        User.delete("max.mustermann@carmeq.com")
+        val user = User.findByEmail("max.mustermann@carmeq.com").get.delete
       }
     }
   }

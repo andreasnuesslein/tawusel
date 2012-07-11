@@ -10,9 +10,9 @@ import tools.notification._
 
 class SMSTest extends Specification {
   //create the dummy object
-  val testNotifiedUser = User("max.mustermann@carmeq.com", "Max", "Mustermann", "01788745240", "password")
-  val testWrongNotifiedUser = User("tester.testikus@carmeq.com", "Tester", "Testikus", "0a1788745240", "password")
-  val testInteractingUser = new User("tester.testikus@carmeq.com", "Tester", "Testikus", "0123456789", "password")
+  val testNotifiedUser = User(-1,"max.mustermann@carmeq.com", "Max", "Mustermann", "01788745240", "password",null)
+  val testWrongNotifiedUser = User(-1,"tester.testikus@carmeq.com", "Tester", "Testikus", "0a1788745240", "password",null)
+  val testInteractingUser = new User(-1,"tester.testikus@carmeq.com", "Tester", "Testikus", "0123456789", "password",null)
 
   "SMS" should {
     
@@ -31,7 +31,7 @@ class SMSTest extends Specification {
     
       "not send the sms if the cellphone number is incorrect" in {
         running(FakeApplication()) {
-          val testTour = Tour.findById(1)
+          val testTour = Tour.getById(1)
           val testNotification = new JoinExistingTourNotification(testWrongNotifiedUser, testInteractingUser, testTour)
           
           SMS.send(testNotification, true) must equalTo("Empfängernummer ungültig.")
@@ -40,7 +40,7 @@ class SMSTest extends Specification {
     
       "send a sms for all notification types" in {
         running(FakeApplication()) {
-          val testTour = Tour.findById(1)
+          val testTour = Tour.getById(1)
           
           var testNotification : Notification = new JoinExistingTourNotification(testNotifiedUser, null, testTour)
           SMS.send(testNotification, true) must equalTo("SMS wurde erfolgreich verschickt.")
