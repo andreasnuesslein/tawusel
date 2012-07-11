@@ -124,4 +124,26 @@ object Location {
 	}
   }
 
+  /**
+   *
+   */
+  def getLocationIdByLocAndTownName(locationName: String, townName: String) : Int = {
+    DB.withConnection { implicit connection =>
+      val locId = SQL("""
+        SELECT location.id
+        FROM location
+        JOIN town ON town.id = location.town_id
+        WHERE location.name = {locationName} AND town.name = {townName}
+        """).on(
+          'locationName -> locationName,
+          'townName -> townName
+        ).as(scalar[Int].single)
+      if(locId != null) {
+        return locId
+      } else {
+        return 0
+      }
+    }
+  }
+
 }

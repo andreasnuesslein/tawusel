@@ -17,6 +17,7 @@ import tools.notification.TaxiStatusChangedFailNotification
 import tools.notification.ManualCallNotification
 import com.codahale.jerkson.Json
 import java.util.Calendar
+import java.text.SimpleDateFormat
 
 object Tours extends Controller with Secured {
 
@@ -45,6 +46,7 @@ object Tours extends Controller with Secured {
       })
   }
 
+  /* This method is being called if the /tours site is being requested and returns the site with its filled lists for full content. */
   def tours = IsAuthenticated { email => implicit request =>
     val user = User.findByEmail(email).get
     val active_tours = Tour.findAllForUser(user.id)
@@ -139,36 +141,32 @@ object Tours extends Controller with Secured {
   }
 
   /*This method is given to remotely create a tour for a per mail specified user.*/
-  def remoteCreateTour(uemail: String, hash: String, start: String, end: String, stime: String, etime: String) = Action {
-   //TODO convert string to email, verification, startingpoint, targetpoint, startingtime and endtime
-   //TODO create tour with data TODO test if a tour with this specifications already exist in the db
-     println(uemail)
-     println(hash)
-     println(start)
-     println(end)
-     println(stime)
-     println(etime)
-     var dep = new java.util.Date(1.toLong);
-     var arr = new java.util.Date(1.toLong);
+  def remoteCreateTour(uemail: String, hash: String, start: String, end: String, stime: String, etime: String, city: String) = Action {
+     val user = User.findByEmail(uemail).get
+     val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+     val dep = dateFormat.parse(stime)
+     val arr = dateFormat.parse(etime)
      var dep_l = 16;
      var arr_l = 17;
-//     var userid = User.getIdByEmail("mail@mail.com")
-     var userid = 5
-     var cal = Calendar.getInstance
-     cal.set(2012, 5, 29, 7, 31)
-     val existingTours: List[Tour] = Tour.checkForSimilarTour(cal.getTime, dep_l, arr_l, 5)
+     val temp_dl = Location.getLocationIdByLocAndTownName(start, city)
+     val temp_al = Location.getLocationIdByLocAndTownName(end, city)
+     if(temp_dl > 0 && temp_al > 0) {
+       dep_l = temp_dl
+       arr_l = temp_al
+     }
+     val existingTours: List[Tour] = Tour.checkForSimilarTour(dep, dep_l, arr_l, 5)
      if(existingTours.nonEmpty) {
        val existingTour: Tour = existingTours.head
-       println(existingTours)
-       println(existingTour)
+       if(!existingTour.getAllUsers().contains(user)) {
+         existingTour.userJoin(user.id)
+       }
+     } else {
+       var tour = Tour.create(dep,arr, dep_l, arr_l, 1,user.id)
      }
-     //var tour = Tour.create(dep,arr, dep_l, arr_l, 1,userid)
-     //println(existingTour)
-     //val json = "{\"aaData\" : " + Json.generate(tour) + "}"
-     //200 if Ok, 500 if internal error, 400 if bad request, 401 if unauthorised
      Ok("true")
   }
 
+  /*This method resets all favorites for one specified user. */
   def resetFavoritesForUser(email: String) = Action {
     val user = User.findByEmail(email).get
     if(Tour.resetFavoritesForUser(user.id)) {
@@ -177,7 +175,8 @@ object Tours extends Controller with Secured {
       Redirect(routes.Auth.account).flashing("warning" -> "Resetting the tour favorites was not successful. Please try again later or contact the support if this problem is ongoing.")
     }
   }
-  
+
+  /*This method resets a favorite which is specified by its tour_id and user_id. */
   def resetFavorite(user_id: Int, tour_id: Int) = Action {
     if(Tour.resetFavorite(user_id, tour_id)) {
       Redirect(routes.Auth.account).flashing("success" -> "Successfully resetted the favorite!")
