@@ -90,7 +90,7 @@ object JSON extends Controller {
 	var tour = Tour.getById(tourId.toLong)
 	val hasUserLeft = tour.userLeave(user.id)
 	if(hasUserLeft) {
-	  val json = Json.generate(List(tour.toRichTour))
+	  val json = Json.generate(tour.toRichTour)
 	  Ok(json).as("application/json")
 	} else {
 	  val json = "[{\"_1\": \"false\"}]"
@@ -111,7 +111,23 @@ object JSON extends Controller {
       val json = "{'dur': '" + min + "'}"
       Ok(json).as("application/json")
     } catch {
-      case e:NoSuchElementException => Ok("""[{"dur": "-1"}]""").as("application/json")
+      case e:NoSuchElementException => Ok("""{"dur": "-1"}""").as("application/json")
+    }
+  }
+  
+  def createTourByApp() = Action { implicit request =>
+    var x = request.body.asFormUrlEncoded.get
+    val user = User.findByEmail(x("email").head).get
+    val dep = new java.util.Date(x("deptime").head.toLong)
+    val arr = new java.util.Date(x("arrtime").head.toLong)
+    val tour = Tour.create(dep, arr, x("depature").head.toLong, x("arrival").head.toLong, 1,user.id)
+    tour.userJoin(user.id)
+    
+    if (tour.id != null) {
+      Ok(tour.id.toString())
+    }
+    else {
+      Ok("error, tour could not be created")
     }
   }
   

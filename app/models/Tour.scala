@@ -331,7 +331,6 @@ object Tour {
   }  
 
 
-
   def getDepatureLocation(tourId: Long): String = {
     DB.withConnection { implicit connection =>
       val firstRow = SQL("""

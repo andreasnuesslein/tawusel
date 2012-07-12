@@ -49,7 +49,7 @@ GET		/leaveTourByApp/*email/*tourId								controllers.JSON.leaveTourByApp(email
 GET		/googleest/:dep/:arr										controllers.JSON.getGoogleEstimate(dep: Int, arr: Int)
 GET		/getTownValuesByApp											controllers.JSON.getTownValuesByApp
 GET		/getLocationValuesByApp										controllers.JSON.getLocationValuesByApp
-
+POST	/createTourByApp											controllers.JSON.createTourByApp
 
 
 # Map static resources from the /public folder to the /assets URL path
