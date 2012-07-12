@@ -1,0 +1,54 @@
+@(myform: Form[(String,String)])(implicit request: RequestHeader)
+
+
+@import helper._
+
+@title = {
+  Welcome to TaWusel
+}
+
+@main(title, nav = "") {
+<div class="span8">
+  <p>
+
+  TaWusel is a service that helps you order taxis and share them with others.<br/>
+  You can either join existing tours of coworkers and friends or create your own tour for others to join.
+  </p>
+  <br/>
+  <table class="span6">
+    <tr><td><img src="/assets/img/simple48.png" /></td><td><h5>Simple</h5>Ordering a taxi is as easy as clicking a button</td></tr>
+    <tr><td><img src="/assets/img/social48.png" /></td><td><h5>Social</h5>Travel with friends and coworkers</td></tr>
+    <tr><td><img src="/assets/img/coins48.png" /></td><td><h5>Save money</h5>By sharing taxis more frequently, you will save your company hard cash</td></tr>
+    <tr><td><img src="/assets/img/history48.png" /></td><td><h5>History</h5>List all your previous tours and analyze them</td></tr>
+    <tr><td><img src="/assets/img/personalize48.png" /></td><td><h5>Peronalized</h5>Create your favorite tours with one click</td></tr>
+
+  </table>
+
+
+</div>
+<div class="span4">
+  <div class="well">
+    <h4>Login</h4>
+    <form action="@routes.Auth.login" method="POST" class="form-horizontal">
+      <fieldset>
+        @inputText(
+        myform("email"),
+        '_label -> "Email",
+        '_help -> ""
+        )
+        @inputPassword(
+        myform("password"),
+        '_label -> "Password"
+        )
+      </fieldset>
+      <div class="form-action">
+        <input type="submit" id="loginbutton" class="btn btn-primary" value="Login" />
+      </div>
+
+    </form>
+  </div>
+</div>
+}
+
+
+

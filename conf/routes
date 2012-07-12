@@ -1,7 +1,7 @@
 
 # Home page
 GET		/															controllers.Application.index
-
+GET		/welcome													controllers.Application.welcome
 
 GET		/tour/:id/confirm/:token									controllers.Tours.confirmTour(id: Long, token: String)
 GET		/tour/:id/cancel/:token										controllers.Tours.cancelTour(id: Long, token: String)

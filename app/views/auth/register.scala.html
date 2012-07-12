@@ -24,58 +24,58 @@
     });
   });
 </script>
+<div class="span12">
+  <form action="@routes.Auth.register" method="POST" class="form-horizontal" >
 
-<form action="@routes.Auth.register" method="POST" class="form-horizontal" >
+    <fieldset>
+      @inputText(
+      signupForm("firstname"),
+      '_label -> "First name",
+      '_help  -> "",
+      '_error -> signupForm.error("firstname")
+      )
 
-<fieldset>
-  @inputText(
-  signupForm("firstname"),
-  '_label -> "First name",
-  '_help  -> "",
-  '_error -> signupForm.error("firstname")
-  )
+      @inputText(
+      signupForm("lastname"),
+      '_label -> "Last name",
+      '_help  -> "",
+      '_error -> signupForm.error("lastname")
+      )
 
-  @inputText(
-  signupForm("lastname"),
-  '_label -> "Last name",
-  '_help  -> "",
-  '_error -> signupForm.error("lastname")
-  )
+      @inputText(
+      signupForm("email"),
+      '_label -> "Email",
+      '_help  -> "",
+      '_error -> signupForm.globalError
+      )
 
-  @inputText(
-  signupForm("email"),
-  '_label -> "Email",
-  '_help  -> "",
-  '_error -> signupForm.globalError
-  )
+      @inputText(
+      signupForm("cellphone"),
+      '_label -> "Mobile phone",
+      '_help  -> "",
+      '_error -> signupForm.error("cellphone")
+      )
 
-  @inputText(
-  signupForm("cellphone"),
-  '_label -> "Mobile phone",
-  '_help  -> "",
-  '_error -> signupForm.error("cellphone")
-  )
+      @inputPassword(
+      signupForm("password.main"),
+      '_label -> "Password",
+      '_help  -> "A password must be at least 6 characters. "
+      )
 
-  @inputPassword(
-  signupForm("password.main"),
-  '_label -> "Password",
-  '_help  -> "A password must be at least 6 characters. "
-  )
+      @inputPassword(
+      signupForm("password.confirm"),
+      '_label -> "Repeat password",
+      '_help  -> "Please repeat your password again.",
+      '_error -> signupForm.error("password")
+      )
 
-  @inputPassword(
-  signupForm("password.confirm"),
-  '_label -> "Repeat password",
-  '_help  -> "Please repeat your password again.",
-  '_error -> signupForm.error("password")
-  )
+    </fieldset>
 
-</fieldset>
+    <div class="form-actions">
+      <input type="submit" id="registerbutton" class="btn btn-primary" value="Register" />
+      <a href="@routes.Application.index" class="btn">Cancel</a>
+    </div>
 
-<div class="form-actions">
-  <input type="submit" id="registerbutton" class="btn primary" value="Register">
-  <a href="@routes.Application.index" class="btn">Cancel</a>
+  </form>
 </div>
-
-</form>
-
 }

@@ -9,33 +9,32 @@
 }
 
 @main(title, nav = "login") {
-
-<form action="@routes.Auth.passwordLost" method="POST" class="form-horizontal" >
-
-  <div class="alerts">
-    @myform.globalError.map { error =>
-    <div class="alert alert-error">
-      <a class="close" data-dismiss="alert" href="#">x</a>
-      @error.message
+<div class="span12">
+  <form action="@routes.Auth.passwordLost" method="POST" class="form-horizontal" >
+    <div class="alerts">
+      @myform.globalError.map { error =>
+      <div class="alert alert-error">
+        <a class="close" data-dismiss="alert" href="#">x</a>
+        @error.message
+      </div>
+      }
     </div>
-    }
-  </div>
 
-  <fieldset>
-    @inputText(
-    myform("email"),
-    '_label -> "Email",
-    '_help -> ""
-    )
-  </fieldset>
+    <fieldset>
+      @inputText(
+      myform("email"),
+      '_label -> "Email",
+      '_help -> ""
+      )
+    </fieldset>
 
-  <div class="form-actions">
-   <input type="submit" id="loginbutton" class="btn primary" value="Login">
-   <a href="@routes.Application.index" class="btn">Cancel</a>
- </div>
+    <div class="form-actions">
+      <input type="submit" id="loginbutton" class="btn primary" value="Login" />
+      <a href="@routes.Application.index" class="btn">Cancel</a>
+    </div>
 
-
-</form>
+  </form>
+</div>
 }
 
 
