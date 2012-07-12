@@ -13,10 +13,9 @@ import java.util.Calendar
 import tools._
 import tools.notification._
 
-//comment
+import models._
 
 case class RichTour(id: Int, town: Town, l1: Location, l2: Location, dep: Date, arr: Date, mod: User, users: List[User], state: Int)
-
 
 case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, arr_location: Long, tour_state: Long, mod_id: Long) {
 
@@ -36,7 +35,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
           'tid -> this.id).execute()
           // notify
           val initiator = User.findById(userid).get
-          var users = this.getAllUsers()
+          var users = this.getAllUsers
           for (u <- users) {
             if(u != initiator) {
               val un = UserNotification.getForUser(u.id)
@@ -76,7 +75,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
         // notify
         val initiator = User.findById(userid).get
-        var users = this.getAllUsers()
+        var users = this.getAllUsers
         for (u <- users) {
           if(u != initiator) {
             val un = UserNotification.getForUser(u.id)
@@ -97,7 +96,14 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
     }
   }
 
-  def getAllUsers(): List[User] = {
+  def toRichTour: RichTour = {
+    val l1 = Location.getById(this.dep_location.toInt)
+    val l2 = Location.getById(this.arr_location.toInt)
+    val town = Town.getById(l1.town_id)
+    RichTour(this.id.toInt,town,l1,l2,this.departure,this.arrival, this.getMod, this.getAllUsers, this.tour_state.toInt)
+  } 
+  
+  def getAllUsers: List[User] = {
     DB.withConnection { implicit connection =>
       SQL("SELECT * FROM user JOIN user_has_tour on user.id = user_has_tour.user_id WHERE user_has_tour.tour_id = {tid};").on(
         'tid -> this.id).as(User.simple *)
@@ -135,7 +141,7 @@ case class Tour(id: Long, departure: Date, arrival: Date, dep_location: Long, ar
 
 
     // notifications
-    for(u : User <- this.getAllUsers()){
+    for(u : User <- this.getAllUsers){
       val un = UserNotification.getForUser(u.id)
       val n = new TourStartsSoonNotification(u, null, this)
       if(un.xmin_email) Mail.send(n)
@@ -323,33 +329,6 @@ object Tour {
         return favorites
       }
   }  
-
-
-  def getTourDetailsForJSON(tour_id: Int): List[(Int, String, String, String, java.util.Date, java.util.Date, Int, List[User], Int)] = {
-    DB.withConnection { implicit connection =>
-      var tours = SQL("""SELECT tour.id,town.name,tour.departure,tour.arrival,l1.name as dep_location,l2.name, tour.mod_id, tour.tour_state
-        FROM tour
-        JOIN user_has_tour ON tour.id = user_has_tour.tour_id
-        JOIN location  as l1 on dep_location=l1.id
-        JOIN location2 as l2 on arr_location=l2.id
-        JOIN town on town.id = l1.town_id
-        WHERE tour.id = {tour_id} AND tour.departure > NOW()"""
-      ).on(
-        'tour_id -> tour_id
-      ).as(int("id") ~ str("town.name") ~ str("location.name") ~ str("location2.name") ~ date("departure") ~ date("arrival") ~ int("mod_id") ~ int("tour_state") map(flatten) *)
-      var x = for(t <- tours;
-        p = SQL("""select *
-        from user join user_has_tour on user_has_tour.user_id=user.id
-        where tour_id={tid}""").on('tid -> t._1).as(User.simple *)
-      ) yield (t._1,t._2,t._3,t._4,t._5,t._6,t._7,p,t._8)
-      return x
-    }
-  }
-
-
-
-
-
 
 
 

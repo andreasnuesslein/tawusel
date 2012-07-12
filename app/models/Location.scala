@@ -23,7 +23,7 @@ object Location {
     }    
   }
 
-  def findAllSortedByName: List[Location] = {
+  def getAllSortedByName: List[Location] = {
     DB.withConnection { implicit connection =>
       SQL("SELECT * FROM location ORDER BY location.name ASC").as(Location.simple *)
     }

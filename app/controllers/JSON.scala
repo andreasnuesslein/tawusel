@@ -77,7 +77,7 @@ object JSON extends Controller {
 	var tour = Tour.getById(tourId.toLong)
 	val isUserJoined = tour.userJoin(user.id)
 	if(isUserJoined) {
-	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
+	  val json = Json.generate(tour.toRichTour)
 	  Ok(json).as("application/json")
 	} else {
 	  val json = "[{\"_1\": \"false\"}]"
@@ -90,7 +90,7 @@ object JSON extends Controller {
 	var tour = Tour.getById(tourId.toLong)
 	val hasUserLeft = tour.userLeave(user.id)
 	if(hasUserLeft) {
-	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
+	  val json = Json.generate(List(tour.toRichTour))
 	  Ok(json).as("application/json")
 	} else {
 	  val json = "[{\"_1\": \"false\"}]"
