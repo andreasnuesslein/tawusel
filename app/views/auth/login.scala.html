@@ -9,48 +9,48 @@
 }
 
 @main(title, nav = "login") {
-  <script>
-    $(document).ready(function(){
-      $("form").submit(function() {
-        $email = $("#email").val();
-        if($email.search("@@") == -1){
-          $("#email").val($email+"@@carmeq.com");
-        }
-      });
+<script>
+  $(document).ready(function(){
+    $("form").submit(function() {
+      $email = $("#email").val();
+      if($email.search("@@") == -1){
+        $("#email").val($email+"@@carmeq.com");
+      }
     });
-  </script>
+  });
+</script>
+<div class="span12">
+  <form action="@routes.Auth.login" method="POST" class="form-horizontal">
 
-<form action="@routes.Auth.login" method="POST" class="form-horizontal" >
-
-  <div class="alerts">
-    @myform.globalError.map { error =>
-    <div class="alert alert-error">
-      <a class="close" data-dismiss="alert" href="#">x</a>
-      @error.message
+    <div class="alerts">
+      @myform.globalError.map { error =>
+      <div class="alert alert-error">
+        <a class="close" data-dismiss="alert" href="#">x</a>
+        @error.message
+      </div>
+      }
     </div>
-    }
-  </div>
 
-  <fieldset>
-    @inputText(
-    myform("email"),
-    '_label -> "Email",
-    '_help -> ""
-    )
-    @inputPassword(
-    myform("password"),
-    '_label -> "Password"
-    )
-  </fieldset>
+    <fieldset>
+      @inputText(
+      myform("email"),
+      '_label -> "Email",
+      '_help -> ""
+      )
+      @inputPassword(
+      myform("password"),
+      '_label -> "Password"
+      )
+    </fieldset>
 
-  <div class="form-actions">
-   <input type="submit" id="loginbutton" class="btn primary" value="Login">
-   <a href="@routes.Application.index" class="btn">Cancel</a>
-   <a href="@routes.Auth.passwordLost">Lost your password?</a>
- </div>
+    <div class="form-actions">
+     <input type="submit" id="loginbutton" class="btn primary" value="Login" />
+     <a href="@routes.Application.index" class="btn">Cancel</a>
+     <a href="@routes.Auth.passwordLost">Lost your password?</a>
+   </div>
 
-
-</form>
+  </form>
+</div>
 }
 
 

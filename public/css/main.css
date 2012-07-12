@@ -260,3 +260,12 @@ background-color: #6E8F3A;
   margin: 1em;
 }
 
+.noti_checkbox {
+  padding-right: 1em;
+}
+
+.flt {
+  width:auto;
+  margin: -8px 0 -5px -5px;
+}
+

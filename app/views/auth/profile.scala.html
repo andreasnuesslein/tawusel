@@ -34,217 +34,214 @@ favorites: List[(String, String, String, java.util.Date, java.util.Date, Boolean
   });
 
 </script>
-<style>
-  .noti_checkbox {
-    padding-right: 1em;
-  }
-</style>
 
-<ul class="nav nav-tabs" id="myTab">
-  <li class="active"><a href="#profile"><strong>Profile</strong></a></li>
-  <li><a href="#notifications"><strong>Notifications</strong></a></li>
-  <li><a href="#history"><strong>Travel history</strong></a></li>
-  <li><a href="#favorites"><strong>Favorites</strong></a></li>
-</ul>
+<div class="span12">
+  <ul class="nav nav-tabs" id="myTab">
+    <li class="active"><a href="#profile"><strong>Profile</strong></a></li>
+    <li><a href="#notifications"><strong>Notifications</strong></a></li>
+    <li><a href="#history"><strong>Travel history</strong></a></li>
+    <li><a href="#favorites"><strong>Favorites</strong></a></li>
+  </ul>
 
-<div class="tab-content">
-  <div class="tab-pane active" id="profile">
-    <table>
-      <tr>
-        <td valign="top"><span id="gravatar">@user.email</span></td>
-        <td>
-          <div><div class="userform-label"></div><span class="userform-input"><strong>@user.firstname @user.lastname</strong></span></div>
-          <br />
-          <form method="POST">
-            @inputText(userform("email"), '_label -> "Email")
-            @inputText(userform("cellphone"), '_label -> "Cellphone")
-            @inputText(userform("extension"), '_label -> "BIK")
-            <div class="userform-label" style="margin-bottom:10px;">Password</div><a href="@routes.Auth.passwordChange">Set new password</a>
-            <div>
-              <div class="userform-label"><button type="submit" id="submit">Save</button></div>
-            </div>
-          </form>
-        </td>
-      </tr>
-    </table>
-  </div>
+  <div class="tab-content">
+    <div class="tab-pane active" id="profile">
+      <table>
+        <tr>
+          <td valign="top"><span id="gravatar">@user.email</span></td>
+          <td>
+            <div><div class="userform-label"></div><span class="userform-input"><strong>@user.firstname @user.lastname</strong></span></div>
+            <br />
+            <form method="POST">
+              @inputText(userform("email"), '_label -> "Email")
+              @inputText(userform("cellphone"), '_label -> "Cellphone")
+              @inputText(userform("extension"), '_label -> "BIK")
+              <div class="userform-label" style="margin-bottom:10px;">Password</div><a href="@routes.Auth.passwordChange">Set new password</a>
+              <div>
+                <div class="userform-label"><button type="submit" id="submit">Save</button></div>
+              </div>
+            </form>
+          </td>
+        </tr>
+      </table>
+    </div>
 
-  <div class="tab-pane" id="notifications">
-    <div class="span6">
-      <form method="POST" action="/notifications">
-        <table class="table">
+    <div class="tab-pane" id="notifications">
+      <div class="span6">
+        <form method="POST" action="/notifications">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Email</th>
+                <th>SMS</th>
+              </tr>
+            </thead>
+            <tr>
+              <td>Somebody joined your tour</td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="sbdy_joined_email" name="sbdy_joined_email" @if(n.sbdy_joined_email){checked} />
+                </label>
+              </td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="sbdy_joined_sms" name="sbdy_joined_sms" @if(n.sbdy_joined_sms){checked} />
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>Somebody left your tour</td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="sbdy_left_email" name="sbdy_left_email" @if(n.sbdy_left_email){checked} />
+                </label>
+              </td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="sbdy_left_sms" name="sbdy_left_sms" @if(n.sbdy_left_sms){checked} />
+                </label>
+              </td>
+            </tr>
+            <tr><td></td><td></td><td></td></tr>
+            <tr>
+              <td>A tour of yours will start in about 30 min</td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="xmin_email" name="xmin_email" @if(n.xmin_email){checked} />
+                </label>
+              </td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="xmin_sms" name="xmin_sms" @if(n.xmin_sms){checked} />
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>A tour requires you to manually call the taxi company</td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="must_call_email" name="must_call_email" disabled="disabled" @if(n.must_call_email){checked} />
+                  <input type="hidden" name="must_call_email" />
+                </label>
+              </td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="must_call_sms" name="must_call_sms" @if(n.must_call_sms){checked} />
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>A tour of yours has changed its status (booked, cancelled).</td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="status_changed_email" name="status_changed_email" @if(n.status_changed_email){checked} />
+                </label>
+              </td>
+              <td>
+                <label class="checkbox noti_checkbox">
+                  <input type="checkbox" id="status_changed_sms" name="status_changed_sms" @if(n.status_changed_sms){checked} />
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button type="submit" class="btn btn-primary" name="submit" id="submit">Save</button>
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+
+          </table>
+        </form>
+      </div>
+    </div>
+    <div class="tab-pane" id="history">
+      <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="historytable">
+        <caption>
+        </caption>
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Time</th>
+            <th>Passengers</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @history.map { h =>
+          <tr class="tour">
+            <td>@h.town.name</td>
+            <td>@h.l1.name</td>
+            <td>@h.l2.name</td>
+            <td><span class="modtime">@h.dep.format("HH:mm") - @h.arr.format("HH:mm")</span> (@h.dep.format("dd.MM.yyyy"))</td>
+            <td>@h.users.map { u =>
+              @if(u.id == h.mod.id) {
+              <span class="mod" style="font-weight:bold;">
+                } else {
+                <span>
+                  }
+                  <span class="passenger" style="border-bottom: 1px black dotted;" rel="popover" data-content="Email: @u.email<br />Phone: @u.cellphone" data-original-title="@u.firstname @u.lastname" email="@u.email">@u.firstname</span>
+                </span>
+                }
+              </td>
+              <td>
+                <span class="status">@if(h.state == 1) {
+                  <span class="statusicon" rel="popover" data-content="This tour was never confirmed nor cancelled." data-original-title="Pending"><a class="icon-question-sign"></a></span>
+                  }
+                  @if(h.state == 2) {
+                  <span class="statusicon" rel="popover" data-content="This tour was confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
+                  }
+                  @if(h.state == 3) {
+                  <span class="statusicon" rel="popover" data-content="This tour was cancelled." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
+                  }
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane" id="favorites">
+        <div class="row-fluid">
+          <div class="span8"></div>
+          <div class="span1"></div>
+          <div class="span1"></div>
+          <a href="/tour/resetFavorites/@user.email"><span class="btn btn-primary favoriteButton">Reset all tours</span></a>
+        </div>
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="favoritetable">
+          <caption>
+          </caption>
           <thead>
             <tr>
-              <th></th>
-              <th>Email</th>
-              <th>SMS</th>
+              <th>City</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Time</th>
+              <th>Reset</th>
             </tr>
           </thead>
-          <tr>
-            <td>Somebody joined your tour</td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="sbdy_joined_email" name="sbdy_joined_email" @if(n.sbdy_joined_email){checked} />
-              </label>
-            </td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="sbdy_joined_sms" name="sbdy_joined_sms" @if(n.sbdy_joined_sms){checked} />
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>Somebody left your tour</td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="sbdy_left_email" name="sbdy_left_email" @if(n.sbdy_left_email){checked} />
-              </label>
-            </td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="sbdy_left_sms" name="sbdy_left_sms" @if(n.sbdy_left_sms){checked} />
-              </label>
-            </td>
-          </tr>
-          <tr><td></td><td></td><td></td></tr>
-          <tr>
-            <td>A tour of yours will start in about 30 min</td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="xmin_email" name="xmin_email" @if(n.xmin_email){checked} />
-              </label>
-            </td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="xmin_sms" name="xmin_sms" @if(n.xmin_sms){checked} />
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>A tour requires you to manually call the taxi company</td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="must_call_email" name="must_call_email" disabled="disabled" @if(n.must_call_email){checked} />
-                <input type="hidden" name="must_call_email" />
-              </label>
-            </td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="must_call_sms" name="must_call_sms" @if(n.must_call_sms){checked} />
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>A tour of yours has changed its status (booked, cancelled).</td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="status_changed_email" name="status_changed_email" @if(n.status_changed_email){checked} />
-              </label>
-            </td>
-            <td>
-              <label class="checkbox noti_checkbox">
-                <input type="checkbox" id="status_changed_sms" name="status_changed_sms" @if(n.status_changed_sms){checked} />
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <button type="submit" class="btn btn-primary" name="submit" id="submit">Save</button>
-            </td>
-            <td></td>
-            <td></td>
-          </tr>
-
+          <tbody>
+            @favorites.map { f =>
+            <tr class="tour">
+              <td>@f._1</td>
+              <td>@f._2</td>
+              <td>@f._3</td>
+              <td><span class="modtime">@f._4.getHours:@f._4.getMinutes - @f._5.getHours:@f._5.getMinutes</span> (@f._4.getDate.@(f._4.getMonth + 1).@(f._4.getYear + 1900))</td>
+              <td>
+                @if(f._6) {
+                already resettet
+                } else {
+                <a href="/tour/resetFavorite/@f._7/@f._8"><span class="btn btn-mini">reset</span></a>
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
         </table>
-      </form>
-    </div>
-  </div>
-  <div class="tab-pane" id="history">
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="historytable">
-      <caption>
-      </caption>
-      <thead>
-        <tr>
-          <th>City</th>
-          <th>From</th>
-          <th>To</th>
-          <th>Time</th>
-          <th>Passengers</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @history.map { h =>
-        <tr class="tour">
-          <td>@h.town.name</td>
-          <td>@h.l1.name</td>
-          <td>@h.l2.name</td>
-          <td><span class="modtime">@h.dep.format("HH:mm") - @h.arr.format("HH:mm")</span> (@h.dep.format("dd.MM.yyyy"))</td>
-          <td>@h.users.map { u =>
-            @if(u.id == h.mod.id) {
-              <span class="mod" style="font-weight:bold;">
-            } else {
-              <span>
-            }
-            <span class="passenger" style="border-bottom: 1px black dotted;" rel="popover" data-content="Email: @u.email<br />Phone: @u.cellphone" data-original-title="@u.firstname @u.lastname" email="@u.email">@u.firstname</span>
-            </span>
-            }
-          </td>
-          <td>
-            <span class="status">@if(h.state == 1) {
-              <span class="statusicon" rel="popover" data-content="This tour was never confirmed nor cancelled." data-original-title="Pending"><a class="icon-question-sign"></a></span>
-              }
-              @if(h.state == 2) {
-              <span class="statusicon" rel="popover" data-content="This tour was confirmed." data-original-title="Booked"><a class="icon-ok"></a></span>
-              }
-              @if(h.state == 3) {
-              <span class="statusicon" rel="popover" data-content="This tour was cancelled." data-original-title="Cancelled"><a class="icon-warning-sign"></a></span>
-              }
-            </span>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  <div class="tab-pane" id="favorites">
-    <div class="row-fluid">
-      <div class="span8"></div>
-      <div class="span1"></div>
-      <div class="span1"></div>
-      <a href="/tour/resetFavorites/@user.email"><span class="btn btn-primary favoriteButton">Reset all tours</span></a>
-    </div>
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered tablesorter"  id="favoritetable">
-      <caption>
-      </caption>
-      <thead>
-        <tr>
-          <th>City</th>
-          <th>From</th>
-          <th>To</th>
-          <th>Time</th>
-          <th>Reset</th>
-        </tr>
-      </thead>
-      <tbody>
-        @favorites.map { f =>
-        <tr class="tour">
-          <td>@f._1</td>
-          <td>@f._2</td>
-          <td>@f._3</td>
-          <td><span class="modtime">@f._4.getHours:@f._4.getMinutes - @f._5.getHours:@f._5.getMinutes</span> (@f._4.getDate.@(f._4.getMonth + 1).@(f._4.getYear + 1900))</td>
-          <td>
-            @if(f._6) {
-              already resettet
-            } else {
-            <a href="/tour/resetFavorite/@f._7/@f._8"><span class="btn btn-mini">reset</span></a>
-            }
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+      </div>
 
+    </div>
 </div>
 }
