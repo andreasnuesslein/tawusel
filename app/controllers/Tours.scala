@@ -49,7 +49,7 @@ object Tours extends Controller with Secured {
     val tour_templates = Tour.getTemplatesForUser(user.id)
     val available_tours = Tour.getAvailableForUser(user.id)
     var towns = Town.findAllSortedByName()
-    var locations = Location.findAllSortedByName()
+    var locations = Location.findAllSortedByName
     Ok(views.html.tours(active_tours, tour_templates, available_tours, towns, locations))
   }
   
