@@ -36,17 +36,17 @@
           <ul class="nav nav-collapse pull-right">
             @request.session.get("firstname").map{ login =>
             <li class="@("active".when(nav == "account"))">
-            <a href="/account">Hello @login</a>
+            <a href="/account">Hello <strong>@login</strong></a>
             </li>
             <li>
-            <a href="/logout">Log out</a>
+            <a href="/logout"><strong>Log out</strong></a>
             </li>
             }.getOrElse {
             <li class="@("active".when(nav == "signup"))">
-            <a href="@routes.Auth.register">Register</a>
+            <a href="@routes.Auth.register"><strong>Register</strong></a>
             </li>
             <li class="@("active".when(nav == "login"))">
-            <a href="@routes.Auth.login">Login</a>
+            <a href="@routes.Auth.login"><strong>Login</strong></a>
             </li>
             }
           </ul>
