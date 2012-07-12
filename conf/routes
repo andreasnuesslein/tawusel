@@ -32,12 +32,14 @@ POST	/password/new												controllers.Auth.passwordChange
 
 GET		/password/reset/*email/*token								controllers.Auth.passwordReset(email, token)
 
-GET		/authenticateByApp/*email/*hashedPassword					controllers.JSON.authenticateByApp(email, hashedPassword)
 
-POST /registerByApp                                   controllers.Auth.registerPerApp
 # Tours
 POST	/tours														controllers.Tours.newTourCreate
 GET		/tours														controllers.Tours.tours
+
+# Android App
+GET		/authenticateByApp/*email/*hashedPassword					controllers.JSON.authenticateByApp(email, hashedPassword)
+POST 	/registerByApp                                   			controllers.Auth.registerPerApp
 GET		/getActiveToursByApp/*email									controllers.JSON.getActiveToursByApp(email)
 GET		/getTourTemplatesByApp/*email								controllers.JSON.getTourTemplatesByApp(email)
 GET		/getAvailableToursByApp/*email								controllers.JSON.getAvailableToursByApp(email)
@@ -45,6 +47,9 @@ GET		/getTourStatusValuesByApp									controllers.JSON.getTourStatusValuesByApp
 GET		/joinTourByApp/*email/*tourId								controllers.JSON.joinTourByApp(email, tourId)
 GET		/leaveTourByApp/*email/*tourId								controllers.JSON.leaveTourByApp(email, tourId)
 GET		/googleest/:dep/:arr										controllers.JSON.getGoogleEstimate(dep: Int, arr: Int)
+GET		/getTownValuesByApp											controllers.JSON.getTownValuesByApp
+GET		/getLocationValuesByApp										controllers.JSON.getLocationValuesByApp
+
 
 
 # Map static resources from the /public folder to the /assets URL path

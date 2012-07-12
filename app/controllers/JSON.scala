@@ -31,6 +31,26 @@ object JSON extends Controller {
     }
   }
   
+  def getTownValuesByApp() = Action {
+    DB.withConnection { implicit connection =>
+      val states = SQL("""SELECT *
+        FROM town"""
+      ).as(int("id") ~ str("name") map(flatten) *)
+      val json = Json.generate(states)
+      Ok(json).as("application/json")
+    }
+  }
+  
+  def getLocationValuesByApp() = Action {
+    DB.withConnection { implicit connection =>
+      val states = SQL("""SELECT *
+        FROM location"""
+      ).as(int("id") ~ int("town_id") ~ str("name") ~str("address") map(flatten) *)
+      val json = Json.generate(states)
+      Ok(json).as("application/json")
+    }
+  }
+  
   def getActiveToursByApp(email: String) = Action {
     val user = User.findByEmail(email).get
     val activeTours = Tour.getActiveForUser(user.id)
@@ -88,7 +108,7 @@ object JSON extends Controller {
       val sec = res.substring(res.indexOf("value",res.indexOf("duration"))+9).split("\n")(0)
       val min = math.ceil(sec.toInt/60.0).toInt
       
-      val json = "[{'dur': '"+min+"'}]"
+      val json = "{'dur': '" + min + "'}"
       Ok(json).as("application/json")
     } catch {
       case e:NoSuchElementException => Ok("""[{"dur": "-1"}]""").as("application/json")
