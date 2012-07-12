@@ -80,7 +80,7 @@ object JSON extends Controller {
 	  val json = Json.generate(tour.toRichTour)
 	  Ok(json).as("application/json")
 	} else {
-	  val json = "[{\"_1\": \"false\"}]"
+	  val json = "{\"_1\": \"false\"}"
 	  Ok(json).as("application/json")
 	} 	
   }
@@ -89,13 +89,19 @@ object JSON extends Controller {
 	val user = User.findByEmail(email).get
 	var tour = Tour.getById(tourId.toLong)
 	val hasUserLeft = tour.userLeave(user.id)
+	var json = ""
 	if(hasUserLeft) {
-	  val json = Json.generate(tour.toRichTour)
-	  Ok(json).as("application/json")
+	  try {
+		  tour = Tour.getById(tourId.toLong)
+		  json = Json.generate(tour.toRichTour)
+	  } catch {
+	    case _ => json = "{\"_1\": \"tour deleted\"}"
+	  } 
 	} else {
-	  val json = "[{\"_1\": \"false\"}]"
-	  Ok(json).as("application/json")
+	 json = "{\"_2\": \"false\"}"
 	}
+	println("json:" + json)
+	Ok(json).as("application/json")
   }
   
   def getGoogleEstimate(dep: Int, arr: Int) = Action {
@@ -124,11 +130,11 @@ object JSON extends Controller {
     tour.userJoin(user.id)
     
     if (tour.id != null) {
-      Ok(tour.id.toString())
+      val richTour = tour.toRichTour
+      Ok(richTour.id + "&" + Json.generate(richTour.users) + "&" + Json.generate(richTour.mod))
     }
     else {
       Ok("error, tour could not be created")
     }
   }
-  
 }
