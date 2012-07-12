@@ -103,7 +103,6 @@ object Auth extends Controller with Secured {
   def registerPerApp = Action { implicit request =>
     println(request.body.asFormUrlEncoded.get)
     var x = request.body.asFormUrlEncoded.get
-    var json = null;
     val userId = User.create(x("email").head, x("firstname").head, x("lastname").head, x("phone").head, x("password").head);
     if (userId != 0) {
       Ok("success")
