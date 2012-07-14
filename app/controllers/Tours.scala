@@ -141,8 +141,8 @@ object Tours extends Controller with Secured {
      val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
      val dep = dateFormat.parse(stime)
      val arr = dateFormat.parse(etime)
-     var dep_l = 16;
-     var arr_l = 17;
+     var dep_l = 19;
+     var arr_l = 7;
      val temp_dl = Location.getLocationIdByLocAndTownName(start, city)
      val temp_al = Location.getLocationIdByLocAndTownName(end, city)
      if(temp_dl > 0 && temp_al > 0) {

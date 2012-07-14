@@ -55,8 +55,12 @@ object Location {
         """).on(
           'locationName -> locationName,
           'townName -> townName
-        ).as(scalar[Int].single)
-      locId
+        ).as(scalar[Int].singleOpt)
+      if(!locId.isEmpty) {
+        return locId.get
+      } else {
+        return -1
+      }
     }
   }
 

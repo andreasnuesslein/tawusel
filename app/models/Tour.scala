@@ -301,12 +301,16 @@ object Tour {
         if(favorites.length < 5) {
           val number = 5 - favorites.length
           val initial_templates = SQL("""SELECT *
-            FROM initials LIMIT {number}
+            FROM initial_template
+            JOIN location ON location.id = initial_template.dep_location
+            JOIN location2 ON location2.id = initial_template.arr_location
+            JOIN town ON town.id = location.town_id
+            LIMIT {number}
             """).on('number -> number).
-            as(int("initial_template.id") ~  date("departure") ~ date("arrival") ~
-               int("townid") ~ str("town.name") ~
-               int("l1id") ~ str("l1name") ~ str("l1address") ~
-               int("l2id") ~ str("l2name") ~ str("l2address") map{ 
+            as(int("initial_template.id") ~  date("initial_template.departure") ~ date("initial_template.arrival") ~
+               int("town.id") ~ str("town.name") ~
+               int("location.id") ~ str("location.name") ~ str("location.address") ~
+               int("location2.id") ~ str("location2.name") ~ str("location2.address") map{ 
                  case i~d~a~ti~tn~l1i~l1n~l1a~l2i~l2n~l2a => RichTour(i,Town(ti,tn),Location(l1i,ti,l1n,l1a),Location(l2i,ti,l2n,l2a),d,a,null,null,1)
             } *)
           templates ++= initial_templates
