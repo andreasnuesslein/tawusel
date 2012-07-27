@@ -17,6 +17,7 @@ object ApplicationBuild extends Build {
       "com.novocode" % "junit-interface" % "0.8" % "test->default",
       "org.scalatest" %% "scalatest" % "1.6.1" % "test",
       "org.springframework" % "spring-mock" % "2.0.8"
+      "com.codahale" %% "jerkson" % "0.5.0"
     )
 
 

@@ -11,6 +11,7 @@ import play.api.db._
 import anorm._
 import anorm.SqlParser._
 import play.api.Play.current
+import play.api.libs.ws.WS
 
 object JSON extends Controller {
 
@@ -25,6 +26,26 @@ object JSON extends Controller {
       val states = SQL("""SELECT *
         FROM tour_state"""
       ).as(int("id") ~ str("name") ~ str("description") map(flatten) *)
+      val json = Json.generate(states)
+      Ok(json).as("application/json")
+    }
+  }
+  
+  def getTownValuesByApp() = Action {
+    DB.withConnection { implicit connection =>
+      val states = SQL("""SELECT *
+        FROM town"""
+      ).as(int("id") ~ str("name") map(flatten) *)
+      val json = Json.generate(states)
+      Ok(json).as("application/json")
+    }
+  }
+  
+  def getLocationValuesByApp() = Action {
+    DB.withConnection { implicit connection =>
+      val states = SQL("""SELECT *
+        FROM location"""
+      ).as(int("id") ~ int("town_id") ~ str("name") ~str("address") map(flatten) *)
       val json = Json.generate(states)
       Ok(json).as("application/json")
     }
@@ -56,10 +77,10 @@ object JSON extends Controller {
 	var tour = Tour.getById(tourId.toLong)
 	val isUserJoined = tour.userJoin(user.id)
 	if(isUserJoined) {
-	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
+	  val json = Json.generate(tour.toRichTour)
 	  Ok(json).as("application/json")
 	} else {
-	  val json = "[{\"_1\": \"false\"}]"
+	  val json = "{\"_1\": \"false\"}"
 	  Ok(json).as("application/json")
 	} 	
   }
@@ -68,12 +89,52 @@ object JSON extends Controller {
 	val user = User.findByEmail(email).get
 	var tour = Tour.getById(tourId.toLong)
 	val hasUserLeft = tour.userLeave(user.id)
+	var json = ""
 	if(hasUserLeft) {
-	  val json = Json.generate(Tour.getTourDetailsForJSON(tourId.toInt))
-	  Ok(json).as("application/json")
+	  try {
+		  tour = Tour.getById(tourId.toLong)
+		  json = Json.generate(tour.toRichTour)
+	  } catch {
+	    case _ => json = "{\"_1\": \"tour deleted\"}"
+	  } 
 	} else {
-	  val json = "[{\"_1\": \"false\"}]"
-	  Ok(json).as("application/json")
-	} 	
+	 json = "{\"_2\": \"false\"}"
+	}
+	println("json:" + json)
+	Ok(json).as("application/json")
+  }
+  
+  def getGoogleEstimate(dep: Int, arr: Int) = Action {
+    try {
+      val d = Location.getById(dep).address.replace(" ","+")
+      val a = Location.getById(arr).address.replace(" ","+")
+      val url = "http://maps.googleapis.com/maps/api/distancematrix/json?sensor=false&origins="+d+"&destinations="+a
+      
+      val res = WS.url(url).get().await(100000).get.body
+      val sec = res.substring(res.indexOf("value",res.indexOf("duration"))+9).split("\n")(0)
+      val min = math.ceil(sec.toInt/60.0).toInt
+      
+      val json = "{'dur': '" + min + "'}"
+      Ok(json).as("application/json")
+    } catch {
+      case e:NoSuchElementException => Ok("""{"dur": "-1"}""").as("application/json")
+    }
+  }
+  
+  def createTourByApp() = Action { implicit request =>
+    var x = request.body.asFormUrlEncoded.get
+    val user = User.findByEmail(x("email").head).get
+    val dep = new java.util.Date(x("deptime").head.toLong)
+    val arr = new java.util.Date(x("arrtime").head.toLong)
+    val tour = Tour.create(dep, arr, x("depature").head.toLong, x("arrival").head.toLong, 1,user.id)
+    tour.userJoin(user.id)
+    
+    if (tour.id != null) {
+      val richTour = tour.toRichTour
+      Ok(richTour.id + "&" + Json.generate(richTour.users) + "&" + Json.generate(richTour.mod))
+    }
+    else {
+      Ok("error, tour could not be created")
+    }
   }
 }

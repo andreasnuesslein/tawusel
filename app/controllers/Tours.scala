@@ -48,9 +48,9 @@ object Tours extends Controller with Secured {
     val active_tours = Tour.getActiveForUser(user.id)
     val tour_templates = Tour.getTemplatesForUser(user.id)
     val available_tours = Tour.getAvailableForUser(user.id)
-    var towns = Town.findAllSortedByName()
-    var locations = Location.findAllSortedByName()
-    Ok(views.html.tours(active_tours, tour_templates, available_tours, towns, locations))
+    var towns = Town.getAllSortedByName
+    var locations = Location.getAllSortedByName
+    Ok(html.tours(active_tours, tour_templates, available_tours, towns, locations))
   }
   
   def joinTour(id:Long) = IsAuthenticated { email => implicit request =>
@@ -82,7 +82,7 @@ object Tours extends Controller with Secured {
       var tour = Tour.getById(id)
       if( tour.checkToken(token) ) {
         if(tour.updateState(2)) {
-          tour.getAllUsers().foreach(u => {
+          tour.getAllUsers.foreach(u => {
             val un = UserNotification.getForUser(u.id)
             val n = new TaxiStatusChangedSuccessNotification(u, null, tour)
             if(un.status_changed_email) Mail.send(n)
@@ -106,20 +106,20 @@ object Tours extends Controller with Secured {
     if( tour.checkToken(token) ) {
         var statusText = ""
         if(tour.updateState(3)) {
-          tour.getAllUsers().foreach(u => {
+          tour.getAllUsers.foreach(u => {
               val un = UserNotification.getForUser(u.id)
               val n = new TaxiStatusChangedFailNotification(u, null, tour)
               if(un.status_changed_email) Mail.send(n)
               if(un.status_changed_sms) SMS.send(n)
             }
           )
-          if(tour.getAllUsers().length > 1) {
+          if(tour.getAllUsers.length > 1) {
             var n:Notification = null
-            if(User.findByEmail(tour.getAllUsers().head.email).get.id.equals(tour.mod_id.toInt)) {
-              val userToNotify = tour.getAllUsers().tail.head
+            if(User.findByEmail(tour.getAllUsers.head.email).get.id.equals(tour.mod_id.toInt)) {
+              val userToNotify = tour.getAllUsers.tail.head
               n = new ManualCallNotification(userToNotify, null, tour, true)
             } else {
-              n = new ManualCallNotification(tour.getAllUsers().head, null, tour, true)
+              n = new ManualCallNotification(tour.getAllUsers.head, null, tour, true)
             }
 
             Mail.send(n)
@@ -141,8 +141,8 @@ object Tours extends Controller with Secured {
      val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
      val dep = dateFormat.parse(stime)
      val arr = dateFormat.parse(etime)
-     var dep_l = 16;
-     var arr_l = 17;
+     var dep_l = 19;
+     var arr_l = 7;
      val temp_dl = Location.getLocationIdByLocAndTownName(start, city)
      val temp_al = Location.getLocationIdByLocAndTownName(end, city)
      if(temp_dl > 0 && temp_al > 0) {
@@ -152,7 +152,7 @@ object Tours extends Controller with Secured {
      val existingTours: List[Tour] = Tour.checkForSimilarTour(dep, dep_l, arr_l, 5)
      if(existingTours.nonEmpty) {
        val existingTour: Tour = existingTours.head
-       if(!existingTour.getAllUsers().contains(user)) {
+       if(!existingTour.getAllUsers.contains(user)) {
          existingTour.userJoin(user.id)
        }
      } else {

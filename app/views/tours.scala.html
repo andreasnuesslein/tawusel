@@ -1,5 +1,5 @@
 @(active_tours: List[RichTour],
-  tour_templates: List[(String, String, String, java.util.Date, java.util.Date)],
+  tour_templates: List[RichTour],
   avail_tours: List[RichTour],
 towns:List[Town],locations: List[Location])(implicit request: RequestHeader)
 
@@ -193,13 +193,8 @@ Plan a new tour
   });
 
 </script>
-<style>
-  .flt {
-    width:auto;
-    margin: -8px 0 -5px -5px;
-  }
-</style>
 
+<div class="span12">
 <div class="row">
   <span class="span6" style="padding-top:5px;padding-left:5px;">
     <span class="legend" rel="popover" data-content="These are the tours you are currently planning on participating in." data-original-title="My Tours">
@@ -213,7 +208,7 @@ Plan a new tour
       <div class="colour_box">    </div> - Available Tours.
     </span>
   </span>
-  <span class="span6" align="right" style="margin-left:20px; margin-bottom:2px;">
+  <span class="span6" style="margin-left:20px; margin-bottom:2px; text-align:right;">
       <a class="btn btn-info" data-toggle="modal" href="#createModal" >Add tour</a>
   </span>
 
@@ -268,10 +263,10 @@ Plan a new tour
     }
     @tour_templates.map { tour =>
     <tr class="tour_template">
-      <td>@tour._1</td>
-      <td>@tour._2</td>
-      <td>@tour._3</td>
-      <td class="modtime">@tour._4.format("HH:mm") - @tour._5.format("HH:mm")</td>
+      <td>@tour.town.name</td>
+      <td>@tour.l1.name</td>
+      <td>@tour.l2.name</td>
+      <td class="modtime">@tour.dep.format("HH:mm") - @tour.arr.format("HH:mm")</td>
       <td>-</td>
       <td>-</td>
       <td><a href="" class="btn btn-mini">create</a></td>
@@ -387,6 +382,6 @@ Plan a new tour
     </div>
   </div>
 </form>
-
+</div>
 }
 
